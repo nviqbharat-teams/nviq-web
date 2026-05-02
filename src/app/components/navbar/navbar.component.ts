@@ -1,497 +1,323 @@
+import {
+  Component, HostListener, OnInit, ElementRef, ViewChild
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-
-interface NavItem {
-  label: string;
-  id: string;
-}
+import { NavService } from '../../services/nav.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <nav class="top-strip" [class.scrolled]="scrolled">
-      <div class="nav-inner">
-        <button type="button" class="brand" (click)="onNavClick('home')" aria-label="Go to home">
-          <span class="brand-mark">N</span>
-          <span class="brand-text">NViQ</span>
-        </button>
+    <nav class="nav-root" [class.scrolled]="scrolled">
+      <div class="nav-shell">
 
-        <div class="right-controls">
-          <ul class="desktop-nav">
-            <li *ngFor="let item of navItems">
-              <button
-                type="button"
-                class="nav-link"
-                [class.active]="activeSection === item.id"
-                (click)="onNavClick(item.id)"
-              >
-                <span>{{ item.label }}</span>
-                <span class="nav-link-line"></span>
-              </button>
-            </li>
-          </ul>
-
-          <button type="button" class="ask-cta" (click)="openAskModal()">Ask Me</button>
-
-          <button
-            type="button"
-            class="mobile-toggle"
-            [attr.aria-expanded]="mobileOpen"
-            aria-label="Toggle navigation menu"
-            (click)="mobileOpen = !mobileOpen"
-          >
-            <span *ngIf="!mobileOpen">&#9776;</span>
-            <span *ngIf="mobileOpen">&#10005;</span>
+        <!-- LEFT: Home + Products -->
+        <div class="nav-left">
+          <button class="nav-link" type="button"
+            [class.active]="nav.page() === 'home'"
+            (click)="navigate('home')">
+            Home
+          </button>
+          <button class="nav-link" type="button"
+            [class.active]="nav.page() === 'products' || nav.page() === 'product-detail'"
+            (click)="navigate('products')">
+            Products
           </button>
         </div>
+
+        <!-- CENTER: Logo (absolute centered) -->
+        <button class="nav-logo" type="button" (click)="navigate('home')">
+          <span class="logo-rabbit" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 80 80" fill="none"
+              stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M28 36 C26 28 24 18 26 10 C27 6 30 4 33 6 C36 8 36 14 35 22 L34 30"/>
+              <path d="M38 32 C38 24 40 16 44 12 C46 10 49 10 50 13 C51 16 49 22 46 27 L42 32"/>
+              <path d="M24 36 C22 40 22 46 26 50 C30 54 36 55 42 54 C48 53 52 49 52 44 C52 38 48 33 42 32 L35 30 C30 29 25 32 24 36Z"/>
+              <circle cx="35" cy="42" r="2" fill="white" stroke="none"/>
+              <path d="M26 50 C24 56 24 62 28 66 C32 70 40 71 46 69 C52 67 54 61 52 55"/>
+              <circle cx="54" cy="62" r="3"/>
+              <path d="M30 66 L28 74 M36 68 L36 76 M44 68 L46 76 M50 64 L54 72"/>
+            </svg>
+          </span>
+          <span class="logo-text">NV<span class="logo-i">i</span>Q</span>
+        </button>
+
+        <!-- RIGHT: Company + Contact -->
+        <div class="nav-right">
+
+          <!-- Company dropdown -->
+          <div class="nav-dropdown" #companyDd>
+            <button class="nav-link" type="button"
+              [class.active]="isCompanyPage"
+              (click)="toggleDropdown()">
+              Company
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5" stroke-linecap="round"
+                [style.transform]="ddOpen ? 'rotate(180deg)' : 'none'"
+                style="transition:transform 0.2s ease">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+
+            <!-- Dropdown menu -->
+            <div class="dd-menu" [class.dd-open]="ddOpen">
+              <button class="dd-item" type="button"
+                [class.active]="nav.page() === 'about'"
+                (click)="navigate('about')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                About Us
+              </button>
+              <button class="dd-item" type="button"
+                [class.active]="nav.page() === 'team'"
+                (click)="navigate('team')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Our Team
+              </button>
+            </div>
+          </div>
+
+          <button class="nav-link" type="button"
+            [class.active]="nav.page() === 'contact'"
+            (click)="navigate('contact')">
+            Contact Us
+          </button>
+        </div>
+
+        <!-- Mobile toggle -->
+        <button class="mob-toggle" type="button"
+          (click)="mobileOpen = !mobileOpen"
+          [attr.aria-expanded]="mobileOpen"
+          aria-label="Toggle menu">
+          <span *ngIf="!mobileOpen">&#9776;</span>
+          <span *ngIf="mobileOpen">&#10005;</span>
+        </button>
+
       </div>
 
-      <div class="mobile-nav" [class.open]="mobileOpen">
-        <button
-          *ngFor="let item of navItems"
-          type="button"
-          class="mobile-link"
-          [class.active]="activeSection === item.id"
-          (click)="onNavClick(item.id)"
-        >
-          {{ item.label }}
-        </button>
+      <!-- Mobile panel -->
+      <div class="mob-panel" [class.mob-open]="mobileOpen">
+        <button class="mob-link" type="button" (click)="navigate('home')">Home</button>
+        <button class="mob-link" type="button" (click)="navigate('products')">Products</button>
+        <button class="mob-link" type="button" (click)="navigate('about')">About</button>
+        <button class="mob-link" type="button" (click)="navigate('team')">Team</button>
+        <button class="mob-link" type="button" (click)="navigate('contact')">Contact Us</button>
       </div>
     </nav>
-
-    <div *ngIf="askOpen" class="ask-modal" (click)="closeAskModal()">
-      <div class="ask-modal-card" (click)="$event.stopPropagation()">
-        <button type="button" class="ask-close" aria-label="Close ask form" (click)="closeAskModal()">&#10005;</button>
-
-        <h3>Ask Me</h3>
-        <p class="ask-subtitle">Quick support from our NViQ team.</p>
-
-        <form *ngIf="!askSubmitted" style="display:grid; gap:12px" (submit)="submitAskForm($event)">
-          <label style="display:grid; gap:6px">
-            <span style="color:#CBD5E1; font-size:12px; font-weight:500">Name</span>
-            <input type="text" name="name" placeholder="Enter your name" required
-              style="width:100%; border-radius:12px; border:1px solid rgba(148,163,184,0.24); background:rgba(15,23,42,0.58); color:#E2E8F0; font-size:14px; outline:none; padding:10px 12px" />
-          </label>
-
-          <label style="display:grid; gap:6px">
-            <span style="color:#CBD5E1; font-size:12px; font-weight:500">Email ID</span>
-            <input type="email" name="email" placeholder="you@example.com" required
-              style="width:100%; border-radius:12px; border:1px solid rgba(148,163,184,0.24); background:rgba(15,23,42,0.58); color:#E2E8F0; font-size:14px; outline:none; padding:10px 12px" />
-          </label>
-
-          <label style="display:grid; gap:6px">
-            <span style="color:#CBD5E1; font-size:12px; font-weight:500">Mobile Number</span>
-            <input type="tel" name="mobile" placeholder="Enter mobile number" required
-              style="width:100%; border-radius:12px; border:1px solid rgba(148,163,184,0.24); background:rgba(15,23,42,0.58); color:#E2E8F0; font-size:14px; outline:none; padding:10px 12px" />
-          </label>
-
-          <label style="display:grid; gap:6px">
-            <span style="color:#CBD5E1; font-size:12px; font-weight:500">Message / Query</span>
-            <textarea name="message" rows="4" placeholder="How can we help?"
-              style="width:100%; min-height:92px; resize:vertical; border-radius:12px; border:1px solid rgba(148,163,184,0.24); background:rgba(15,23,42,0.58); color:#E2E8F0; font-size:14px; outline:none; padding:10px 12px"></textarea>
-          </label>
-
-          <button type="submit"
-            style="margin-top:2px; height:42px; border:0; border-radius:12px; color:#F8FAFC; font-size:14px; font-weight:600; background:linear-gradient(135deg, #3B82F6, #06B6D4); box-shadow:0 10px 20px rgba(37,99,235,0.22); cursor:pointer">
-            Submit Query
-          </button>
-        </form>
-
-        <div *ngIf="askSubmitted"
-          style="border-radius:12px; border:1px solid rgba(56,189,248,0.36); background:rgba(8,47,73,0.48); color:#BAE6FD; font-size:15px; font-weight:600; text-align:center; padding:18px 14px; margin-top:8px">
-          We'll contact you shortly
-        </div>
-      </div>
-    </div>
   `,
   styles: [`
-    .top-strip {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
-      background: rgba(8, 10, 18, 0.68);
-      backdrop-filter: blur(14px);
-      transition: background 0.25s ease, border-color 0.25s ease;
+    /* ── Root ──────────────────────────────────────────── */
+    .nav-root {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid #E2E8F0;
+      transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .nav-root.scrolled {
+      background: #FFFFFF;
+      border-color: #E2E8F0;
+      box-shadow: 0 1px 12px rgba(0,0,0,0.07);
     }
 
-    .top-strip.scrolled {
-      background: rgba(8, 10, 18, 0.9);
-      border-bottom-color: rgba(148, 163, 184, 0.26);
-      box-shadow: 0 8px 24px rgba(2, 6, 23, 0.24);
-    }
-
-    .nav-inner {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 10px 24px;
+    /* ── Shell ──────────────────────────────────────────── */
+    .nav-shell {
+      max-width: 1280px; margin: 0 auto;
+      min-height: 64px;
+      padding: 0 32px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      border: 0;
-      background: transparent;
-      cursor: pointer;
-      padding: 0;
-      flex-shrink: 0;
-    }
-
-    .brand-mark {
-      width: 30px;
-      height: 30px;
-      border-radius: 10px;
-      display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
-      font-weight: 800;
-      color: #ffffff;
-      background: linear-gradient(135deg, #3B82F6, #06B6D4);
-      box-shadow: 0 0 14px rgba(59, 130, 246, 0.34);
-    }
-
-    .brand-text {
-      color: #F8FAFC;
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .right-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .desktop-nav {
-      list-style: none;
-      display: none;
-      align-items: center;
-      gap: 24px;
-      margin: 0;
-      padding: 0;
-    }
-
-    .nav-link {
       position: relative;
-      border: 0;
-      background: transparent;
-      padding: 7px 0;
-      color: #94A3B8;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
     }
 
-    .nav-link.active {
-      color: #F8FAFC;
+    /* ── Left / Right ───────────────────────────────────── */
+    .nav-left {
+      display: flex; align-items: center; gap: 2px;
+      padding-right: 80px;
+    }
+    .nav-right {
+      display: flex; align-items: center; gap: 2px;
+      padding-left: 80px;
     }
 
-    .nav-link-line {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 2px;
+    /* ── Nav link ───────────────────────────────────────── */
+    .nav-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: transparent; border: none;
+      color: #475569;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px; font-weight: 500;
+      cursor: pointer; padding: 8px 12px; border-radius: 10px;
+      position: relative;
+      transition: color 0.2s ease, background 0.2s ease;
+      white-space: nowrap;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute; bottom: 3px; left: 12px; right: 12px;
+      height: 1.5px;
+      background: #2563EB;
       border-radius: 999px;
       transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.28s ease;
-      background: linear-gradient(90deg, #3B82F6, #06B6D4);
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.32);
+      transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
     }
+    .nav-link:hover { color: #0F172A; }
+    .nav-link:hover::after { transform: scaleX(1); }
+    .nav-link.active { color: #2563EB; font-weight: 600; }
+    .nav-link.active::after { transform: scaleX(1); }
 
-    .nav-link:hover .nav-link-line,
-    .nav-link.active .nav-link-line {
-      transform: scaleX(1);
-    }
-
-    .ask-cta {
-      border: 1px solid rgba(125, 211, 252, 0.44);
-      border-radius: 999px;
-      height: 36px;
-      padding: 0 16px;
-      color: #E0F2FE;
-      font-size: 13px;
-      font-weight: 600;
-      background: linear-gradient(135deg, rgba(6, 182, 212, 0.24), rgba(59, 130, 246, 0.26));
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    }
-
-    .ask-cta:hover {
-      transform: scale(1.05);
-      border-color: rgba(125, 211, 252, 0.72);
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
-    }
-
-    .mobile-toggle {
-      width: 36px;
-      height: 36px;
-      border: 1px solid rgba(148, 163, 184, 0.28);
-      border-radius: 11px;
-      background: rgba(15, 23, 42, 0.55);
-      color: #F8FAFC;
-      font-size: 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: border-color 0.2s ease, background 0.2s ease;
-    }
-
-    .mobile-nav {
-      max-height: 0;
+    /* ── Dropdown ───────────────────────────────────────── */
+    .nav-dropdown { position: relative; }
+    .dd-menu {
+      position: absolute; top: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%) translateY(-6px) scale(0.97);
+      min-width: 180px;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 6px;
       opacity: 0;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 0 24px;
-      border-top: 1px solid transparent;
-      transition: max-height 0.28s ease, opacity 0.2s ease, padding 0.2s ease;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06);
     }
-
-    .mobile-nav.open {
-      max-height: 280px;
+    .dd-menu.dd-open {
       opacity: 1;
-      padding: 10px 24px 14px;
-      border-top-color: rgba(148, 163, 184, 0.18);
+      transform: translateX(-50%) translateY(0) scale(1);
+      pointer-events: auto;
     }
-
-    .mobile-link {
-      width: 100%;
-      border: 1px solid transparent;
-      background: transparent;
-      border-radius: 10px;
-      padding: 10px 12px;
-      text-align: left;
-      color: #94A3B8;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    .dd-item {
+      display: flex; align-items: center; gap: 9px;
+      width: 100%; background: transparent; border: none;
+      color: #475569;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13.5px; font-weight: 600;
+      cursor: pointer; padding: 10px 14px; border-radius: 9px;
+      transition: all 0.15s ease; text-align: left;
     }
+    .dd-item:hover { color: #0F172A; background: #F1F5F9; }
+    .dd-item.active { color: #2563EB; background: rgba(37,99,235,0.06); }
 
-    .mobile-link.active {
-      color: #F8FAFC;
-      border-color: rgba(59, 130, 246, 0.34);
-      background: rgba(30, 41, 59, 0.56);
-    }
-
-    .ask-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 80;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 14px;
-      background: rgba(2, 6, 23, 0.62);
-      backdrop-filter: blur(8px);
-    }
-
-    .ask-modal-card {
-      position: relative;
-      width: min(520px, calc(100vw - 24px));
-      border-radius: 18px;
-      border: 1px solid rgba(148, 163, 184, 0.24);
-      background: linear-gradient(180deg, rgba(15, 23, 42, 0.86), rgba(8, 10, 18, 0.94));
-      box-shadow: 0 24px 60px rgba(2, 6, 23, 0.5);
-      padding: 24px 20px 20px;
-      animation: modalIn 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .ask-close {
+    /* ── Logo ───────────────────────────────────────────── */
+    .nav-logo {
       position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 30px;
-      height: 30px;
-      border-radius: 9px;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      background: rgba(15, 23, 42, 0.6);
-      color: #CBD5E1;
-      font-size: 14px;
+      left: 50%; transform: translateX(-50%);
+      display: inline-flex; align-items: center; gap: 9px;
+      background: transparent; border: none; cursor: pointer;
+      padding: 5px 10px; border-radius: 12px;
+      transition: background 0.2s ease;
+      z-index: 1;
+    }
+    .nav-logo:hover { background: rgba(37,99,235,0.05); }
+
+    .logo-rabbit {
+      width: 36px; height: 36px;
+      background: rgba(37,99,235,0.08);
+      border: 1px solid rgba(37,99,235,0.2);
+      border-radius: 10px;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .logo-rabbit svg { stroke: #2563EB; }
+    .nav-logo:hover .logo-rabbit {
+      background: rgba(37,99,235,0.14);
+      border-color: rgba(37,99,235,0.35);
+    }
+    .logo-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 19px; font-weight: 900;
+      color: #0F172A; letter-spacing: -0.02em;
+    }
+    .logo-i { color: #2563EB; }
+
+    /* ── Mobile toggle ──────────────────────────────────── */
+    .mob-toggle {
+      display: none;
+      position: absolute; right: 14px;
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      border: 1px solid #E2E8F0;
+      background: #F8FAFC;
+      color: #475569; font-size: 16px;
+      align-items: center; justify-content: center;
       cursor: pointer;
-      transition: color 0.2s ease, border-color 0.2s ease;
     }
 
-    .ask-modal-card h3 {
-      margin: 0;
-      color: #F8FAFC;
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+    /* ── Mobile panel ───────────────────────────────────── */
+    .mob-panel {
+      max-height: 0; overflow: hidden; opacity: 0;
+      background: #FFFFFF;
+      border-top: 1px solid transparent;
+      display: flex; flex-direction: column; gap: 2px;
+      transition: max-height 0.25s ease, opacity 0.2s ease, padding 0.2s ease;
+      padding: 0 20px;
     }
-
-    .ask-subtitle {
-      margin: 8px 0 16px;
-      color: #94A3B8;
-      font-size: 13px;
+    .mob-panel.mob-open {
+      max-height: 320px; opacity: 1; padding: 10px 20px 16px;
+      border-top-color: #E2E8F0;
     }
-
-    @media (max-width: 767px) {
-      .brand-text {
-        font-size: 18px;
-      }
-
-      .ask-cta {
-        height: 34px;
-        padding: 0 14px;
-        font-size: 12px;
-      }
-
-      .ask-modal-card {
-        width: calc(100vw - 20px);
-        padding: 22px 16px 16px;
-      }
+    .mob-link {
+      background: transparent; border: none;
+      color: #475569;
+      font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600;
+      text-align: left; padding: 11px 14px; border-radius: 10px;
+      cursor: pointer; transition: all 0.15s ease;
     }
+    .mob-link:hover { color: #2563EB; background: rgba(37,99,235,0.06); }
 
-    @media (min-width: 768px) {
-      .desktop-nav {
-        display: flex;
-      }
-
-      .mobile-toggle,
-      .mobile-nav {
-        display: none;
-      }
+    /* ── Responsive ─────────────────────────────────────── */
+    @media (max-width: 760px) {
+      .nav-left, .nav-right { display: none; }
+      .mob-toggle { display: inline-flex; }
+      .nav-shell { padding: 0 16px; }
     }
-
-    @keyframes modalIn {
-      from {
-        opacity: 0;
-        transform: scale(0.95) translateY(12px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
+    @media (max-width: 480px) {
+      .nav-shell { min-height: 56px; padding: 0 12px; }
+      .logo-rabbit { width: 32px; height: 32px; }
+      .logo-text { font-size: 17px; }
     }
-  `],
+  `]
 })
-export class NavbarComponent implements OnInit, OnDestroy {
-  navItems: NavItem[] = [
-    { label: 'Home', id: 'home' },
-    { label: 'Fleet Solutions', id: 'fleet-solutions' },
-    { label: 'Mutual Fund', id: 'mutual-fund' },
-    { label: 'Pricing', id: 'pricing' },
-    { label: 'About', id: 'about' },
-  ];
-
-  activeSection = 'home';
+export class NavbarComponent implements OnInit {
+  scrolled  = false;
   mobileOpen = false;
-  scrolled = false;
-  askOpen = false;
-  askSubmitted = false;
+  ddOpen    = false;
 
-  private readonly navOffset = 84;
+  @ViewChild('companyDd') companyDdRef!: ElementRef<HTMLElement>;
 
-  ngOnInit(): void {
-    this.onWindowScroll();
+  constructor(public nav: NavService) {}
+
+  get isCompanyPage(): boolean {
+    const p = this.nav.page();
+    return p === 'about' || p === 'team';
   }
 
-  ngOnDestroy(): void {
-    this.unlockBodyScroll();
-  }
+  ngOnInit(): void { this.scrolled = window.scrollY > 10; }
 
   @HostListener('window:scroll')
-  onWindowScroll(): void {
-    this.scrolled = window.scrollY > 10;
-    this.updateActiveSection();
+  onScroll(): void { this.scrolled = window.scrollY > 10; }
+
+  @HostListener('document:click', ['$event'])
+  onDocClick(e: MouseEvent): void {
+    if (this.ddOpen && !this.companyDdRef?.nativeElement.contains(e.target as Node)) {
+      this.ddOpen = false;
+    }
   }
 
   @HostListener('window:resize')
-  onWindowResize(): void {
-    if (window.innerWidth >= 768) {
-      this.mobileOpen = false;
-    }
+  onResize(): void {
+    if (window.innerWidth > 900) this.mobileOpen = false;
   }
 
-  @HostListener('document:keydown.escape')
-  onEscape(): void {
-    if (this.askOpen) {
-      this.closeAskModal();
-    }
-  }
+  toggleDropdown(): void { this.ddOpen = !this.ddOpen; }
 
-  openAskModal(): void {
-    this.askSubmitted = false;
-    this.askOpen = true;
-    this.lockBodyScroll();
-  }
-
-  closeAskModal(): void {
-    this.askOpen = false;
-    this.askSubmitted = false;
-    this.unlockBodyScroll();
-  }
-
-  submitAskForm(event: Event): void {
-    event.preventDefault();
-    this.askSubmitted = true;
-  }
-
-  onNavClick(id: string): void {
-    this.activeSection = id;
+  navigate(page: string): void {
+    this.ddOpen    = false;
     this.mobileOpen = false;
-
-    if (id === 'home') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-
-    const section = document.getElementById(id);
-    if (!section) {
-      return;
-    }
-
-    const top = section.getBoundingClientRect().top + window.scrollY - this.navOffset;
-    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
-  }
-
-  private updateActiveSection(): void {
-    const threshold = this.navOffset + 20;
-    let current = 'home';
-
-    for (const item of this.navItems) {
-      if (item.id === 'home') {
-        continue;
-      }
-
-      const section = document.getElementById(item.id);
-      if (!section) {
-        continue;
-      }
-
-      const rect = section.getBoundingClientRect();
-      if (rect.top <= threshold) {
-        current = item.id;
-      }
-    }
-
-    const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
-    if (atBottom) {
-      current = this.navItems[this.navItems.length - 1].id;
-    }
-
-    this.activeSection = current;
-  }
-
-  private lockBodyScroll(): void {
-    document.body.style.overflow = 'hidden';
-  }
-
-  private unlockBodyScroll(): void {
-    document.body.style.overflow = '';
+    this.nav.go(page as any);
   }
 }

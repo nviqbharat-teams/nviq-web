@@ -1,204 +1,290 @@
-import { Component, AfterViewInit, OnDestroy, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
+type FleetNode = {
+  plate: string;
+  route: string;
+  status: 'moving' | 'idle' | 'alert';
+  speed: number;
+  x: number;
+  y: number;
+};
 
 @Component({
   selector: 'app-live-tracking-section',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section id="analytics" class="py-24" style="background: #080A12">
-      <div class="max-w-[1280px] mx-auto px-6">
-        <div class="text-center mb-12">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#22C55E]/20 mb-4"
-            style="background: rgba(34,197,94,0.06)">
-            <span class="w-2 h-2 rounded-full bg-[#22C55E] animate-pulse inline-block"></span>
-            <span class="text-[#22C55E]" style="font-size:13px; font-weight:500">Live Demo</span>
-          </div>
-          <h2 class="text-white" style="font-size: clamp(28px, 3.5vw, 44px); font-weight:800; letter-spacing:-.03em; line-height:1.1">
-            Your Fleet, <span class="text-[#22C55E]">One Screen</span>
+    <section id="product-demo" class="py-24" style="background: linear-gradient(180deg, #080d18 0%, #060b14 100%)">
+      <div class="max-w-[1220px] mx-auto px-6">
+        <header class="text-center max-w-[820px] mx-auto mb-12">
+          <p class="text-[#93C5FD] uppercase tracking-[0.12em] font-bold mb-3" style="font-size:12px">Drive with Data</p>
+          <h2 class="text-white" style="font-size:clamp(30px,4.2vw,48px); font-weight:800; letter-spacing:-0.03em; line-height:1.08">
+            One Control Surface for Tracking, Dispatch, and Fast Decisions
           </h2>
-        </div>
+          <p class="text-[#94A3B8] mt-4" style="font-size:15px; line-height:1.7">
+            Simulated platform view showing real-time movement, route efficiency, and actionable operational alerts.
+          </p>
+        </header>
 
-        <div class="rounded-2xl border border-white/10 overflow-hidden relative"
-          style="background: rgba(15,23,42,0.6); box-shadow: 0 0 80px rgba(59,130,246,0.06), 0 25px 50px rgba(0,0,0,0.4)">
-          <!-- Toolbar -->
-          <div class="flex flex-wrap items-center justify-between px-5 py-3 border-b border-white/5 gap-3">
-            <div class="flex items-center gap-4">
-              <div class="flex items-center gap-2">
-                <span class="text-[#3B82F6]">🧭</span>
-                <span class="text-white" style="font-size:14px; font-weight:600">Fleet Map</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span *ngFor="let s of statusBadges"
-                  class="px-2 py-0.5 rounded-md cursor-default"
-                  [style.color]="s.color"
-                  [style.background]="s.color + '15'"
-                  style="font-size:11px; font-weight:600">{{ s.label }}</span>
-              </div>
+        <div class="rounded-2xl border border-white/10 overflow-hidden"
+          style="background: linear-gradient(180deg, rgba(15,23,42,0.88), rgba(8,11,20,0.95)); box-shadow: 0 30px 70px rgba(2,6,23,0.48)">
+
+          <div class="px-5 py-3 border-b border-white/10 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[#22C55E] animate-pulse inline-block"></span>
+              <span class="text-[#E2E8F0]" style="font-size:13px; font-weight:700">NViQ Control Center</span>
             </div>
-            <div class="text-[#64748B] text-xs">Last sync: {{ syncTime }}s ago</div>
+            <div class="flex items-center gap-2">
+              <span class="text-[#64748B]" style="font-size:11px">Active Vehicles: 27</span>
+              <span class="text-[#64748B]" style="font-size:11px">Avg ETA Accuracy: 96%</span>
+            </div>
           </div>
 
-          <div class="flex flex-col lg:flex-row">
-            <!-- Map -->
-            <div class="relative flex-1" style="min-height:500px">
-              <canvas #mapCanvas class="absolute inset-0 w-full h-full"
-                style="background: linear-gradient(180deg, #070B16 0%, #0A1020 100%)"></canvas>
-              <!-- Vehicle labels -->
-              <div *ngFor="let v of vehicles" class="absolute z-10"
-                [style.left]="v.x + '%'" [style.top]="v.y + '%'">
-                <div class="px-3 py-2.5 rounded-lg border whitespace-nowrap cursor-pointer hover:scale-105 transition-transform"
-                  style="background: rgba(8,10,18,0.95); backdrop-filter: blur(12px); min-width:180px"
-                  [style.borderColor]="statusColor[v.status] + '30'">
-                  <div class="flex items-center justify-between mb-1.5">
-                    <span class="text-white" style="font-size:12px; font-weight:700">{{ v.plate }}</span>
-                    <span class="px-1.5 py-0.5 rounded" style="font-size:10px; font-weight:600"
-                      [style.background]="statusColor[v.status] + '20'"
-                      [style.color]="statusColor[v.status]">{{ v.status.toUpperCase() }}</span>
+          <div class="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-0">
+            <div class="border-b lg:border-b-0 lg:border-r border-white/10">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 border-b border-white/10">
+                <article class="rounded-xl border border-[#22C55E]/20 p-3" style="background: rgba(34,197,94,0.08)">
+                  <p class="text-[#86EFAC]" style="font-size:11px">Trips Today</p>
+                  <h3 class="text-white mt-1" style="font-size:21px; font-weight:800">184</h3>
+                </article>
+                <article class="rounded-xl border border-[#3B82F6]/20 p-3" style="background: rgba(59,130,246,0.08)">
+                  <p class="text-[#BFDBFE]" style="font-size:11px">Cost Saved</p>
+                  <h3 class="text-white mt-1" style="font-size:21px; font-weight:800">Rs 42,300</h3>
+                </article>
+                <article class="rounded-xl border border-[#06B6D4]/20 p-3" style="background: rgba(6,182,212,0.08)">
+                  <p class="text-[#A5F3FC]" style="font-size:11px">On-Time Dispatch</p>
+                  <h3 class="text-white mt-1" style="font-size:21px; font-weight:800">96%</h3>
+                </article>
+                <article class="rounded-xl border border-[#F59E0B]/20 p-3" style="background: rgba(245,158,11,0.08)">
+                  <p class="text-[#FCD34D]" style="font-size:11px">Active Alerts</p>
+                  <h3 class="text-white mt-1" style="font-size:21px; font-weight:800">7</h3>
+                </article>
+              </div>
+
+              <div class="relative min-h-[360px]">
+                <canvas #mapCanvas class="absolute inset-0 w-full h-full" style="background: linear-gradient(170deg, #060B15 0%, #0A1220 100%)"></canvas>
+
+                <div *ngFor="let node of nodes"
+                  class="absolute rounded-xl border border-white/10 px-3 py-2 backdrop-blur-md"
+                  [style.left.%]="node.x"
+                  [style.top.%]="node.y"
+                  style="transform: translate(-50%, -50%); min-width: 175px; background: rgba(8,10,18,0.88)">
+                  <div class="flex items-center justify-between gap-2">
+                    <strong class="text-white" style="font-size:12px">{{ node.plate }}</strong>
+                    <span class="px-2 py-[2px] rounded-full uppercase" style="font-size:10px; font-weight:700"
+                      [style.background]="statusColor[node.status] + '22'"
+                      [style.color]="statusColor[node.status]">{{ node.status }}</span>
                   </div>
-                  <div class="text-[#94A3B8]" style="font-size:11px">{{ v.driver }}</div>
-                  <div class="text-[#64748B] mt-1" style="font-size:10px">{{ v.heading }}</div>
-                  <div class="flex items-center gap-3 mt-2 pt-2 border-t border-white/5">
-                    <span class="text-white" style="font-size:11px">{{ v.speed }} km/h</span>
-                    <span class="text-[#64748B]" style="font-size:11px">Fuel: {{ v.fuel }}%</span>
-                  </div>
+                  <p class="text-[#94A3B8] mt-1" style="font-size:10px">{{ node.route }}</p>
+                  <div class="text-[#CBD5E1] mt-1" style="font-size:11px">{{ node.speed }} km/h</div>
                 </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border-t border-white/10">
+                <article class="rounded-xl border border-white/10 p-3" style="background: rgba(15,23,42,0.68)">
+                  <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-white" style="font-size:13px; font-weight:700">Route Efficiency</h4>
+                    <span class="text-[#67E8F9]" style="font-size:11px">7 day trend</span>
+                  </div>
+                  <svg viewBox="0 0 100 46" preserveAspectRatio="none" class="w-full h-[122px]">
+                    <defs>
+                      <linearGradient id="routeLine" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#3B82F6"></stop>
+                        <stop offset="100%" stop-color="#22D3EE"></stop>
+                      </linearGradient>
+                    </defs>
+                    <polyline points="0,36 12,33 24,34 36,27 48,25 60,20 72,17 84,11 100,8"
+                      fill="none" stroke="url(#routeLine)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                    <polyline points="0,41 12,39 24,37 36,35 48,33 60,30 72,28 84,26 100,23"
+                      fill="none" stroke="rgba(148,163,184,0.6)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                  </svg>
+                </article>
+
+                <article class="rounded-xl border border-white/10 p-3" style="background: rgba(15,23,42,0.68)">
+                  <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-white" style="font-size:13px; font-weight:700">Dispatch Load</h4>
+                    <span class="text-[#BFDBFE]" style="font-size:11px">today</span>
+                  </div>
+                  <div class="grid grid-cols-6 gap-2 items-end h-[122px]">
+                    <span *ngFor="let col of loadBars" class="rounded-t-md"
+                      [style.height.%]="col"
+                      style="background: linear-gradient(180deg, rgba(34,211,238,0.95), rgba(59,130,246,0.7))"></span>
+                  </div>
+                </article>
               </div>
             </div>
 
-            <!-- Right panel -->
-            <div class="w-full lg:w-[280px] border-t lg:border-t-0 lg:border-l border-white/5 p-4 flex flex-col gap-4"
-              style="background: rgba(8,10,18,0.6)">
-              <div class="text-white" style="font-size:13px; font-weight:600">Fleet Overview</div>
-
-              <div *ngFor="let stat of fleetStats"
-                class="rounded-lg border border-white/5 p-3 cursor-default hover:scale-[1.02] transition-transform"
-                style="background: rgba(255,255,255,0.01)">
-                <div class="flex items-center justify-between mb-2">
-                  <div class="flex items-center gap-2">
-                    <span [style.color]="stat.color">{{ stat.icon }}</span>
-                    <span class="text-[#64748B]" style="font-size:11px">{{ stat.label }}</span>
+            <aside class="p-4 space-y-4">
+              <article class="rounded-xl border border-white/10 p-4" style="background: rgba(15,23,42,0.64)">
+                <h4 class="text-white" style="font-size:13px; font-weight:700">Fleet Utilization</h4>
+                <div class="mt-3 flex items-center gap-4">
+                  <div class="w-[90px] h-[90px] rounded-full"
+                    style="background: conic-gradient(#22C55E 0deg 275deg, rgba(51,65,85,0.8) 275deg 360deg); display:flex; align-items:center; justify-content:center">
+                    <div class="w-[64px] h-[64px] rounded-full flex items-center justify-center" style="background:#0B1220">
+                      <span class="text-[#E2E8F0]" style="font-size:16px; font-weight:800">76%</span>
+                    </div>
                   </div>
-                  <span class="text-white" style="font-size:14px; font-weight:700">{{ stat.value }}</span>
+                  <div class="space-y-2">
+                    <p class="text-[#94A3B8]" style="font-size:11px">Productive Hours</p>
+                    <p class="text-white" style="font-size:15px; font-weight:700">6.8 / 8.9 hrs</p>
+                    <p class="text-[#6EE7B7]" style="font-size:11px">+11.4% this week</p>
+                  </div>
                 </div>
-                <div class="h-1 rounded-full overflow-hidden" style="background: rgba(255,255,255,.04)">
-                  <div class="h-full rounded-full transition-all" [style.width]="stat.pct + '%'" [style.background]="stat.color"></div>
-                </div>
-              </div>
+              </article>
 
-              <!-- Savings card -->
-              <div class="rounded-lg border border-[#06B6D4]/20 p-3 mt-auto cursor-default"
-                style="background: rgba(6,182,212,0.04)">
-                <div class="text-[#06B6D4]" style="font-size:10px; font-weight:600; letter-spacing:.05em">TODAY'S SAVINGS</div>
-                <div class="text-white mt-1" style="font-size:24px; font-weight:800">₹4,200</div>
-                <div class="text-[#06B6D4]" style="font-size:11px">+12% vs yesterday</div>
-              </div>
-
-              <!-- Ticker -->
-              <div class="rounded-lg border border-white/5 p-3" style="background: rgba(255,255,255,.01)">
-                <div class="text-[#64748B] mb-2" style="font-size:10px; font-weight:600; letter-spacing:.05em">LIVE EVENTS</div>
-                <div class="flex items-center gap-2">
-                  <div class="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse"></div>
-                  <span class="text-[#94A3B8] truncate" style="font-size:11px">{{ currentEvent }}</span>
+              <article class="rounded-xl border border-white/10 p-4" style="background: rgba(15,23,42,0.64)">
+                <h4 class="text-white mb-3" style="font-size:13px; font-weight:700">Priority Alerts</h4>
+                <div class="space-y-2">
+                  <div *ngFor="let alert of alerts" class="rounded-lg border border-white/10 px-3 py-2"
+                    style="background: rgba(2,6,23,0.48)">
+                    <p class="text-white" style="font-size:11px; font-weight:600">{{ alert.title }}</p>
+                    <p class="text-[#94A3B8]" style="font-size:10px">{{ alert.detail }}</p>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </article>
+
+              <article class="rounded-xl border border-white/10 p-4" style="background: rgba(15,23,42,0.64)">
+                <h4 class="text-white mb-3" style="font-size:13px; font-weight:700">Dispatch Queue</h4>
+                <div class="space-y-2">
+                  <div *ngFor="let item of dispatchQueue" class="flex items-center justify-between">
+                    <p class="text-[#CBD5E1]" style="font-size:11px">{{ item.route }}</p>
+                    <span class="text-[#67E8F9]" style="font-size:10px">{{ item.eta }}</span>
+                  </div>
+                </div>
+              </article>
+            </aside>
           </div>
         </div>
       </div>
     </section>
-  `
+  `,
 })
-export class LiveTrackingSectionComponent implements AfterViewInit, OnDestroy, OnInit {
+export class LiveTrackingSectionComponent implements AfterViewInit, OnDestroy {
   @ViewChild('mapCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
-  private animId = 0;
-  private tickerInterval: any;
-  private syncInterval: any;
-  private tickerIndex = 0;
-  syncTime = 3;
-  currentEvent = 'MH-12-AB-1234 crossed Lonavala checkpoint';
 
-  statusColor: Record<string, string> = { moving: '#22C55E', idle: '#F59E0B', alert: '#EF4444' };
+  private frameId = 0;
+  private width = 0;
+  private height = 0;
 
-  statusBadges = [
-    { label: '4 Moving', color: '#22C55E' },
-    { label: '1 Idle', color: '#F59E0B' },
-    { label: '1 Alert', color: '#EF4444' },
+  statusColor: Record<FleetNode['status'], string> = {
+    moving: '#22C55E',
+    idle: '#F59E0B',
+    alert: '#EF4444',
+  };
+
+  nodes: FleetNode[] = [
+    { plate: 'MH12 AB 1244', route: 'Mumbai to Pune', status: 'moving', speed: 62, x: 22, y: 30 },
+    { plate: 'KA09 FX 8821', route: 'Hubli to Belgaum', status: 'idle', speed: 0, x: 58, y: 56 },
+    { plate: 'RJ14 KL 2098', route: 'Jaipur Ring Road', status: 'alert', speed: 79, x: 76, y: 34 },
   ];
 
-  vehicles = [
-    { id: 'TRK-001', plate: 'MH-12-AB-1234', driver: 'Rajesh K.', x: 15, y: 25, speed: 62, status: 'moving', heading: 'Mumbai → Pune', fuel: 78 },
-    { id: 'TRK-004', plate: 'MH-14-CD-5678', driver: 'Suresh M.', x: 45, y: 55, speed: 0, status: 'idle', heading: 'At Depot B', fuel: 45 },
-    { id: 'TRK-007', plate: 'MH-09-EF-9012', driver: 'Amit P.', x: 70, y: 20, speed: 45, status: 'moving', heading: 'Nashik Highway', fuel: 62 },
-    { id: 'TRK-012', plate: 'MH-22-GH-3456', driver: 'Vikram S.', x: 55, y: 75, speed: 78, status: 'alert', heading: 'Overspeed NH-48', fuel: 34 },
+  loadBars = [72, 84, 68, 91, 76, 88];
+
+  alerts = [
+    { title: 'Overspeed Trigger - RJ14 KL 2098', detail: '79 km/h detected in restricted lane' },
+    { title: 'Idle Alert - KA09 FX 8821', detail: 'Vehicle idle for 18 minutes' },
+    { title: 'Route Deviation - MH12 AB 1244', detail: '1.8 km off preferred corridor' },
   ];
 
-  fleetStats = [
-    { icon: '📈', label: 'Active Vehicles', value: '24/30', color: '#22C55E', pct: 80 },
-    { icon: '⛽', label: 'Avg Fuel Level', value: '64%', color: '#3B82F6', pct: 64 },
-    { icon: '⚠', label: 'Active Alerts', value: '7', color: '#EF4444', pct: 23 },
-    { icon: '⏱', label: 'Idle Vehicles', value: '1', color: '#F59E0B', pct: 3 },
+  dispatchQueue = [
+    { route: 'Navi Mumbai to Pune Yard', eta: 'ETA 11:30' },
+    { route: 'Kolkata Port to Dankuni', eta: 'ETA 12:05' },
+    { route: 'Hyderabad DC to Warangal', eta: 'ETA 12:40' },
   ];
 
-  private events = [
-    'MH-12-AB-1234 crossed Lonavala checkpoint',
-    'MH-22-GH-3456 exceeded speed limit — 78 km/h',
-    'MH-14-CD-5678 has been idle for 22 minutes',
-    'MH-04-IJ-7890 fuel level at 89%',
-  ];
-
-  ngOnInit() {
-    this.tickerInterval = setInterval(() => {
-      this.tickerIndex = (this.tickerIndex + 1) % this.events.length;
-      this.currentEvent = this.events[this.tickerIndex];
-    }, 3000);
-    this.syncInterval = setInterval(() => {
-      this.syncTime = this.syncTime >= 10 ? 1 : this.syncTime + 1;
-    }, 1000);
+  ngAfterViewInit(): void {
+    this.startCanvas();
   }
 
-  ngAfterViewInit() { this.initMap(); }
-
-  ngOnDestroy() {
-    cancelAnimationFrame(this.animId);
-    clearInterval(this.tickerInterval);
-    clearInterval(this.syncInterval);
+  ngOnDestroy(): void {
+    cancelAnimationFrame(this.frameId);
   }
 
-  private initMap() {
+  private startCanvas(): void {
     const canvas = this.canvasRef.nativeElement;
-    const ctx = canvas.getContext('2d')!;
-    let w = 0, h = 0;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return;
+    }
+
+    const points = [
+      { x: 0.16, y: 0.32, speed: 0.0009, phase: 0 },
+      { x: 0.44, y: 0.58, speed: 0.0007, phase: 1.2 },
+      { x: 0.72, y: 0.36, speed: 0.0011, phase: 2.3 },
+      { x: 0.84, y: 0.7, speed: 0.0006, phase: 0.6 },
+    ];
+
     const resize = () => {
-      const r = canvas.getBoundingClientRect(), d = Math.min(window.devicePixelRatio, 2);
-      w = r.width; h = r.height; canvas.width = w * d; canvas.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0);
+      const box = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      this.width = Math.max(1, Math.round(box.width));
+      this.height = Math.max(1, Math.round(box.height));
+      canvas.width = this.width * dpr;
+      canvas.height = this.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
-    resize(); window.addEventListener('resize', resize);
+
+    resize();
+    window.addEventListener('resize', resize);
 
     const draw = () => {
-      ctx.clearRect(0, 0, w, h);
-      const t = performance.now() * 0.001;
-      ctx.strokeStyle = `rgba(59,130,246,${0.035 + Math.sin(t * 0.3) * 0.01})`; ctx.lineWidth = 0.5;
-      for (let x = 0; x < w; x += 30) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-      for (let y = 0; y < h; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+      ctx.clearRect(0, 0, this.width, this.height);
 
-      this.vehicles.forEach(v => {
-        const vx = (v.x / 100) * w, vy = (v.y / 100) * h;
-        const col = this.statusColor[v.status];
-        const gr = v.status === 'alert' ? 20 + Math.sin(t * 4) * 6 : 16;
-        const glow = ctx.createRadialGradient(vx, vy, 0, vx, vy, gr);
-        glow.addColorStop(0, col + '35'); glow.addColorStop(1, col + '00');
-        ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(vx, vy, gr, 0, Math.PI * 2); ctx.fill();
-        if (v.status === 'moving' || v.status === 'alert') {
-          const pingT = (t * (v.status === 'alert' ? 2 : 0.8)) % 1;
-          ctx.strokeStyle = col; ctx.globalAlpha = (1 - pingT) * 0.3; ctx.lineWidth = 1;
-          ctx.beginPath(); ctx.arc(vx, vy, 6 + pingT * 18, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1;
-        }
-        ctx.fillStyle = col; ctx.beginPath(); ctx.arc(vx, vy, 5, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(vx, vy, 2, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = 'rgba(59, 130, 246, 0.08)';
+      ctx.lineWidth = 0.8;
+      for (let x = 0; x <= this.width; x += 36) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, this.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= this.height; y += 36) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(this.width, y);
+        ctx.stroke();
+      }
+
+      const t = performance.now();
+      points.forEach((p, idx) => {
+        p.phase += p.speed * 16;
+        const x = (p.x * this.width) + Math.sin(p.phase + idx) * 10;
+        const y = (p.y * this.height) + Math.cos(p.phase * 1.3 + idx) * 9;
+
+        const glow = ctx.createRadialGradient(x, y, 0, x, y, 18);
+        glow.addColorStop(0, 'rgba(34, 211, 238, 0.34)');
+        glow.addColorStop(1, 'rgba(34, 211, 238, 0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(x, y, 18, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#67E8F9';
+        ctx.beginPath();
+        ctx.arc(x, y, 3.6, 0, Math.PI * 2);
+        ctx.fill();
+
+        const ring = (Math.sin((t * 0.003) + idx) + 1) / 2;
+        ctx.strokeStyle = `rgba(103, 232, 249, ${0.25 - ring * 0.18})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(x, y, 6 + ring * 10, 0, Math.PI * 2);
+        ctx.stroke();
       });
-      this.animId = requestAnimationFrame(draw);
+
+      ctx.strokeStyle = 'rgba(103, 232, 249, 0.3)';
+      ctx.setLineDash([5, 6]);
+      ctx.beginPath();
+      ctx.moveTo(points[0].x * this.width, points[0].y * this.height);
+      ctx.lineTo(points[1].x * this.width, points[1].y * this.height);
+      ctx.lineTo(points[2].x * this.width, points[2].y * this.height);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      this.frameId = requestAnimationFrame(draw);
     };
-    this.animId = requestAnimationFrame(draw);
+
+    this.frameId = requestAnimationFrame(draw);
   }
 }

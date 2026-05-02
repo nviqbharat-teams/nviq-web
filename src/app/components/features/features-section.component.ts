@@ -1,126 +1,285 @@
-import { Component, AfterViewInit, OnDestroy, ElementRef, ViewChildren, QueryList } from '@angular/core';
+import {
+  AfterViewInit, Component, ElementRef,
+  OnDestroy, QueryList, ViewChildren
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+
+interface FeatureCard {
+  icon: string;
+  iconColor: string;
+  glow: string;
+  title: string;
+  description: string;
+  bullets: string[];
+}
 
 @Component({
   selector: 'app-features-section',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section id="features" class="py-20" style="background: linear-gradient(180deg, #0F172A 0%, #080A12 100%)">
-      <div class="max-w-[1280px] mx-auto px-6">
-        <h2 class="text-white text-center mb-14"
-          style="font-size: clamp(28px, 3.5vw, 44px); font-weight:800">
-          Control Your Fleet.
-          <span style="background: linear-gradient(135deg, #3B82F6, #06B6D4); -webkit-background-clip:text; -webkit-text-fill-color:transparent">
-            Save More Every Month.
-          </span>
-        </h2>
+    <section class="fs-root" id="fleet-solutions">
+      <div class="fs-container">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          <div *ngFor="let f of features; let i = index"
-            class="rounded-2xl border border-white/5 hover:border-white/15 p-5 text-center transition-all hover:-translate-y-1 cursor-default"
-            style="background: rgba(255,255,255,.02)">
-            <canvas #featureCanvas class="mx-auto" style="width:140px; height:140px"></canvas>
-            <h3 class="text-white mt-2" style="font-size:18px; font-weight:700">{{ f.title }}</h3>
-            <p class="text-[#94A3B8] mt-1 mb-3" style="font-size:13px">{{ f.desc }}</p>
-            <div class="flex gap-2">
-              <div *ngFor="let m of f.metrics" class="flex-1 rounded-lg p-1.5" style="background: rgba(255,255,255,.05)">
-                <div class="text-white" style="font-size:12px; font-weight:700">{{ m.value }}</div>
-                <div style="font-size:9px; color:#64748B">{{ m.label }}</div>
-              </div>
+        <header class="fs-header">
+          <p class="fs-eyebrow">Fleet Value</p>
+          <h2 class="fs-title">What We Deliver<br><span class="fs-accent">to Your Fleet</span></h2>
+          <p class="fs-sub">
+            A focused operating layer that gives your team clear visibility,
+            safer decisions, and stronger control every day.
+          </p>
+        </header>
+
+        <div class="fs-grid">
+          <article
+            #cardRef
+            *ngFor="let card of features; let i = index"
+            class="fs-card"
+            [class.visible]="visibleCards[i]"
+            [style.transition-delay]="(i * 110) + 'ms'"
+            (mousemove)="onTilt($event, i)"
+            (mouseleave)="onTiltReset(i)"
+          >
+            <!-- Glare -->
+            <div class="fs-glare" [attr.data-gi]="i"></div>
+
+            <!-- Corner accent -->
+            <div class="fs-corner" [style.background]="card.iconColor + '18'"></div>
+
+            <div class="card-icon-wrap" [style.border-color]="card.iconColor + '40'"
+                 [style.background]="card.glow">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                [attr.stroke]="card.iconColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path [attr.d]="card.icon"/>
+              </svg>
             </div>
-          </div>
+
+            <h3 class="card-title">{{ card.title }}</h3>
+            <p class="card-desc">{{ card.description }}</p>
+
+            <ul class="card-bullets">
+              <li *ngFor="let b of card.bullets">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                  [attr.stroke]="card.iconColor" stroke-width="2.5" stroke-linecap="round">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+                {{ b }}
+              </li>
+            </ul>
+
+            <!-- Bottom glow bar -->
+            <div class="card-bar"
+                 [style.background]="'linear-gradient(90deg,' + card.iconColor + ',' + card.iconColor + '44,transparent)'">
+            </div>
+          </article>
         </div>
+
       </div>
     </section>
-  `
+  `,
+  styles: [`
+    .fs-root {
+      padding: 96px 24px 108px;
+      background:
+        radial-gradient(ellipse 50% 40% at 10% 50%, rgba(14,165,233,0.08) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 90% 50%, rgba(34,197,94,0.06) 0%, transparent 55%),
+        #030810;
+    }
+    .fs-container { max-width: 1180px; margin: 0 auto; }
+
+    /* Header */
+    .fs-header { text-align: center; max-width: 760px; margin: 0 auto 56px; }
+    .fs-eyebrow {
+      display: inline-block;
+      color: #7dd3fc; font-size: 11.5px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.18em;
+      margin-bottom: 14px;
+    }
+    .fs-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2rem, 4.2vw, 3.1rem);
+      font-weight: 900; letter-spacing: -0.03em;
+      color: #f8fafc; line-height: 1.08; margin-bottom: 16px;
+    }
+    .fs-accent {
+      background: linear-gradient(120deg, #00D4FF, #6366F1);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .fs-sub {
+      color: rgba(203,213,225,0.82);
+      font-size: clamp(0.97rem, 1.4vw, 1.1rem); line-height: 1.65;
+    }
+
+    /* Grid */
+    .fs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+    /* Card */
+    .fs-card {
+      position: relative;
+      padding: 34px 30px 30px;
+      border-radius: 22px;
+      border: 1px solid rgba(148,163,184,0.14);
+      background: rgba(8,13,24,0.85);
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+      display: flex; flex-direction: column; gap: 14px;
+      opacity: 0; transform: translateY(24px) scale(0.98);
+      transition: opacity 0.6s ease, transform 0.6s ease,
+                  border-color 0.3s ease, box-shadow 0.3s ease;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .fs-card.visible { opacity: 1; transform: translateY(0) scale(1); }
+    .fs-card:hover { border-color: rgba(148,163,184,0.28); }
+
+    /* Corner accent triangle */
+    .fs-corner {
+      position: absolute; top: 0; right: 0;
+      width: 80px; height: 80px;
+      clip-path: polygon(100% 0, 0 0, 100% 100%);
+      opacity: 0.5; transition: opacity 0.3s;
+    }
+    .fs-card:hover .fs-corner { opacity: 0.8; }
+
+    /* Glare */
+    .fs-glare {
+      position: absolute; inset: 0; border-radius: 22px;
+      pointer-events: none; opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .fs-card:hover .fs-glare { opacity: 1; }
+
+    /* Icon */
+    .card-icon-wrap {
+      width: 50px; height: 50px;
+      border-radius: 14px; border: 1px solid;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: transform 0.3s ease;
+    }
+    .fs-card:hover .card-icon-wrap { transform: rotate(-8deg) scale(1.1); }
+
+    /* Title */
+    .card-title {
+      font-size: 1.25rem; font-weight: 800;
+      color: #f8fafc; letter-spacing: -0.02em; line-height: 1.2;
+    }
+
+    /* Description */
+    .card-desc { color: rgba(203,213,225,0.75); font-size: 0.93rem; line-height: 1.65; }
+
+    /* Bullets */
+    .card-bullets {
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-direction: column; gap: 9px; margin-top: 4px;
+    }
+    .card-bullets li {
+      display: flex; align-items: flex-start; gap: 8px;
+      color: rgba(226,232,240,0.8); font-size: 0.86rem; line-height: 1.5;
+    }
+    .card-bullets li svg { flex-shrink: 0; margin-top: 2px; }
+
+    /* Bottom bar */
+    .card-bar {
+      position: absolute; bottom: 0; left: 0;
+      height: 2px; width: 0;
+      transition: width 0.6s cubic-bezier(0.22,1,0.36,1) 0.3s;
+    }
+    .fs-card.visible .card-bar { width: 100%; }
+
+    @media (max-width: 768px) {
+      .fs-root { padding: 72px 16px 80px; }
+      .fs-grid { grid-template-columns: 1fr; }
+    }
+  `],
 })
 export class FeaturesSectionComponent implements AfterViewInit, OnDestroy {
-  @ViewChildren('featureCanvas') canvases!: QueryList<ElementRef<HTMLCanvasElement>>;
-  private animIds: number[] = [];
+  @ViewChildren('cardRef') cardRefs!: QueryList<ElementRef<HTMLElement>>;
 
-  features = [
+  visibleCards: boolean[] = [];
+  private cardEls: HTMLElement[] = [];
+  private obs: IntersectionObserver | null = null;
+
+  features: FeatureCard[] = [
     {
-      title: 'Live Tracking', desc: 'Know the exact location of every vehicle in real time.',
-      metrics: [{ value: 'Real-time', label: 'Tracking' }, { value: 'High', label: 'Accuracy' }, { value: '100%', label: 'Visibility' }]
+      icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z M12 5v2M12 17v2M5 12H3M21 12h-2',
+      iconColor: '#38bdf8', glow: 'rgba(56,189,248,0.1)',
+      title: 'Essential Tracking',
+      description: 'Always-on location visibility with clean route history to keep operations grounded.',
+      bullets: ['Live GPS position every 10 seconds','Full route history with timestamps','Geofence alerts for boundary violations'],
     },
     {
-      title: 'Instant Alerts', desc: 'Get notified instantly about fuel theft, overspeeding, or excessive idle time.',
-      metrics: [{ value: 'Fuel Theft', label: 'Alert' }, { value: 'Overspeed', label: 'Instant' }, { value: 'Idle', label: 'Monitor' }]
+      icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4',
+      iconColor: '#34d399', glow: 'rgba(52,211,153,0.1)',
+      title: 'Advanced Tracking',
+      description: 'Route intelligence and behavioral context to reduce delays and improve utilization.',
+      bullets: ['Driver behavior scoring — speed, braking, idling','Smart route deviation detection','Trip efficiency & utilization analytics'],
     },
     {
-      title: 'Smart Analytics', desc: 'Discover hidden savings with fuel efficiency insights and optimized routes.',
-      metrics: [{ value: '10–15%', label: 'Fuel Saving' }, { value: '+30%', label: 'Efficiency' }, { value: 'Routes', label: 'Optimized' }]
+      icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z',
+      iconColor: '#a78bfa', glow: 'rgba(167,139,250,0.1)',
+      title: 'Intelligent Tracking',
+      description: 'Smart signal interpretation that helps teams respond faster to live fleet conditions.',
+      bullets: ['AI anomaly detection on sensor data','Predictive maintenance alerts','Real-time exception dashboard'],
     },
     {
-      title: 'Easy Integration', desc: 'Seamlessly connect with your existing systems for smooth operations.',
-      metrics: [{ value: 'Fast', label: 'Setup' }, { value: 'API', label: 'Ready' }, { value: '100%', label: 'Compatible' }]
+      icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
+      iconColor: '#fb923c', glow: 'rgba(251,146,60,0.1)',
+      title: 'Certified Safety Solutions',
+      description: 'Compliance-friendly controls that strengthen driver safety and audit confidence.',
+      bullets: ['Driver fatigue & overspeed alerts','Panic button & emergency SOS relay','Compliance audit trail & reports'],
     },
   ];
 
-  ngAfterViewInit() {
-    this.canvases.forEach((canvasRef, i) => {
-      const canvas = canvasRef.nativeElement;
-      const ctx = canvas.getContext('2d')!;
-      const size = 140;
-      const dpr = Math.min(window.devicePixelRatio, 2);
-      canvas.width = size * dpr; canvas.height = size * dpr;
-      ctx.scale(dpr, dpr);
+  constructor() {
+    this.visibleCards = this.features.map(() => true);
+  }
 
-      const colors = ['#22C55E', '#EF4444', '#3B82F6', '#06B6D4'];
-      const color = colors[i] || '#3B82F6';
-      const bars = [.25, .4, .35, .6, .55, .75, .7, .9, .82, .95];
-      const animated = bars.map(() => 0);
+  ngAfterViewInit(): void {
+    setTimeout(() => { this.visibleCards = this.visibleCards.map(() => true); }, 80);
 
-      const draw = () => {
-        ctx.clearRect(0, 0, size, size);
-        const t = performance.now() * 0.001;
-        const cx = size / 2, cy = size / 2;
+    this.obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        const idx = parseInt(e.target.getAttribute('data-fi') || '0', 10);
+        if (e.isIntersecting) this.visibleCards[idx] = true;
+      });
+    }, { threshold: 0.15 });
 
-        if (i === 0) {
-          // GPS pin
-          for (let j = 0; j < 3; j++) {
-            const ph = (t * 0.8 + j * 0.33) % 1;
-            ctx.strokeStyle = `rgba(34,197,94,${(1 - ph) * 0.18})`; ctx.lineWidth = 1.5;
-            ctx.beginPath(); ctx.arc(cx, cy + 6, 14 + ph * 40, 0, Math.PI * 2); ctx.stroke();
-          }
-          const bob = Math.sin(t * 2) * 4;
-          ctx.fillStyle = color;
-          ctx.beginPath(); ctx.moveTo(cx, cy + 14 + bob); ctx.quadraticCurveTo(cx - 16, cy - 2 + bob, cx - 16, cy - 12 + bob);
-          ctx.arc(cx, cy - 12 + bob, 16, Math.PI, 0, false); ctx.quadraticCurveTo(cx + 16, cy - 2 + bob, cx, cy + 14 + bob); ctx.fill();
-          ctx.fillStyle = '#060810'; ctx.beginPath(); ctx.arc(cx, cy - 12 + bob, 7, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = '#4ADE80'; ctx.beginPath(); ctx.arc(cx, cy - 12 + bob, 3.5, 0, Math.PI * 2); ctx.fill();
-        } else if (i === 1) {
-          // Bell
-          const flash = Math.sin(t * 3) > 0 ? 0.1 : 0.04;
-          const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 32);
-          g.addColorStop(0, `rgba(239,68,68,${flash})`); g.addColorStop(1, 'rgba(239,68,68,0)');
-          ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, 32, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = '#EF4444';
-          ctx.beginPath(); ctx.moveTo(cx - 16, cy + 5); ctx.quadraticCurveTo(cx - 16, cy - 16, cx - 5, cy - 20);
-          ctx.lineTo(cx - 2, cy - 24); ctx.lineTo(cx + 2, cy - 24); ctx.lineTo(cx + 5, cy - 20);
-          ctx.quadraticCurveTo(cx + 16, cy - 16, cx + 16, cy + 5); ctx.lineTo(cx + 18, cy + 7); ctx.lineTo(cx - 18, cy + 7);
-          ctx.closePath(); ctx.fill();
-          ctx.beginPath(); ctx.arc(cx, cy + 12, 4, 0, Math.PI * 2); ctx.fill();
-        } else {
-          // Bar chart
-          const baseY = size * .8, bW = 7, gap = 5;
-          const total = bars.length * (bW + gap) - gap, sx = (size - total) / 2, maxH = size * .58;
-          bars.forEach((tgt, bi) => {
-            const wave = tgt + Math.sin(t * 1.5 + bi * .5) * .06;
-            animated[bi] += (wave - animated[bi]) * 0.05;
-            const bh = animated[bi] * maxH, x = sx + bi * (bW + gap);
-            const bg = ctx.createLinearGradient(x, baseY, x, baseY - bh);
-            bg.addColorStop(0, color); bg.addColorStop(1, color + 'aa');
-            ctx.fillStyle = bg;
-            ctx.beginPath(); ctx.roundRect(x, baseY - bh, bW, bh, [3, 3, 0, 0]); ctx.fill();
-          });
-        }
-        this.animIds[i] = requestAnimationFrame(draw);
-      };
-      this.animIds[i] = requestAnimationFrame(draw);
+    this.cardRefs.forEach((ref, i) => {
+      ref.nativeElement.setAttribute('data-fi', String(i));
+      this.obs!.observe(ref.nativeElement);
+      this.cardEls[i] = ref.nativeElement;
     });
   }
 
-  ngOnDestroy() { this.animIds.forEach(id => cancelAnimationFrame(id)); }
+  onTilt(event: MouseEvent, i: number): void {
+    const el = this.cardEls[i];
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const rx = ((event.clientY - cy) / (rect.height / 2)) * -7;
+    const ry = ((event.clientX - cx) / (rect.width  / 2)) *  7;
+    el.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(10px)`;
+    el.style.boxShadow = `0 28px 64px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.07)`;
+    const glare = el.querySelector('.fs-glare') as HTMLElement | null;
+    if (glare) {
+      const px = ((event.clientX - rect.left) / rect.width) * 100;
+      const py = ((event.clientY - rect.top) / rect.height) * 100;
+      glare.style.background = `radial-gradient(circle at ${px}% ${py}%, rgba(255,255,255,0.06), transparent 65%)`;
+      glare.style.opacity = '1';
+    }
+  }
+
+  onTiltReset(i: number): void {
+    const el = this.cardEls[i];
+    if (!el) return;
+    el.style.transform = '';
+    el.style.boxShadow = '';
+    const glare = el.querySelector('.fs-glare') as HTMLElement | null;
+    if (glare) glare.style.opacity = '0';
+  }
+
+  ngOnDestroy(): void { this.obs?.disconnect(); }
 }

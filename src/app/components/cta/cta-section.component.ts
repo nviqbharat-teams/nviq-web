@@ -1,74 +1,293 @@
-import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-cta-section',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section class="py-28 sm:py-32 relative overflow-hidden" style="background: #080A12">
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] opacity-[0.18] pointer-events-none"
-        style="background: radial-gradient(ellipse, #3B82F6 0%, #7C3AED 40%, transparent 70%); filter: blur(100px)"></div>
+    <section class="cta-root">
 
-      <div class="max-w-[740px] mx-auto px-6 text-center relative z-10">
-        <button (click)="openModal.emit()"
-          class="inline-flex items-center gap-2.5 px-5 py-2 rounded-full mb-8 cursor-pointer"
-          style="background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(124,58,237,0.12)); border: 1px solid rgba(59,130,246,0.25)">
-          <span class="text-[#60A5FA]">⚡</span>
-          <span class="text-white" style="font-size:14px; font-weight:700">Start Tracking &#64; ₹499 / Vehicle</span>
-          <span class="text-[#60A5FA]">→</span>
-        </button>
+      <!-- Animated background -->
+      <div class="cta-bg" aria-hidden="true">
+        <div class="cta-orb cta-orb-1"></div>
+        <div class="cta-orb cta-orb-2"></div>
+        <div class="cta-orb cta-orb-3"></div>
+        <div class="cta-grid"></div>
+      </div>
 
-        <h2 class="text-white mb-4" style="font-size: clamp(30px, 4.5vw, 52px); font-weight:800; letter-spacing:-.035em; line-height:1.1">
-          Stop Losing.
-          <br class="hidden sm:block"/>
-          <span style="background: linear-gradient(135deg, #3B82F6, #8B5CF6); -webkit-background-clip:text; -webkit-text-fill-color:transparent">
-            Start Profiting.
-          </span>
+      <!-- Floating particles -->
+      <div class="particles" aria-hidden="true">
+        <span *ngFor="let p of particles" class="particle"
+          [style.left]="p.x + '%'"
+          [style.top]="p.y + '%'"
+          [style.animation-delay]="p.delay + 's'"
+          [style.width.px]="p.size"
+          [style.height.px]="p.size">
+        </span>
+      </div>
+
+      <div class="cta-shell">
+
+        <!-- Badge -->
+        <div class="cta-badge">
+          <span class="badge-dot"></span>
+          14-day free trial · No credit card
+        </div>
+
+        <!-- Heading -->
+        <h2 class="cta-title">
+          Ready to Run Your Fleet
+          <span class="cta-accent">on Live Data?</span>
         </h2>
 
-        <p class="text-[#F59E0B] mb-10" style="font-size:14px; font-weight:600">⚡ ROI in 7 days — guaranteed</p>
+        <p class="cta-desc">
+          Launch your control center, cut fuel and delay losses, and make every
+          dispatch decision with measurable confidence — starting today.
+        </p>
 
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <button (click)="openModal.emit()"
-            class="text-white px-9 py-4 rounded-[10px] flex items-center gap-2.5 cursor-pointer hover:scale-105 transition-transform"
-            style="font-size:16px; font-weight:700; background: linear-gradient(135deg, #3B82F6, #7C3AED); box-shadow: 0 0 50px rgba(59,130,246,0.3)">
-            Start Free Trial →
+        <!-- Buttons -->
+        <div class="cta-actions">
+          <button type="button" class="btn-primary-cta" (click)="openModal.emit()">
+            Start 14-Day Trial
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
           </button>
-          <button (click)="openModal.emit()"
-            class="text-[#94A3B8] hover:text-white px-9 py-4 rounded-[10px] border border-white/10 hover:border-white/20 transition-all"
-            style="font-size:16px; font-weight:500">
-            Schedule Demo
+          <button type="button" class="btn-ghost-cta" (click)="openModal.emit()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            Book Live Demo
           </button>
         </div>
 
-        <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 mt-6">
-          <div *ngFor="let t of trustItems" class="flex items-center gap-1.5 text-[#475569]">
-            <span class="text-[#22C55E]">✓</span>
-            <span style="font-size:12px">{{ t }}</span>
+        <!-- Trust chips -->
+        <div class="cta-trust">
+          <div class="trust-chip" *ngFor="let chip of trustChips">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+              stroke="#22c55e" stroke-width="2.5" stroke-linecap="round">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+            {{ chip }}
           </div>
         </div>
 
-        <div class="mt-8 inline-flex items-center gap-2 px-4 py-2 rounded-full"
-          style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.15)">
-          <span class="w-2 h-2 rounded-full bg-[#F59E0B] animate-pulse inline-block"></span>
-          <span class="text-[#F59E0B]" style="font-size:12px; font-weight:600">Only 12 onboarding slots left this week</span>
-        </div>
-      </div>
-
-      <!-- Sticky Mobile CTA -->
-      <div class="fixed bottom-0 left-0 right-0 z-50 sm:hidden px-4 pb-4 pt-3"
-        style="background: linear-gradient(180deg, transparent 0%, rgba(8,10,18,0.95) 30%)">
-        <button (click)="openModal.emit()"
-          class="w-full py-3.5 rounded-[10px] text-white flex items-center justify-center gap-2"
-          style="font-size:15px; font-weight:700; background: linear-gradient(135deg, #3B82F6, #7C3AED); box-shadow: 0 0 40px rgba(59,130,246,0.3)">
-          ⚡ Start Tracking &#64; ₹499 →
-        </button>
       </div>
     </section>
-  `
+  `,
+  styles: [`
+    /* ─── Root ─────────────────────────────────────────── */
+    .cta-root {
+      position: relative;
+      padding: 110px 24px 120px;
+      overflow: hidden;
+      isolation: isolate;
+      background: #040810;
+    }
+
+    /* ─── Background ─────────────────────────────────────  */
+    .cta-bg { position: absolute; inset: 0; z-index: 0; }
+
+    .cta-orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); pointer-events: none;
+    }
+    .cta-orb-1 {
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(0,212,255,0.12) 0%, transparent 65%);
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      animation: ctaOrb1 16s ease-in-out infinite;
+    }
+    .cta-orb-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 70%);
+      bottom: -100px; left: -80px;
+      animation: ctaOrb2 20s ease-in-out infinite;
+    }
+    .cta-orb-3 {
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%);
+      bottom: -80px; right: -60px;
+      animation: ctaOrb3 18s ease-in-out infinite;
+    }
+    @keyframes ctaOrb1 { 0%,100%{transform:translateX(-50%) scale(1)} 50%{transform:translateX(-50%) scale(1.12)} }
+    @keyframes ctaOrb2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(60px,-50px)} }
+    @keyframes ctaOrb3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-50px,40px)} }
+
+    .cta-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 0%, transparent 80%);
+    }
+
+    /* ─── Particles ──────────────────────────────────────  */
+    .particles { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+    .particle {
+      position: absolute; border-radius: 50%;
+      background: var(--brand-cyan);
+      opacity: 0;
+      animation: particleFloat 6s ease-in-out infinite;
+    }
+    @keyframes particleFloat {
+      0%   { opacity: 0; transform: translateY(0) scale(0); }
+      20%  { opacity: 0.6; }
+      80%  { opacity: 0.2; }
+      100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
+    }
+
+    /* ─── Shell ──────────────────────────────────────────  */
+    .cta-shell {
+      position: relative; z-index: 2;
+      max-width: 760px; margin: 0 auto;
+      text-align: center;
+    }
+
+    /* ─── Badge ──────────────────────────────────────────  */
+    .cta-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 18px; border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.22);
+      background: rgba(0,212,255,0.07);
+      color: var(--brand-cyan);
+      font-size: 12px; font-weight: 600;
+      margin-bottom: 28px;
+      animation: badgePop 0.6s ease both;
+    }
+    @keyframes badgePop {
+      from { opacity:0; transform:scale(0.85) translateY(10px); }
+      to   { opacity:1; transform:none; }
+    }
+    .badge-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34,197,94,0.25);
+      animation: badgeDotPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes badgeDotPulse {
+      0%,100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.25); }
+      50%      { box-shadow: 0 0 0 6px rgba(34,197,94,0.08); }
+    }
+
+    /* ─── Title ──────────────────────────────────────────  */
+    .cta-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5.5vw, 4rem);
+      font-weight: 900; letter-spacing: -0.04em;
+      color: var(--text-primary); line-height: 1.06;
+      margin: 0 0 20px;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      animation: titleReveal 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+    }
+    @keyframes titleReveal {
+      from { opacity:0; transform:translateY(24px); }
+      to   { opacity:1; transform:none; }
+    }
+    .cta-accent {
+      background: linear-gradient(120deg, var(--brand-cyan) 0%, #818cf8 50%, var(--brand-indigo) 100%);
+      background-size: 200%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: gradShift 4s linear infinite;
+    }
+    @keyframes gradShift {
+      0%   { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    .cta-desc {
+      color: rgba(148,163,184,0.9);
+      font-size: 1.05rem; line-height: 1.72;
+      margin: 0 0 36px; max-width: 620px; margin-left: auto; margin-right: auto;
+      animation: titleReveal 0.8s cubic-bezier(0.22,1,0.36,1) 0.2s both;
+    }
+
+    /* ─── Buttons ────────────────────────────────────────  */
+    .cta-actions {
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 14px; margin-bottom: 28px;
+      animation: titleReveal 0.8s cubic-bezier(0.22,1,0.36,1) 0.3s both;
+    }
+
+    .btn-primary-cta {
+      display: inline-flex; align-items: center; gap: 10px;
+      height: 54px; padding: 0 32px; border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, var(--brand-cyan) 0%, var(--brand-indigo) 100%);
+      color: #fff; font-family: var(--font-display);
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      box-shadow: 0 8px 32px rgba(0,212,255,0.3);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      position: relative; overflow: hidden;
+    }
+    .btn-primary-cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0; transition: opacity 0.25s ease;
+    }
+    .btn-primary-cta:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 16px 48px rgba(0,212,255,0.4);
+    }
+    .btn-primary-cta:hover::before { opacity: 1; }
+    .btn-primary-cta svg { transition: transform 0.2s ease; }
+    .btn-primary-cta:hover svg { transform: translateX(4px); }
+
+    .btn-ghost-cta {
+      display: inline-flex; align-items: center; gap: 9px;
+      height: 54px; padding: 0 28px; border-radius: 14px;
+      border: 1px solid rgba(148,163,184,0.2);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-secondary); font-family: var(--font-display);
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.25s ease;
+    }
+    .btn-ghost-cta:hover {
+      border-color: rgba(0,212,255,0.3); color: var(--brand-cyan);
+      background: rgba(0,212,255,0.06); transform: translateY(-2px);
+    }
+
+    /* ─── Trust chips ────────────────────────────────────  */
+    .cta-trust {
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 8px 20px;
+      animation: titleReveal 0.8s cubic-bezier(0.22,1,0.36,1) 0.4s both;
+    }
+    .trust-chip {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12.5px; font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    /* ─── Responsive ─────────────────────────────────────  */
+    @media (max-width: 600px) {
+      .cta-root { padding: 80px 16px 88px; }
+      .btn-primary-cta, .btn-ghost-cta { width: 100%; justify-content: center; }
+      .cta-actions { flex-direction: column; }
+    }
+  `],
 })
 export class CtaSectionComponent {
   @Output() openModal = new EventEmitter<void>();
-  trustItems = ['No credit card required', '14-day free trial', 'Cancel anytime'];
+
+  particles = Array.from({ length: 14 }, (_, i) => ({
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 3 + 2,
+    delay: (i * 0.4) % 6,
+  }));
+
+  trustChips = [
+    'Fast onboarding — live in 1 day',
+    'Dedicated support team',
+    'No long-term lock-in',
+    'SEBI-registered investment partners',
+  ];
 }

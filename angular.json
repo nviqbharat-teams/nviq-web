@@ -21,30 +21,41 @@
             "outputPath": "dist/nviq-angular",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "tsconfig.app.json",
-"assets": [
-  "src/favicon.ico",
-  "src/assets"
-],
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public",
+                "output": "/"
+              }
+            ],
             "styles": [
               "src/styles.css",
-              "src/app/components/mutual-funds/mutual-funds-section.styles.css"
+              "src/app/components/mutual-funds/mutual-funds-section.styles.css",
+              "node_modules/swiper/swiper-bundle.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "optimization": {
+              "fonts": {
+                "inline": false
+              }
+            }
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1MB",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "20kB",
+                  "maximumError": "30kB"
                 }
               ],
               "outputHashing": "all"
@@ -73,6 +84,7 @@
     }
   },
   "cli": {
+    "packageManager": "npm",
     "analytics": "d2dd0163-5d8b-4da0-bcb8-a5774f116a35"
   }
 }

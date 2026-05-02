@@ -1,165 +1,372 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
-interface Review {
-  id: number; name: string; business: string; rating: number; text: string;
-  tag?: string; tagType?: string; nviqResponse?: string;
+interface Testimonial {
+  name: string;
+  role: string;
+  company: string;
+  initials: string;
+  avatarGrad: [string, string];
+  quote: string;
+  metric?: string;
+  metricLabel?: string;
 }
 
 @Component({
   selector: 'app-reviews-section',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   template: `
-    <section class="py-24" style="background: linear-gradient(180deg, #080A12 0%, #0F172A 100%)">
-      <div class="max-w-[1280px] mx-auto px-6">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-          <!-- Left -->
-          <div class="lg:col-span-5">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#8B5CF6]/20 mb-4"
-              style="background: rgba(139,92,246,0.06)">
-              <span class="text-[#8B5CF6]" style="font-size:13px; font-weight:500">Real Customer Feedback</span>
-            </div>
-            <h2 class="text-white mb-4" style="font-size: clamp(26px, 3vw, 40px); font-weight:800; letter-spacing:-.03em; line-height:1.15">
-              What Fleet Owners
-              <span style="background: linear-gradient(135deg, #8B5CF6, #3B82F6); -webkit-background-clip:text; -webkit-text-fill-color:transparent">
-                Actually Experience
-              </span>
-            </h2>
-            <p class="text-[#64748B] mb-8" style="font-size:15px; line-height:1.7">
-              Real feedback. Real results. No filters.
-            </p>
-            <div class="grid grid-cols-3 gap-4 mb-8">
-              <div class="rounded-xl border border-white/5 p-4 text-center" style="background: rgba(255,255,255,0.02)">
-                <div class="text-white" style="font-size:26px; font-weight:800">{{ avgRating }}</div>
-                <div class="text-[#64748B] mt-1" style="font-size:11px">Avg Rating</div>
-              </div>
-              <div class="rounded-xl border border-white/5 p-4 text-center" style="background: rgba(255,255,255,0.02)">
-                <div class="text-white" style="font-size:26px; font-weight:800">{{ reviews.length }}</div>
-                <div class="text-[#64748B] mt-1" style="font-size:11px">Total Reviews</div>
-              </div>
-              <div class="rounded-xl border border-white/5 p-4 text-center" style="background: rgba(255,255,255,0.02)">
-                <div class="text-[#22C55E]" style="font-size:26px; font-weight:800">{{ positivePercent }}%</div>
-                <div class="text-[#64748B] mt-1" style="font-size:11px">Positive</div>
-              </div>
-            </div>
-            <button (click)="reviewModalOpen = true"
-              class="inline-flex items-center gap-2.5 px-6 py-3 rounded-[10px] text-white cursor-pointer"
-              style="background: linear-gradient(135deg, #8B5CF6, #3B82F6); box-shadow: 0 0 30px rgba(139,92,246,0.2); font-size:14px; font-weight:700">
-              ✍ Write Your Review
-            </button>
+    <section class="rev-root" id="reviews">
+
+      <!-- Background -->
+      <div class="rev-orb rev-orb-1" aria-hidden="true"></div>
+      <div class="rev-orb rev-orb-2" aria-hidden="true"></div>
+
+      <!-- Header -->
+      <div class="rev-header">
+        <p class="rev-eyebrow">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+          Testimonials
+        </p>
+        <h2 class="rev-title">
+          What Operators Say After
+          <span class="title-accent">Switching to NViQ</span>
+        </h2>
+        <p class="rev-sub">Trusted by fleet teams across India's logistics and transport sector.</p>
+      </div>
+
+      <!-- Cards grid -->
+      <div class="rev-grid">
+        <article
+          #cardRef
+          *ngFor="let item of testimonials; let i = index"
+          class="rev-card"
+          [class.visible]="visibleCards[i]"
+          [style.transition-delay]="(i * 100) + 'ms'"
+        >
+          <!-- Big quote mark -->
+          <div class="quote-mark" aria-hidden="true">"</div>
+
+          <!-- Stars -->
+          <div class="stars" aria-label="5 out of 5 stars">
+            <svg *ngFor="let s of [1,2,3,4,5]" width="14" height="14" viewBox="0 0 24 24" fill="#FBBF24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
           </div>
 
-          <!-- Right - scrollable feed -->
-          <div class="lg:col-span-7 overflow-y-auto pr-2" style="max-height:560px">
-            <div *ngFor="let review of reviews" class="rounded-xl border p-5 mb-4"
-              [style.background]="'rgba(255,255,255,0.02)'"
-              [style.borderColor]="review.rating <= 3 ? 'rgba(245,158,11,0.12)' : 'rgba(255,255,255,0.06)'">
-              <div class="flex items-start justify-between mb-3">
-                <div>
-                  <div class="text-white" style="font-size:14px; font-weight:600">{{ review.name }}</div>
-                  <div class="text-[#64748B]" style="font-size:11px">{{ review.business }}</div>
-                </div>
-                <div class="flex items-center gap-0.5">
-                  <span *ngFor="let s of getStars(review.rating)" class="text-[#F59E0B]">★</span>
-                  <span *ngFor="let s of getEmptyStars(review.rating)" class="text-[#334155]">★</span>
-                </div>
-              </div>
-              <p class="text-[#94A3B8] mb-3" style="font-size:13px; line-height:1.65">"{{ review.text }}"</p>
-              <div *ngIf="review.tag" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full mb-3"
-                [style.background]="review.tagType === 'positive' ? 'rgba(34,197,94,0.08)' : 'rgba(245,158,11,0.08)'"
-                [style.borderColor]="review.tagType === 'positive' ? 'rgba(34,197,94,0.2)' : 'rgba(245,158,11,0.2)'"
-                style="border:1px solid">
-                <span [style.color]="review.tagType === 'positive' ? '#22C55E' : '#F59E0B'" style="font-size:11px; font-weight:600">
-                  {{ review.tagType === 'positive' ? '📈' : '⚠' }} {{ review.tag }}
-                </span>
-              </div>
-              <div *ngIf="review.nviqResponse" class="mt-2 rounded-lg p-3"
-                style="background: rgba(59,130,246,0.05); border: 1px solid rgba(59,130,246,0.12)">
-                <div class="flex items-center gap-1.5 mb-1.5">
-                  <span class="text-[#3B82F6]" style="font-size:11px; font-weight:700">💬 NViQ Response</span>
-                </div>
-                <p class="text-[#94A3B8]" style="font-size:12px; line-height:1.55">{{ review.nviqResponse }}</p>
-              </div>
+          <!-- Quote -->
+          <p class="rev-quote">"{{ item.quote }}"</p>
+
+          <!-- Metric pill -->
+          <div *ngIf="item.metric" class="metric-pill">
+            <span class="metric-num">{{ item.metric }}</span>
+            <span class="metric-label">{{ item.metricLabel }}</span>
+          </div>
+
+          <!-- Divider -->
+          <div class="card-divider"></div>
+
+          <!-- Author -->
+          <div class="rev-author">
+            <div class="avatar"
+              [style.background]="'linear-gradient(135deg,' + item.avatarGrad[0] + ',' + item.avatarGrad[1] + ')'">
+              {{ item.initials }}
+            </div>
+            <div class="author-info">
+              <strong>{{ item.name }}</strong>
+              <span>{{ item.role }} · {{ item.company }}</span>
             </div>
           </div>
+
+          <!-- Card shimmer on hover -->
+          <div class="card-shimmer" aria-hidden="true"></div>
+        </article>
+      </div>
+
+      <!-- Trust bar -->
+      <div class="trust-bar">
+        <div class="trust-item" *ngFor="let t of trustItems">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="#22c55e" stroke-width="2.5" stroke-linecap="round">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+          {{ t }}
         </div>
       </div>
+
     </section>
+  `,
+  styles: [`
+    /* ─── Root ─────────────────────────────────────────── */
+    .rev-root {
+      position: relative;
+      padding: 100px 24px 80px;
+      background: linear-gradient(180deg, #070d18 0%, #04070f 100%);
+      overflow: hidden;
+      isolation: isolate;
+    }
 
-    <!-- Review Modal -->
-    <div *ngIf="reviewModalOpen" class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6"
-      (click)="reviewModalOpen = false">
-      <div class="absolute inset-0" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(8px)"></div>
-      <div class="relative w-full sm:max-w-[460px] rounded-t-2xl sm:rounded-2xl overflow-hidden p-6 sm:p-8"
-        style="background: rgba(15,23,42,0.95); border: 1px solid rgba(255,255,255,0.08)"
-        (click)="$event.stopPropagation()">
-        <button (click)="reviewModalOpen = false" class="absolute top-4 right-4 text-[#64748B] hover:text-white">✕</button>
-        <div *ngIf="!submitted">
-          <h3 class="text-white text-center mb-2" style="font-size:22px; font-weight:800">Write Your Review</h3>
-          <div class="space-y-3 mb-5">
-            <input type="text" placeholder="Full Name" required [(ngModel)]="reviewForm.name"
-              class="w-full px-4 py-3 rounded-xl text-white outline-none"
-              style="font-size:14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08)"/>
-            <input type="tel" placeholder="Phone Number" required [(ngModel)]="reviewForm.phone"
-              class="w-full px-4 py-3 rounded-xl text-white outline-none"
-              style="font-size:14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08)"/>
-            <input type="email" placeholder="Email Address" required [(ngModel)]="reviewForm.email"
-              class="w-full px-4 py-3 rounded-xl text-white outline-none"
-              style="font-size:14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08)"/>
-            <div class="flex gap-1">
-              <span *ngFor="let i of [1,2,3,4,5]" class="cursor-pointer text-2xl"
-                [style.color]="selectedRating >= i ? '#F59E0B' : '#334155'"
-                (click)="selectedRating = i">★</span>
-            </div>
-            <textarea placeholder="Share your experience..." rows="3" [(ngModel)]="reviewForm.text"
-              class="w-full px-4 py-3 rounded-xl text-white outline-none resize-none"
-              style="font-size:14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08)"></textarea>
-          </div>
-          <button (click)="submitReview()"
-            class="w-full py-3.5 rounded-[10px] text-white flex items-center justify-center gap-2 cursor-pointer"
-            style="font-size:15px; font-weight:700; background: linear-gradient(135deg, #8B5CF6, #3B82F6)">
-            ✉ Submit Review
-          </button>
-        </div>
-        <div *ngIf="submitted" class="text-center py-8">
-          <div class="text-[#22C55E] text-5xl mb-4">✓</div>
-          <h3 class="text-white mb-2" style="font-size:22px; font-weight:800">Thanks for Your Review!</h3>
-          <p class="text-[#94A3B8] mb-6" style="font-size:14px">Your review will be visible after verification.</p>
-          <button (click)="reviewModalOpen = false; submitted = false"
-            class="text-[#8B5CF6]" style="font-size:14px; font-weight:600">Close</button>
-        </div>
-      </div>
-    </div>
-  `
+    /* ─── Orbs ──────────────────────────────────────────── */
+    .rev-orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(120px); pointer-events: none; z-index: 0;
+    }
+    .rev-orb-1 {
+      width: 560px; height: 560px;
+      background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%);
+      top: -120px; right: -80px;
+      animation: orbA 22s ease-in-out infinite;
+    }
+    .rev-orb-2 {
+      width: 440px; height: 440px;
+      background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+      bottom: -80px; left: -60px;
+      animation: orbB 26s ease-in-out infinite;
+    }
+    @keyframes orbA { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-60px,50px)} }
+    @keyframes orbB { 0%,100%{transform:translate(0,0)} 50%{transform:translate(50px,-40px)} }
+
+    /* ─── Header ────────────────────────────────────────── */
+    .rev-header {
+      position: relative; z-index: 2;
+      text-align: center; max-width: 680px;
+      margin: 0 auto 56px;
+    }
+    .rev-eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 5px 16px; border-radius: 999px;
+      border: 1px solid rgba(251,191,36,0.25);
+      background: rgba(251,191,36,0.07);
+      color: #FBBF24;
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      margin-bottom: 20px;
+    }
+    .rev-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.9rem, 4vw, 3.1rem);
+      font-weight: 900; letter-spacing: -0.03em;
+      color: var(--text-primary); margin: 0 0 14px;
+      line-height: 1.1;
+    }
+    .title-accent {
+      background: linear-gradient(120deg, var(--brand-cyan), var(--brand-indigo));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .rev-sub {
+      color: var(--text-secondary); font-size: 0.98rem; margin: 0; line-height: 1.6;
+    }
+
+    /* ─── Grid ──────────────────────────────────────────── */
+    .rev-grid {
+      position: relative; z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 1120px;
+      margin: 0 auto 48px;
+    }
+
+    /* ─── Card ──────────────────────────────────────────── */
+    .rev-card {
+      position: relative;
+      padding: 28px 24px 26px;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      background: linear-gradient(160deg, rgba(12,18,32,0.95) 0%, rgba(8,13,26,0.98) 100%);
+      display: flex; flex-direction: column; gap: 16px;
+      overflow: hidden;
+      opacity: 0; transform: translateY(32px);
+      transition: opacity 0.65s ease, transform 0.65s ease,
+                  border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .rev-card.visible {
+      opacity: 1; transform: none;
+    }
+    .rev-card:hover {
+      border-color: rgba(99,102,241,0.35);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,102,241,0.15);
+      transform: translateY(-5px);
+    }
+    .rev-card.visible:hover { transform: translateY(-5px); }
+
+    /* Shimmer on hover */
+    .card-shimmer {
+      position: absolute; top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+      transform: skewX(-15deg);
+      transition: left 0.6s ease;
+      pointer-events: none;
+    }
+    .rev-card:hover .card-shimmer { left: 160%; }
+
+    /* Quote mark */
+    .quote-mark {
+      position: absolute;
+      top: 12px; right: 20px;
+      font-size: 80px; line-height: 1;
+      font-family: Georgia, serif;
+      color: rgba(99,102,241,0.12);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Stars */
+    .stars {
+      display: flex; gap: 3px;
+      animation: starShine 0.5s ease both;
+    }
+    @keyframes starShine {
+      from { opacity:0; transform:scale(0.8); }
+      to   { opacity:1; transform:none; }
+    }
+
+    /* Quote */
+    .rev-quote {
+      color: rgba(226,232,240,0.88);
+      font-size: 0.93rem; line-height: 1.72;
+      margin: 0; flex: 1;
+      font-style: italic;
+    }
+
+    /* Metric pill */
+    .metric-pill {
+      display: inline-flex; align-items: baseline; gap: 6px;
+      padding: 6px 14px; border-radius: 999px;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.18);
+      width: fit-content;
+    }
+    .metric-num {
+      font-family: var(--font-display);
+      font-size: 1.3rem; font-weight: 900;
+      background: linear-gradient(120deg, var(--brand-cyan), var(--brand-indigo));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .metric-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    /* Divider */
+    .card-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+    }
+
+    /* Author */
+    .rev-author {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-size: 14px; font-weight: 800; color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .author-info strong {
+      display: block;
+      color: var(--text-primary); font-size: 13.5px; font-weight: 700;
+    }
+    .author-info span {
+      display: block;
+      color: var(--text-muted); font-size: 11.5px; margin-top: 2px;
+    }
+
+    /* ─── Trust bar ──────────────────────────────────────  */
+    .trust-bar {
+      position: relative; z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 10px 28px;
+      max-width: 860px; margin: 0 auto;
+    }
+    .trust-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12.5px; font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    /* ─── Responsive ─────────────────────────────────────  */
+    @media (max-width: 1024px) { .rev-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 640px)  { .rev-root { padding: 72px 16px 56px; } .rev-grid { grid-template-columns: 1fr; } }
+  `],
 })
-export class ReviewsSectionComponent {
-  reviewModalOpen = false;
-  submitted = false;
-  selectedRating = 0;
-  reviewForm = { name: '', phone: '', email: '', text: '' };
+export class ReviewsSectionComponent implements AfterViewInit, OnDestroy {
+  @ViewChildren('cardRef') cardRefs!: QueryList<ElementRef<HTMLElement>>;
 
-  reviews: Review[] = [
-    { id: 1, name: 'Rajesh Kumar', business: 'Transport / 28 Vehicles', rating: 5, text: 'Switched from manual logbooks to NViQ — fuel theft dropped to zero in the first week.', tag: 'Saved ₹18,000/month', tagType: 'positive' },
-    { id: 2, name: 'Meena Devi', business: 'Logistics / 12 Vehicles', rating: 4, text: 'The live tracking is excellent. I can see exactly where every truck is.', tag: 'Real-time visibility', tagType: 'positive' },
-    { id: 3, name: 'Vikram Singh', business: 'Transport / 45 Vehicles', rating: 2, text: 'Initial setup took longer than expected.', tag: 'Facing delay issue', tagType: 'negative', nviqResponse: 'We replaced the faulty device within 24 hours and assigned a dedicated support agent.' },
-    { id: 4, name: 'Anita Sharma', business: 'Cold Chain / 20 Vehicles', rating: 5, text: 'The temperature monitoring combined with GPS is a game-changer for our pharma deliveries.', tag: 'Saved ₹42,000/month', tagType: 'positive' },
-    { id: 5, name: 'Suresh Patil', business: 'Fleet Owner / 60 Vehicles', rating: 5, text: 'ROI was visible in 10 days. Idle time alerts alone saved us ₹25,000 in the first month.', tag: 'Saved ₹25,000/month', tagType: 'positive' },
+  visibleCards: boolean[] = [true, true, true];
+  private obs: IntersectionObserver | null = null;
+
+  testimonials: Testimonial[] = [
+    {
+      name: 'Rohit Sharma',
+      role: 'Fleet Manager',
+      company: 'RoadLink Logistics',
+      initials: 'RS',
+      avatarGrad: ['#0EA5E9', '#6366F1'],
+      quote: 'Within two weeks we reduced route delays by 34% and gained complete real-time visibility. The data NViQ gives us is better than what we paid for with three separate tools before.',
+      metric: '34%',
+      metricLabel: 'Delay Reduction',
+    },
+    {
+      name: 'Meena Iyer',
+      role: 'Operations Head',
+      company: 'TransitOne Mobility',
+      initials: 'MI',
+      avatarGrad: ['#10B981', '#0EA5E9'],
+      quote: 'The dashboard is clear and fast. Our dispatch team now makes decisions based on live data instead of guesswork. Onboarding took less than a day — no technical expertise needed.',
+      metric: '1 Day',
+      metricLabel: 'To Go Live',
+    },
+    {
+      name: 'Arvind Patel',
+      role: 'Business Owner',
+      company: 'CargoVerse Transport',
+      initials: 'AP',
+      avatarGrad: ['#F59E0B', '#EF4444'],
+      quote: 'NViQ helped us control fuel variance and improve on-time delivery by 28%. The cost impact was visible in the first month. I recommend it to every fleet owner I meet.',
+      metric: '28%',
+      metricLabel: 'OTD Improvement',
+    },
   ];
 
-  get avgRating() {
-    return (this.reviews.reduce((a, r) => a + r.rating, 0) / this.reviews.length).toFixed(1);
-  }
-  get positivePercent() {
-    return Math.round((this.reviews.filter(r => r.rating >= 4).length / this.reviews.length) * 100);
+  trustItems = [
+    'Trusted by 1,000+ fleet operators',
+    'Average 4.9 / 5 rating',
+    'Zero-complaint onboarding',
+    'Live support — 7 days a week',
+  ];
+
+  ngAfterViewInit(): void {
+    setTimeout(() => { this.visibleCards = this.visibleCards.map(() => true); }, 80);
+
+    this.obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          const idx = parseInt(e.target.getAttribute('data-idx') || '0', 10);
+          if (e.isIntersecting) this.visibleCards[idx] = true;
+        });
+      },
+      { threshold: 0.15 }
+    );
+    this.cardRefs.forEach((ref, i) => {
+      ref.nativeElement.setAttribute('data-idx', String(i));
+      this.obs!.observe(ref.nativeElement);
+    });
   }
 
-  getStars(rating: number) { return Array(rating).fill(0); }
-  getEmptyStars(rating: number) { return Array(5 - rating).fill(0); }
-
-  submitReview() {
-    if (this.selectedRating === 0) return;
-    this.submitted = true;
-  }
+  ngOnDestroy(): void { this.obs?.disconnect(); }
 }
