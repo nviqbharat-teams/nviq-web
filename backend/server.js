@@ -9,21 +9,35 @@ const path         = require('path');
 const connectDB    = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
-// ─── Route imports ───────────────────────────────────────────────────────────
-const authRoutes    = require('./routes/authRoutes');
-const companyRoutes = require('./routes/companyRoutes');
-const servicesRoutes= require('./routes/servicesRoutes');
-const fundsRoutes   = require('./routes/fundsRoutes');
-const contactRoutes = require('./routes/contactRoutes');
-
-// ─── Connect Database ─────────────────────────────────────────────────────────
-connectDB();
+// ─── Route imports ─────────────────────────────────────────
+const authRoutes     = require('./routes/authRoutes');
+const companyRoutes  = require('./routes/companyRoutes');
+const servicesRoutes = require('./routes/servicesRoutes');
+const fundsRoutes    = require('./routes/fundsRoutes');
+const contactRoutes  = require('./routes/contactRoutes');
 
 const app = express();
 
-// ─── Security middleware ──────────────────────────────────────────────────────
+
+// 🔥 IMPORTANT: Lazy DB connect (Vercel fix)
+let isConnected = false;
+
+const initDB = async () => {
+  if (!isConnected) {
+    try {
+      await connectDB();
+      isConnected = true;
+      console.log("✅ DB Connected");
+    } catch (err) {
+      console.error("❌ DB Error:", err.message);
+    }
+  }
+};
+
+
+// ─── Security middleware ───────────────────────────────────
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' }, // allow serving /uploads
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 
 const allowedOrigins = [
@@ -45,58 +59,55 @@ app.use(cors({
   credentials: true,
 }));
 
-// ─── Rate limiting ────────────────────────────────────────────────────────────
+
+// ─── Rate limiting ─────────────────────────────────────────
 const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 200,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { success: false, message: 'Too many requests. Please try again later.' },
 });
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { success: false, message: 'Too many login attempts. Try again in 15 minutes.' },
 });
 
 const contactLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
+  windowMs: 60 * 60 * 1000,
   max: 5,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { success: false, message: 'Too many contact form submissions. Try again later.' },
 });
 
 app.use(globalLimiter);
 
-// ─── Body parsers ─────────────────────────────────────────────────────────────
+
+// ─── Body parsers ─────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// ─── Static uploads ───────────────────────────────────────────────────────────
+
+// ─── Static uploads ───────────────────────────────────────
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ─── Health check ─────────────────────────────────────────────────────────────
-app.get('/api/health', (req, res) => {
+
+// 🔥 Health check (DB init here)
+app.get('/api/health', async (req, res) => {
+  await initDB();
+
   res.status(200).json({
     success: true,
-    message: 'NVIQ Bharat API is running',
-    environment: process.env.NODE_ENV,
-    timestamp: new Date().toISOString(),
+    message: 'Backend Running 🚀',
   });
 });
 
-// ─── API routes ───────────────────────────────────────────────────────────────
-app.use('/api/auth',     authLimiter, authRoutes);
-app.use('/api/company',  companyRoutes);
-app.use('/api/services', servicesRoutes);
-app.use('/api/funds',    fundsRoutes);
-app.use('/api/contact',  contactLimiter, contactRoutes);
 
-// ─── 404 handler ─────────────────────────────────────────────────────────────
+// 🔥 API routes (DB init before every request)
+app.use('/api/auth',     authLimiter, async (req, res, next) => { await initDB(); next(); }, authRoutes);
+app.use('/api/company',  async (req, res, next) => { await initDB(); next(); }, companyRoutes);
+app.use('/api/services', async (req, res, next) => { await initDB(); next(); }, servicesRoutes);
+app.use('/api/funds',    async (req, res, next) => { await initDB(); next(); }, fundsRoutes);
+app.use('/api/contact',  contactLimiter, async (req, res, next) => { await initDB(); next(); }, contactRoutes);
+
+
+// ─── 404 handler ──────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -104,33 +115,10 @@ app.use((req, res) => {
   });
 });
 
-// ─── Global error handler ─────────────────────────────────────────────────────
+
+// ─── Error handler ────────────────────────────────────────
 app.use(errorHandler);
 
-// ─── Start server ─────────────────────────────────────────────────────────────
-const PORT = process.env.PORT || 5000;
 
-if (require.main === module) {
-  const server = app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
-  });
-
-  // ─── Graceful shutdown ────────────────────────────────────────────────────────
-  const shutdown = (signal) => {
-    console.log(`\n⚠️  ${signal} received. Shutting down gracefully...`);
-    server.close(() => {
-      console.log('✅ HTTP server closed.');
-      process.exit(0);
-    });
-  };
-
-  process.on('SIGTERM', () => shutdown('SIGTERM'));
-  process.on('SIGINT',  () => shutdown('SIGINT'));
-
-  process.on('unhandledRejection', (err) => {
-    console.error('❌ Unhandled Rejection:', err.message);
-    server.close(() => process.exit(1));
-  });
-}
-
+// ❗ Vercel के लिए जरूरी
 module.exports = app;
