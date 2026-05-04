@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Stop-Process -Id \\(Get-NetTCPConnection -LocalPort 5000 -ErrorAction SilentlyContinue\\).OwningProcess -Force -ErrorAction SilentlyContinue; Write-Host \"cleared\")",
+      "Bash(node server.js)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 5000 -ErrorAction SilentlyContinue)",
+      "Bash(curl -X POST http://localhost:5000/api/contact -H \"Content-Type: application/json\" -d \"{\\\\\"name\\\\\":\\\\\"Test User\\\\\",\\\\\"email\\\\\":\\\\\"test@test.com\\\\\",\\\\\"phone\\\\\":\\\\\"9694551326\\\\\",\\\\\"message\\\\\":\\\\\"Test message from backend\\\\\"}\")",
+      "PowerShell(Start-Process powershell -ArgumentList \"-NoExit\", \"-Command\", \"cd 'E:\\\\nviq_redesigned\\\\nviq_final\\\\backend'; npm run dev\")",
+      "PowerShell(Start-Process powershell -ArgumentList \"-NoExit\", \"-Command\", \"cd 'E:\\\\nviq_redesigned\\\\nviq_final\\\\nviq-angular'; ng serve --open\")",
+      "PowerShell(Start-Process cmd -ArgumentList \"/k cd /d E:\\\\nviq_redesigned\\\\nviq_final\\\\backend && npm run dev\" -WindowStyle Normal)",
+      "PowerShell(Start-Process cmd -ArgumentList \"/k cd /d E:\\\\nviq_redesigned\\\\nviq_final\\\\nviq-angular && ng serve --open\" -WindowStyle Normal)",
+      "Bash(npx tsc *)",
+      "Bash(New-Item -ItemType Directory -Force -Path \"e:\\\\nviq_redesigned\\\\nviq_final\\\\nviq-angular\\\\src\\\\app\\\\pages\\\\mutual-fund\")",
+      "Bash(Out-Null)",
+      "Bash(Write-Host \"done\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"e:\\\\nviq_redesigned\\\\nviq_final\\\\nviq-angular\\\\src\\\\app\\\\pages\\\\mutual-fund\")"
+    ]
+  }
+}

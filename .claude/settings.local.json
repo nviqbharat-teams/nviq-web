@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ng serve *)",
+      "Bash(ng build *)",
+      "Bash(npx ng *)",
+      "Bash(curl -s http://localhost:4200)",
+      "Bash(sc query *)",
+      "Bash(where mongod *)",
+      "Read(//c/Program Files/MongoDB/**)",
+      "PowerShell(Get-Command mongod -ErrorAction SilentlyContinue)",
+      "Bash(npm run *)",
+      "PowerShell(Stop-Process -Id \\(Get-NetTCPConnection -LocalPort 5000 -ErrorAction SilentlyContinue\\).OwningProcess -Force -ErrorAction SilentlyContinue; Write-Host \"Port 5000 freed\")"
+    ]
+  }
+}
