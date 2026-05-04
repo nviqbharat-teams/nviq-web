@@ -17,7 +17,9 @@ const contactRoutes = require('./routes/contactRoutes');
 
 const app = express();
 
-// 🔥 MongoDB connect
+
+app.set('trust proxy', true);
+
 let isConnected = false;
 
 const connectDB = async () => {
@@ -33,7 +35,7 @@ const connectDB = async () => {
     console.log("✅ MongoDB Connected");
   } catch (err) {
     console.error("❌ DB Error:", err.message);
-    throw err; // 👉 IMPORTANT (otherwise silent crash)
+    throw err; 
   }
 };
 
@@ -48,10 +50,26 @@ app.use(cors({
   credentials: true,
 }));
 
+const getClientIp = (req) => {
+  return req.ip ||
+    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+    req.headers['x-real-ip'] ||
+    req.socket?.remoteAddress ||
+    'unknown';
+};
+
 // 🚦 Rate limit
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
+  keyGenerator: getClientIp,
+  handler: (req, res) => {
+    res.status(429).json({
+      success: false,
+      message: 'Too many requests. Please try again later.',
+    });
+  },
+  skipFailedRequests: true,
 }));
 
 // 📦 Body
