@@ -1,0 +1,61 @@
+const jwt = require('jsonwebtoken');
+const Admin = require('../models/Admin');
+
+// Verify JWT and attach admin to request
+exports.protect = async (req, res, next) => {
+  try {
+    let token;
+
+    if (req.headers.authorization?.startsWith('Bearer ')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Access denied. No token provided.',
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const admin = await Admin.findById(decoded.id).select('-password');
+    if (!admin) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token is no longer valid. Admin not found.',
+      });
+    }
+
+    if (!admin.isActive) {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account has been deactivated. Contact super admin.',
+      });
+    }
+
+    req.admin = admin;
+    next();
+  } catch (error) {
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ success: false, message: 'Invalid token.' });
+    }
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ success: false, message: 'Token has expired.' });
+    }
+    next(error);
+  }
+};
+
+// Restrict to specific roles
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.admin.role)) {
+      return res.status(403).json({
+        success: false,
+        message: `Access denied. Required role: ${roles.join(' or ')}.`,
+      });
+    }
+    next();
+  };
+};

@@ -1,0 +1,338 @@
+{
+  "info": {
+    "name": "NVIQ Bharat API",
+    "description": "Complete API collection for NVIQ Bharat Technology Private Limited backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000", "type": "string" },
+    { "key": "token",   "value": "",                      "type": "string" }
+  ],
+  "item": [
+
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Login (get JWT)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "const json = pm.response.json();",
+                "if (json.token) {",
+                "  pm.collectionVariables.set('token', json.token);",
+                "  console.log('Token saved:', json.token);",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@nviqbharat.com\",\n  \"password\": \"Admin@1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+          }
+        },
+        {
+          "name": "Register Admin",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"NVIQ Admin\",\n  \"email\": \"admin@nviqbharat.com\",\n  \"password\": \"Admin@1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] }
+          }
+        },
+        {
+          "name": "Get Me (verify token)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api","auth","me"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🏢 Company",
+      "item": [
+        {
+          "name": "Get Company Details",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/company", "host": ["{{baseUrl}}"], "path": ["api","company"] }
+          }
+        },
+        {
+          "name": "Create Company (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"NVIQ Bharat Technology Private Limited\",\n  \"CIN\": \"U62099RJ2026PTC113523\",\n  \"PAN\": \"AALCN5488M\",\n  \"address\": \"Vill. Jamalpur, Teh. Malakhera, Alwar, Rajasthan\",\n  \"phone\": \"9694551326\",\n  \"email\": \"nviqbharat@gmail.com\",\n  \"tagline\": \"Innovating Fleet & Finance Solutions\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/company", "host": ["{{baseUrl}}"], "path": ["api","company"] }
+          }
+        },
+        {
+          "name": "Update Company (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"NVIQ Bharat Technology Private Limited\",\n  \"phone\": \"9694551326\",\n  \"address\": \"Vill. Jamalpur, Teh. Malakhera, Alwar, Rajasthan\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/company/:id", "host": ["{{baseUrl}}"], "path": ["api","company",":id"], "variable": [{ "key": "id", "value": "COMPANY_ID_HERE" }] }
+          }
+        },
+        {
+          "name": "Upload Company Logo (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "logo",        "type": "file",   "src": "" },
+                { "key": "companyName", "type": "text",   "value": "NVIQ Bharat Technology Private Limited" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/company/:id", "host": ["{{baseUrl}}"], "path": ["api","company",":id"], "variable": [{ "key": "id", "value": "COMPANY_ID_HERE" }] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "💼 Services",
+      "item": [
+        {
+          "name": "Get All Services",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/services?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["api","services"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] }
+          }
+        },
+        {
+          "name": "Get Single Service",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/services/:id", "host": ["{{baseUrl}}"], "path": ["api","services",":id"], "variable": [{ "key": "id", "value": "SERVICE_ID" }] }
+          }
+        },
+        {
+          "name": "Create Service (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"GPS Fleet Tracking\",\n  \"description\": \"Real-time GPS tracking for your entire fleet. Live maps, geo-fencing, route analytics.\",\n  \"icon\": \"🗺️\",\n  \"order\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/services", "host": ["{{baseUrl}}"], "path": ["api","services"] }
+          }
+        },
+        {
+          "name": "Create Service with Image (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "image",       "type": "file", "src": "" },
+                { "key": "title",       "type": "text", "value": "GPS Fleet Tracking" },
+                { "key": "description", "type": "text", "value": "Real-time GPS tracking for your entire fleet." },
+                { "key": "icon",        "type": "text", "value": "🗺️" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/services", "host": ["{{baseUrl}}"], "path": ["api","services"] }
+          }
+        },
+        {
+          "name": "Update Service (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"GPS Fleet Tracking\",\n  \"description\": \"Updated description here.\",\n  \"icon\": \"🗺️\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/services/:id", "host": ["{{baseUrl}}"], "path": ["api","services",":id"], "variable": [{ "key": "id", "value": "SERVICE_ID" }] }
+          }
+        },
+        {
+          "name": "Delete Service (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/services/:id", "host": ["{{baseUrl}}"], "path": ["api","services",":id"], "variable": [{ "key": "id", "value": "SERVICE_ID" }] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📊 Mutual Funds",
+      "item": [
+        {
+          "name": "Get All Funds",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/funds?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","funds"],
+              "query": [
+                { "key": "page",     "value": "1" },
+                { "key": "limit",    "value": "10" },
+                { "key": "category", "value": "Equity",   "disabled": true },
+                { "key": "risk",     "value": "Moderate", "disabled": true },
+                { "key": "featured", "value": "true",     "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Single Fund",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/funds/:id", "host": ["{{baseUrl}}"], "path": ["api","funds",":id"], "variable": [{ "key": "id", "value": "FUND_ID" }] }
+          }
+        },
+        {
+          "name": "Create Fund (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fundName\": \"SBI Bluechip Fund\",\n  \"category\": \"Equity\",\n  \"risk\": \"Moderate\",\n  \"returns\": \"12%\",\n  \"description\": \"Stable large-cap fund focused on blue-chip companies.\",\n  \"minSIP\": 500,\n  \"isFeatured\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/funds", "host": ["{{baseUrl}}"], "path": ["api","funds"] }
+          }
+        },
+        {
+          "name": "Update Fund (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fundName\": \"SBI Bluechip Fund\",\n  \"category\": \"Equity\",\n  \"risk\": \"Moderate\",\n  \"returns\": \"14%\",\n  \"description\": \"Updated description.\",\n  \"isFeatured\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/funds/:id", "host": ["{{baseUrl}}"], "path": ["api","funds",":id"], "variable": [{ "key": "id", "value": "FUND_ID" }] }
+          }
+        },
+        {
+          "name": "Delete Fund (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/funds/:id", "host": ["{{baseUrl}}"], "path": ["api","funds",":id"], "variable": [{ "key": "id", "value": "FUND_ID" }] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📩 Contact",
+      "item": [
+        {
+          "name": "Submit Contact Form (Public)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ravi Sharma\",\n  \"email\": \"ravi@example.com\",\n  \"phone\": \"9876543210\",\n  \"message\": \"I am interested in your GPS fleet tracking solution. Please contact me.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/contact", "host": ["{{baseUrl}}"], "path": ["api","contact"] }
+          }
+        },
+        {
+          "name": "Get All Contacts (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/contact?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","contact"],
+              "query": [
+                { "key": "page",   "value": "1" },
+                { "key": "limit",  "value": "20" },
+                { "key": "status", "value": "new", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Contact Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"replied\",\n  \"adminNote\": \"Called customer on 04/05/2026\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/contact/:id/status", "host": ["{{baseUrl}}"], "path": ["api","contact",":id","status"], "variable": [{ "key": "id", "value": "CONTACT_ID" }] }
+          }
+        },
+        {
+          "name": "Delete Contact (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/contact/:id", "host": ["{{baseUrl}}"], "path": ["api","contact",":id"], "variable": [{ "key": "id", "value": "CONTACT_ID" }] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "⚙️ System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/health", "host": ["{{baseUrl}}"], "path": ["api","health"] }
+          }
+        }
+      ]
+    }
+
+  ]
+}
