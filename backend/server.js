@@ -6,7 +6,6 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const path = require('path');
-const serverless = require('serverless-http');
 
 // routes
 const authRoutes = require('./routes/authRoutes');
@@ -97,6 +96,14 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
+// root route for Vercel deployment domain
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'NVIQ backend is running. Use /api/health or /api/...'
+  });
+});
+
 // 🔥 Middleware to ensure DB connection
 const withDB = async (req, res, next) => {
   try {
@@ -126,4 +133,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = serverless(app);
+module.exports = app;
