@@ -1,27 +1,20 @@
-import dotenv from 'dotenv';
-dotenv.config();
+require('dotenv').config();
 
-import express from 'express';
-import helmet from 'helmet';
-import cors from 'cors';
-import rateLimit from 'express-rate-limit';
-import mongoose from 'mongoose';
-import path from 'path';
-import { fileURLToPath } from 'url';
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+const mongoose = require('mongoose');
+const path = require('path');
 
 // routes
-import authRoutes from './routes/authRoutes.js';
-import companyRoutes from './routes/companyRoutes.js';
-import servicesRoutes from './routes/servicesRoutes.js';
-import fundsRoutes from './routes/fundsRoutes.js';
-import contactRoutes from './routes/contactRoutes.js';
-
-// fix __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const authRoutes = require('./routes/authRoutes');
+const companyRoutes = require('./routes/companyRoutes');
+const servicesRoutes = require('./routes/servicesRoutes');
+const fundsRoutes = require('./routes/fundsRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 
 const app = express();
-
 
 // 🔥 MongoDB connect
 let isConnected = false;
@@ -30,27 +23,29 @@ const connectDB = async () => {
   if (isConnected) return;
 
   try {
+    if (!process.env.MONGO_URI) {
+      throw new Error("MONGO_URI missing ❌");
+    }
+
     await mongoose.connect(process.env.MONGO_URI);
     isConnected = true;
     console.log("✅ MongoDB Connected");
   } catch (err) {
     console.error("❌ DB Error:", err.message);
+    throw err; // 👉 IMPORTANT (otherwise silent crash)
   }
 };
-
 
 // 🔐 Security
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 
-
 // 🌐 CORS
 app.use(cors({
-  origin: ['http://localhost:4200', /\.vercel\.app$/],
+  origin: true,
   credentials: true,
 }));
-
 
 // 🚦 Rate limit
 app.use(rateLimit({
@@ -58,40 +53,51 @@ app.use(rateLimit({
   max: 200,
 }));
 
-
 // 📦 Body
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 // 📁 Static
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-
 // 🧪 Health route
 app.get('/api/health', async (req, res) => {
-  await connectDB();
+  try {
+    await connectDB();
 
-  res.json({
-    success: true,
-    message: "Backend Running 🚀"
-  });
+    res.json({
+      success: true,
+      message: "Backend Running 🚀"
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
 });
 
+// 🔥 Middleware to ensure DB connection
+const withDB = async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
-// 🔥 API routes
-app.use('/api/auth', async (req, res, next) => { await connectDB(); next(); }, authRoutes);
-app.use('/api/company', async (req, res, next) => { await connectDB(); next(); }, companyRoutes);
-app.use('/api/services', async (req, res, next) => { await connectDB(); next(); }, servicesRoutes);
-app.use('/api/funds', async (req, res, next) => { await connectDB(); next(); }, fundsRoutes);
-app.use('/api/contact', async (req, res, next) => { await connectDB(); next(); }, contactRoutes);
-
+// 🔥 Routes
+app.use('/api/auth', withDB, authRoutes);
+app.use('/api/company', withDB, companyRoutes);
+app.use('/api/services', withDB, servicesRoutes);
+app.use('/api/funds', withDB, fundsRoutes);
+app.use('/api/contact', withDB, contactRoutes);
 
 // ❌ 404
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-
-// ❗❗ Vercel serverless export
-export default app;
+module.exports = app;
