@@ -1,5 +1,11 @@
 {
+<<<<<<< HEAD
     "recommendations": [
         "qwenlm.qwen-code-vscode-ide-companion"
     ]
 }
+=======
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=827846
+  "recommendations": ["angular.ng-template"]
+}
+>>>>>>> b8d9b210be28c9a459c2395cde120cdb73b24821

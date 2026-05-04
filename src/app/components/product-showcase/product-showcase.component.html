@@ -1,0 +1,119 @@
+<section class="ps-root">
+
+  <!-- 3D Particle Canvas -->
+  <canvas #ptCanvas class="ps-canvas"></canvas>
+
+  <div class="ps-container">
+    <div class="ps-header">
+      <h2 class="ps-title">Our Products</h2>
+      <p class="ps-subtitle">Innovative solutions for every need</p>
+    </div>
+
+    <div class="ps-list">
+      <article
+        *ngFor="let p of products; let i = index"
+        class="ps-card"
+        (click)="openProduct(p.id)"
+        [style.animationDelay]="(i * 90) + 'ms'"
+      >
+        <div class="ps-card-bg" aria-hidden="true"></div>
+
+        <div class="ps-inner">
+          <!-- LEFT: visual mockup -->
+          <div class="ps-visual">
+            <div class="ps-mockup" [ngClass]="{
+              'v-mf': p.visual === 'mf',
+              'v-gps': p.visual === 'gps',
+              'v-fastag': p.visual === 'fastag',
+              'v-drone': p.visual === 'drone'
+            }">
+              <div class="ps-mockup-header">
+                <span class="ps-mockup-icon" aria-hidden="true">
+                  <ng-container *ngIf="p.visual === 'mf'">📈</ng-container>
+                  <ng-container *ngIf="p.visual === 'gps'">🗺️</ng-container>
+                  <ng-container *ngIf="p.visual === 'fastag'">💳</ng-container>
+                  <ng-container *ngIf="p.visual === 'drone'">🚁</ng-container>
+                </span>
+                <span class="ps-mockup-name">
+                  <ng-container *ngIf="p.visual === 'mf'">Mutual Fund</ng-container>
+                  <ng-container *ngIf="p.visual === 'gps'">GPS Tracking</ng-container>
+                  <ng-container *ngIf="p.visual === 'fastag'">FASTag</ng-container>
+                  <ng-container *ngIf="p.visual === 'drone'">Agri Drone</ng-container>
+                </span>
+              </div>
+
+              <div class="ps-mockup-body">
+                <div class="ps-mf-chart" *ngIf="p.visual === 'mf'">
+                  <span class="ps-bar" style="height: 62%"></span>
+                  <span class="ps-bar" style="height: 88%"></span>
+                  <span class="ps-bar" style="height: 72%"></span>
+                  <span class="ps-bar" style="height: 96%"></span>
+                </div>
+
+                <div class="ps-gps-map" *ngIf="p.visual === 'gps'">
+                  <span class="ps-route"></span>
+                  <span class="ps-marker"></span>
+                </div>
+
+                <div class="ps-fastag-balance" *ngIf="p.visual === 'fastag'">
+                  <div class="ps-balance-chip">
+                    <span class="ps-balance-label">Available</span>
+                    <span class="ps-balance-value">₹1,250</span>
+                  </div>
+                  <div class="ps-fastag-mini">
+                    <span class="ps-mini-pill"></span>
+                    <span class="ps-mini-pill"></span>
+                  </div>
+                </div>
+
+                <div class="ps-drone-view" *ngIf="p.visual === 'drone'">
+                  <div class="ps-field-grid"></div>
+                  <div class="ps-scan" aria-hidden="true"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Floating mini-cards -->
+            <div class="ps-floating" aria-hidden="true">
+              <div class="ps-float ps-f1">
+                <span class="ps-f-label">{{ p.floats[0].label }}</span>
+                <span class="ps-f-value">{{ p.floats[0].value }}</span>
+              </div>
+              <div class="ps-float ps-f2">
+                <span class="ps-f-label">{{ p.floats[1].label }}</span>
+                <span class="ps-f-value">{{ p.floats[1].value }}</span>
+              </div>
+              <div class="ps-float ps-f3">
+                <span class="ps-f-label">{{ p.floats[2].label }}</span>
+                <span class="ps-f-value">{{ p.floats[2].value }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: content -->
+          <div class="ps-content">
+            <div class="ps-tagline">
+              <span class="ps-subtle-dot" [style.background]="p.accent" aria-hidden="true"></span>
+              <span class="ps-tag-text">Product</span>
+            </div>
+
+            <h3 class="ps-title-card">{{ p.title }}</h3>
+            <p class="ps-sub-card">{{ p.subtitle }}</p>
+
+            <ul class="ps-features">
+              <li *ngFor="let f of p.features">
+                <span class="ps-check" aria-hidden="true"></span>
+                <span>{{ f }}</span>
+              </li>
+            </ul>
+
+            <button type="button" class="ps-arrow-btn" (click)="openProduct(p.id); $event.stopPropagation()">
+              <span class="ps-arrow-text">Explore</span>
+              <span class="ps-arrow" aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
