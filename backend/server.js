@@ -6,6 +6,7 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const path = require('path');
+const serverless = require('serverless-http');
 
 // routes
 const authRoutes = require('./routes/authRoutes');
@@ -100,4 +101,11 @@ app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-module.exports = app;
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+}
+
+module.exports = serverless(app);
