@@ -1,45 +1,33 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+  // Dedicated Mutual Fund page — no GPS data, no route-param guessing
   {
-    path: '',
+    path: 'mutual-fund',
     loadComponent: () =>
-      import('./pages/home/home').then(m => m.HomeComponent)
+      import('./pages/mutual-fund/mutual-fund-page.component').then(m => m.MutualFundPageComponent)
   },
-  {
-    path: 'pricing',
-    loadComponent: () =>
-      import('./pricing/pricing').then(m => m.PricingComponent)
-  },
-  {
-    path: 'contact',
-    loadComponent: () =>
-      import('./pages/contact/contact').then(m => m.ContactComponent)
-  },
-  {
-    path: 'products',
-    loadComponent: () =>
-      import('./pages/products/products').then(m => m.ProductsComponent)
-  },
+  // Redirect legacy URL to canonical route
   {
     path: 'products/mutual-fund',
-    loadComponent: () =>
-      import('./components/product-detail/product-detail').then(m => m.ProductDetailComponent)
+    redirectTo: '/mutual-fund',
+    pathMatch: 'full'
   },
+  // GPS / FASTag / Drone — shared ProductDetailComponent, reads URL on init
   {
     path: 'products/gps-tracking',
     loadComponent: () =>
-      import('./components/product-detail/product-detail').then(m => m.ProductDetailComponent)
+      import('./components/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
   },
   {
     path: 'products/fastag',
     loadComponent: () =>
-      import('./components/product-detail/product-detail').then(m => m.ProductDetailComponent)
+      import('./components/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
   },
   {
     path: 'products/drone',
     loadComponent: () =>
-      import('./components/product-detail/product-detail').then(m => m.ProductDetailComponent)
+      import('./components/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
   },
   { path: '**', redirectTo: '' }
 ];

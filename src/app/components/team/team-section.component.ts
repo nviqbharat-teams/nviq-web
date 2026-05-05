@@ -146,7 +146,7 @@ interface Member {
       to   { opacity:1; transform:none; }
     }
 
-    /* Avatar */
+    /* Avatar 
     .tm-avatar {
       width: 72px; height: 72px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;

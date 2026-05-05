@@ -6,12 +6,15 @@
   EventEmitter,
   NgZone,
   OnDestroy,
+  OnInit,
   Output,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { register } from 'swiper/element/bundle';
+import { ApiService, Fund } from '../../services/api.service';
 
 register();
 
@@ -164,7 +167,7 @@ export interface MFSlide {
                     transform="rotate(-90 70 70)"/>
                   <!-- Returns arc -->
                   <circle cx="70" cy="70" r="56"
-                    fill="none" stroke="#3B82F6" stroke-width="12"
+                    fill="none" stroke="#10B981" stroke-width="12"
                     stroke-linecap="butt"
                     [attr.stroke-dasharray]="donutReturns + ' ' + circumference"
                     [attr.stroke-dashoffset]="(-donutInvested)"
@@ -183,7 +186,7 @@ export interface MFSlide {
                     <span class="legend-txt">Invested</span>
                   </div>
                   <div class="legend-row">
-                    <span class="legend-swatch" style="background:#3B82F6"></span>
+                    <span class="legend-swatch" style="background:#10B981"></span>
                     <span class="legend-txt">Returns</span>
                   </div>
                 </div>
@@ -197,7 +200,7 @@ export interface MFSlide {
                 </div>
                 <div class="sip-stat sip-stat-green">
                   <p class="sstat-label">Estimated Returns</p>
-                  <p class="sstat-val" style="color:#3B82F6">{{ formatINR(estimatedReturns) }}</p>
+                  <p class="sstat-val" style="color:#10B981">{{ formatINR(estimatedReturns) }}</p>
                 </div>
                 <div class="sip-stat sip-stat-primary">
                   <p class="sstat-label">Maturity Value</p>
@@ -926,9 +929,22 @@ export interface MFSlide {
     }
   `],
 })
-export class MutualFundSliderComponent implements AfterViewInit, OnDestroy {
+export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() openModal = new EventEmitter<void>();
   @ViewChild('swiperEl') swiperEl!: ElementRef;
+
+  private ngZone = inject(NgZone);
+  private api    = inject(ApiService);
+
+  private readonly SLIDE_STYLES: Array<{ iconGrad: [string, string]; glowColor: string }> = [
+    { iconGrad: ['#3B82F6', '#2563EB'], glowColor: 'rgba(59,130,246,0.18)' },
+    { iconGrad: ['#0EA5E9', '#06B6D4'], glowColor: 'rgba(14,165,233,0.18)' },
+    { iconGrad: ['#8B5CF6', '#6366F1'], glowColor: 'rgba(139,92,246,0.18)' },
+    { iconGrad: ['#F59E0B', '#EF4444'], glowColor: 'rgba(245,158,11,0.18)' },
+    { iconGrad: ['#F43F5E', '#E11D48'], glowColor: 'rgba(244,63,94,0.18)' },
+    { iconGrad: ['#3B82F6', '#6366F1'], glowColor: 'rgba(37,99,235,0.18)' },
+    { iconGrad: ['#A855F7', '#3B82F6'], glowColor: 'rgba(168,85,247,0.18)' },
+  ];
 
   readonly String = String;
 
@@ -1041,12 +1057,55 @@ export class MutualFundSliderComponent implements AfterViewInit, OnDestroy {
     },
   ];
 
+  ngOnInit(): void {
+    this.api.getFunds({ limit: 10 }).subscribe({
+      next: (res) => {
+        if (res.success && res.data?.length) {
+          this.slides = res.data.map((fund, i) => this.fundToSlide(fund, i));
+          this.selectedSlide = this.slides[0];
+        }
+      },
+      error: () => { /* fallback: keep hardcoded slides */ }
+    });
+  }
+
+  private fundToSlide(fund: Fund, index: number): MFSlide {
+    const style = this.SLIDE_STYLES[index % this.SLIDE_STYLES.length];
+    return {
+      id: index + 1,
+      title: fund.fundName,
+      tag: fund.category,
+      badge: fund.isFeatured ? 'Featured' : undefined,
+      highlight: fund.isFeatured,
+      iconGrad: style.iconGrad,
+      glowColor: style.glowColor,
+      lines: [
+        `Risk: ${fund.risk}`,
+        `Expected Returns: ${fund.returns}`,
+      ],
+      details: fund.description,
+    };
+  }
+
   ngAfterViewInit(): void {
-    this.selectedSlide = this.slides[0];
+    this.selectedSlide = this.selectedSlide ?? this.slides[0];
     this.calculateSIP();
 
     // Show immediately — component is only rendered when already on screen
-    setTimeout(() => { this.sectionVisible = true; }, 80);
+    setTimeout(() => {
+      this.sectionVisible = true;
+
+      // Sync swiper auto-play with the detail panel
+      const swiper = this.swiperEl?.nativeElement?.swiper;
+      if (swiper) {
+        swiper.on('slideChange', () => {
+          this.ngZone.run(() => {
+            const idx = swiper.realIndex ?? 0;
+            this.selectedSlide = this.slides[idx % this.slides.length];
+          });
+        });
+      }
+    }, 80);
 
     const sectionEl = document.getElementById('mutual-funds');
     if (sectionEl) {
@@ -1070,6 +1129,12 @@ export class MutualFundSliderComponent implements AfterViewInit, OnDestroy {
 
   selectSlide(slide: MFSlide): void {
     this.selectedSlide = slide;
+    // Jump swiper to matching slide so auto-play stays in sync
+    const swiper = this.swiperEl?.nativeElement?.swiper;
+    if (swiper) {
+      const idx = this.slides.findIndex(s => s.id === slide.id);
+      if (idx !== -1) swiper.slideToLoop(idx);
+    }
   }
 
   slidePrev(): void {

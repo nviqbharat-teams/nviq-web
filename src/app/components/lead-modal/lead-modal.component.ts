@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-lead-modal',
@@ -15,10 +16,9 @@ import { FormsModule } from '@angular/forms';
         (click)="$event.stopPropagation()">
         <button (click)="closeModal.emit()"
           class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full flex items-center justify-center text-[#64748B] hover:text-white hover:bg-white/5 transition-all"
-          aria-label="Close">
-          x
-        </button>
+          aria-label="Close">x</button>
 
+        <!-- Form -->
         <div *ngIf="!submitted" class="relative p-6 sm:p-8">
           <div class="flex justify-center mb-5">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full"
@@ -31,8 +31,14 @@ import { FormsModule } from '@angular/forms';
           </h3>
           <p class="text-[#64748B] text-center mb-7" style="font-size:14px; line-height:1.6">
             Launch live GPS tracking from
-            <span class="text-[#3B82F6]" style="font-weight:700">Rs 299 per vehicle / month</span>
+            <span class="text-[#3B82F6]" style="font-weight:700">Rs 499 per vehicle / month</span>
           </p>
+
+          <!-- Error -->
+          <p *ngIf="errorMsg" style="color:#EF4444; font-size:12px; text-align:center; margin-bottom:12px">
+            {{ errorMsg }}
+          </p>
+
           <div class="space-y-3 mb-6">
             <div>
               <label class="block text-[#94A3B8] mb-1.5" style="font-size:12px; font-weight:500">Full Name</label>
@@ -53,33 +59,39 @@ import { FormsModule } from '@angular/forms';
                 style="font-size:14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08)"/>
             </div>
           </div>
-          <button (click)="submit()"
+
+          <button (click)="submit()" [disabled]="sending"
             class="w-full py-3.5 rounded-[10px] text-white flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] transition-transform"
             style="font-size:15px; font-weight:700; background: linear-gradient(135deg, #3B82F6, #7C3AED); box-shadow: 0 0 40px rgba(59,130,246,0.25)">
-            Activate Starter Plan ->
+            {{ sending ? 'Submitting...' : 'Activate Starter Plan →' }}
           </button>
+
           <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-5">
             <div *ngFor="let t of trustItems" class="flex items-center gap-1.5 text-[#475569]">
-              <span class="text-[#22C55E]">+</span>
+              <span class="text-[#22C55E]">✓</span>
               <span style="font-size:11px; font-weight:500">{{ t }}</span>
             </div>
           </div>
         </div>
 
+        <!-- Success -->
         <div *ngIf="submitted" class="relative p-8 text-center">
-          <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5 text-3xl"
-            style="background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.05)); border: 1px solid rgba(34,197,94,0.3)">
-            +
+          <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5"
+            style="background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.05)); border: 1px solid rgba(34,197,94,0.3); font-size:28px">
+            ✓
           </div>
           <h3 class="text-white mb-2" style="font-size:22px; font-weight:800">You are all set.</h3>
           <p class="text-[#94A3B8] mb-6" style="font-size:14px; line-height:1.6">
-            Our team will reach out to <span class="text-white font-semibold">{{ form.phone || 'you' }}</span> within 30 minutes.
+            Our team will reach out to
+            <span class="text-white font-semibold">{{ form.phone || 'you' }}</span>
+            within 30 minutes.
           </p>
           <button (click)="closeModal.emit(); submitted = false"
             class="text-[#3B82F6] hover:text-[#60A5FA] transition-colors" style="font-size:14px; font-weight:600">
             Close
           </button>
         </div>
+
       </div>
     </div>
   `
@@ -87,17 +99,50 @@ import { FormsModule } from '@angular/forms';
 export class LeadModalComponent implements OnChanges {
   @Input() open = false;
   @Output() closeModal = new EventEmitter<void>();
+
+  private api = inject(ApiService);
+
   submitted = false;
+  sending   = false;
+  errorMsg  = '';
   form = { name: '', phone: '', email: '' };
   trustItems = ['No payment required now', 'Setup in 10 minutes', 'Built for fleet owners'];
 
   ngOnChanges() {
-    if (this.open) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = '';
+    if (this.open) {
+      document.body.style.overflow = 'hidden';
+      this.submitted = false;
+      this.errorMsg  = '';
+      this.sending   = false;
+    } else {
+      document.body.style.overflow = '';
+    }
   }
 
-  submit() {
-    if (!this.form.name || !this.form.phone || !this.form.email) return;
-    this.submitted = true;
+  submit(): void {
+    if (!this.form.name.trim() || !this.form.phone.trim() || !this.form.email.trim()) {
+      this.errorMsg = 'Please fill all fields before submitting.';
+      return;
+    }
+
+    this.sending  = true;
+    this.errorMsg = '';
+
+    this.api.submitContact({
+      name:    this.form.name.trim(),
+      email:   this.form.email.trim(),
+      phone:   this.form.phone.trim(),
+      message: '[Lead Modal] Interested in GPS Fleet Tracking — Rs 499/vehicle/month plan.',
+      source:  'lead-modal',
+    }).subscribe({
+      next: () => {
+        this.sending   = false;
+        this.submitted = true;
+      },
+      error: (err: Error) => {
+        this.sending  = false;
+        this.errorMsg = err.message || 'Something went wrong. Please try again.';
+      },
+    });
   }
 }

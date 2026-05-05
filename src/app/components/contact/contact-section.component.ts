@@ -1,6 +1,7 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-contact-section',
@@ -135,13 +136,20 @@ import { FormsModule } from '@angular/forms';
               <span class="git-err" *ngIf="msgErr">Message is required</span>
             </div>
 
-            <button class="git-submit" type="submit" [disabled]="submitted">
-              <ng-container *ngIf="!submitted">
+            <p class="git-err" *ngIf="submitError" style="margin-bottom:10px;text-align:center">
+              {{ submitError }}
+            </p>
+
+            <button class="git-submit" type="submit" [disabled]="submitted || sending">
+              <ng-container *ngIf="!submitted && !sending">
                 Send Message
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                   <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
                 </svg>
+              </ng-container>
+              <ng-container *ngIf="sending">
+                Sending...
               </ng-container>
               <ng-container *ngIf="submitted">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -470,8 +478,12 @@ import { FormsModule } from '@angular/forms';
   `]
 })
 export class ContactSectionComponent implements OnInit {
+  private api = inject(ApiService);
+
   form = { name: '', phone: '', email: '', company: '', message: '' };
-  submitted = false;
+  submitted  = false;
+  sending    = false;
+  submitError = '';
   nameErr  = false;
   phoneErr = false;
   emailErr = false;
@@ -526,10 +538,27 @@ export class ContactSectionComponent implements OnInit {
 
     if (this.nameErr || this.phoneErr || this.emailErr || this.msgErr) return;
 
-    this.submitted = true;
-    setTimeout(() => {
-      this.form = { name: '', phone: '', email: '', company: '', message: '' };
-      this.submitted = false;
-    }, 4000);
+    this.sending     = true;
+    this.submitError = '';
+
+    const payload = {
+      name:    this.form.name.trim(),
+      email:   this.form.email.trim(),
+      phone:   this.form.phone.trim(),
+      message: `${this.form.company ? '[' + this.form.company.trim() + '] ' : ''}${this.form.message.trim()}`,
+    };
+
+    this.api.submitContact(payload).subscribe({
+      next: () => {
+        this.submitted = true;
+        this.sending   = false;
+        this.form      = { name: '', phone: '', email: '', company: '', message: '' };
+        setTimeout(() => { this.submitted = false; }, 4000);
+      },
+      error: (err: Error) => {
+        this.sending     = false;
+        this.submitError = err.message || 'Failed to send. Please try again.';
+      },
+    });
   }
 }
