@@ -2,6 +2,9 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/nviq-angular/browser",
   "framework": "angular",
+  "env": {
+    "NODE_OPTIONS": "--max-old-space-size=6144"
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
