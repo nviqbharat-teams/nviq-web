@@ -50,7 +50,7 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
             *ngFor="let slide of gpsSlides; let i = index"
             class="gps-slide"
             [class.gps-slide-active]="i === currentGpsSlide"
-            [style.background-image]="getSlideBackground(slide.image)"
+            [ngClass]="'gps-bg-' + i"
           >
             <div class="gps-slide-content">
               <span class="gps-slide-tag">{{ slide.tag }}</span>
@@ -362,6 +362,11 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
       to   { opacity: 1; transform: none; }
     }
 
+    /* ── GPS Slide Backgrounds ───────────────────────── */
+    .gps-bg-0 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('images/gps%20slide-1.jpg.jpeg') center/cover no-repeat; }
+    .gps-bg-1 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('images/gps%20slide-2.jpg.jpeg') center/cover no-repeat; }
+    .gps-bg-2 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('images/gps%20slide-3.jpg.jpeg') center/cover no-repeat; }
+
     /* ── GPS Image Slider ─────────────────────────────── */
     .gps-slider {
       position: relative;
@@ -585,8 +590,5 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     this.startGpsAutoplay();
   }
 
-  getSlideBackground(image: string): string {
-    return `linear-gradient(rgba(0,0,0,0.58), rgba(0,0,0,0.62)), url(${image})`;
-  }
 }
 
