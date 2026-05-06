@@ -5,7 +5,10 @@ import { NavService } from '../../services/nav.service';
 import { MutualFundSliderComponent } from '../../components/mutual-fund-slider/mutual-fund-slider.component';
 import { MutualFundPricingComponent } from '../../components/mutual-fund-pricing/mutual-fund-pricing.component';
 import { CtaSectionComponent } from '../../components/cta/cta-section.component';
-import { CtaFinalComponent } from '../../components/cta-final/cta-final.component';
+import { TiltDirective } from '../../directives/tilt.directive';
+import { RevealDirective } from '../../directives/reveal.directive';
+import { ParticleCanvasComponent } from '../../components/particle-canvas/particle-canvas.component';
+import { ReviewsSectionComponent } from '../../components/reviews/reviews-section.component';
 
 @Component({
   selector: 'app-mutual-fund-page',
@@ -15,6 +18,10 @@ import { CtaFinalComponent } from '../../components/cta-final/cta-final.componen
     MutualFundSliderComponent,
     MutualFundPricingComponent,
     CtaSectionComponent,
+    TiltDirective,
+    RevealDirective,
+    ParticleCanvasComponent,
+    ReviewsSectionComponent,
   ],
   template: `
     <!-- Back bar -->
@@ -30,23 +37,25 @@ import { CtaFinalComponent } from '../../components/cta-final/cta-final.componen
 
     <!-- Image Slider Hero -->
     <div class="mf-slider">
+      <app-particle-canvas [count]="40" [lines]="true" [parallax]="0.012"></app-particle-canvas>
+
       <div class="mf-slides-track">
         <div *ngFor="let slide of mfSlides; let i = index"
           class="mf-slide"
           [class.mf-slide-active]="i === currentSlide"
           [ngClass]="'mf-slide-bg-' + i">
           <div class="mf-slide-overlay"></div>
-          <div class="mf-slide-content">
-            <span class="mf-slide-tag">{{ slide.tag }}</span>
-            <h1 class="mf-slide-title">{{ slide.title }}</h1>
-            <p class="mf-slide-desc">{{ slide.desc }}</p>
-            <div class="mf-slide-stats">
-              <div *ngFor="let stat of slide.stats" class="mf-stat">
+          <div class="mf-slide-content" appReveal="up" [revealDelay]="100">
+            <span class="mf-slide-tag" appReveal="fade" [revealDelay]="150">{{ slide.tag }}</span>
+            <h1 class="mf-slide-title" appReveal="up" [revealDelay]="200">{{ slide.title }}</h1>
+            <p class="mf-slide-desc" appReveal="up" [revealDelay]="280">{{ slide.desc }}</p>
+            <div class="mf-slide-stats" appReveal="up" [revealDelay]="360">
+              <div *ngFor="let stat of slide.stats" class="mf-stat" appTilt [tiltMax]="8" [tiltScale]="1.05" [tiltGlow]="'rgba(59,130,246,0.3)'">
                 <span class="mf-stat-val">{{ stat.val }}</span>
                 <span class="mf-stat-label">{{ stat.label }}</span>
               </div>
             </div>
-            <button class="mf-slide-btn" type="button" (click)="nav.openModal()">
+            <button class="mf-slide-btn" type="button" (click)="nav.openModalFor('mf')" appReveal="up" [revealDelay]="440">
               Start Investing
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </button>
@@ -71,14 +80,31 @@ import { CtaFinalComponent } from '../../components/cta-final/cta-final.componen
       <div class="mf-counter">{{ currentSlide + 1 }} / {{ mfSlides.length }}</div>
     </div>
 
+    <!-- Trust bar -->
+    <div class="mf-trust-bar" appReveal="up" [revealDelay]="0">
+      <div class="mf-trust-item" *ngFor="let t of trustItems" appTilt [tiltMax]="6" [tiltScale]="1.04">
+        <span class="mf-trust-icon">{{ t.icon }}</span>
+        <span class="mf-trust-text">{{ t.text }}</span>
+      </div>
+    </div>
+
     <!-- MF Slider (SIP Calculator + Fund Cards) -->
-    <app-mutual-fund-slider (openModal)="nav.openModal()"></app-mutual-fund-slider>
+    <div appReveal="up" [revealDelay]="100">
+      <app-mutual-fund-slider (openModal)="nav.openModalFor('mf')"></app-mutual-fund-slider>
+    </div>
 
     <!-- Pricing -->
-    <app-mutual-fund-pricing></app-mutual-fund-pricing>
+    <div appReveal="up" [revealDelay]="100">
+      <app-mutual-fund-pricing></app-mutual-fund-pricing>
+    </div>
+
+    <!-- Reviews -->
+    <app-reviews-section [productType]="'mf'"></app-reviews-section>
 
     <!-- CTA -->
-    <app-cta-section (openModal)="nav.openModal()"></app-cta-section>
+    <div appReveal="up" [revealDelay]="80">
+      <app-cta-section [product]="'mf'" (openModal)="nav.openModalFor('mf')"></app-cta-section>
+    </div>
   `,
   styles: [`
     /* ── MF Image Slider ──────────────────────────────── */
@@ -92,17 +118,32 @@ import { CtaFinalComponent } from '../../components/cta-final/cta-final.componen
       position: absolute; inset: 0;
       display: flex; align-items: center;
       padding: 0 80px;
-      opacity: 0; transform: scale(1.04);
-      transition: opacity 0.75s cubic-bezier(0.4,0,0.2,1),
-                  transform 0.75s cubic-bezier(0.4,0,0.2,1);
+      opacity: 0; transform: scale(1.06);
+      transition: opacity 0.9s cubic-bezier(0.4,0,0.2,1),
+                  transform 5s cubic-bezier(0.25,0.46,0.45,0.94);
       pointer-events: none;
+      background-attachment: local;
     }
-    .mf-slide-active { opacity: 1; transform: scale(1); pointer-events: auto; }
+    .mf-slide-active {
+      opacity: 1; transform: scale(1); pointer-events: auto;
+    }
 
     /* Real image backgrounds */
-    .mf-slide-bg-0 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('images/mf%20slide-1.jpg.jpg') center/cover no-repeat; }
-    .mf-slide-bg-1 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('images/mf%20slide-2.jpg.webp') center/cover no-repeat; }
-    .mf-slide-bg-2 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('images/mf%20slide-3.jpg.jpg') center/cover no-repeat; }
+    .mf-slide-bg-0 {
+      background:
+        linear-gradient(120deg, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.38) 60%, rgba(0,0,0,0.25) 100%),
+        url('/MF1.jpg') center/cover no-repeat;
+    }
+    .mf-slide-bg-1 {
+      background:
+        linear-gradient(120deg, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.38) 60%, rgba(0,0,0,0.25) 100%),
+        url('/MF2.jpg') center/cover no-repeat;
+    }
+    .mf-slide-bg-2 {
+      background:
+        linear-gradient(120deg, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.38) 60%, rgba(0,0,0,0.25) 100%),
+        url('/MF3.jpg') center/cover no-repeat;
+    }
 
     .mf-slide-overlay {
       position: absolute; inset: 0; z-index: 0;
@@ -299,9 +340,31 @@ import { CtaFinalComponent } from '../../components/cta-final/cta-final.componen
       background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 65%);
     }
 
+    /* ── Trust bar ───────────────────────────────────────── */
+    .mf-trust-bar {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 12px 24px; padding: 28px 32px;
+      background: rgba(10,10,20,0.95);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .mf-trust-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 12px;
+      border: 1px solid rgba(59,130,246,0.15);
+      background: rgba(59,130,246,0.05);
+      cursor: default;
+    }
+    .mf-trust-icon { font-size: 18px; }
+    .mf-trust-text {
+      font-size: 13px; font-weight: 600;
+      color: rgba(255,255,255,0.65);
+    }
+
     @media (max-width: 768px) {
       .mfp-back-bar { padding: 10px 16px; }
       .mfp-hero { min-height: 50vh; padding: 60px 16px; }
+      .mf-trust-bar { padding: 20px 16px; gap: 10px; }
+      .mf-trust-item { padding: 8px 14px; }
     }
   `]
 })
@@ -312,13 +375,22 @@ export class MutualFundPageComponent implements OnInit, OnDestroy {
   currentSlide = 0;
   private timer: any;
 
+  trustItems = [
+    { icon: '🔒', text: 'SEBI Registered' },
+    { icon: '🏦', text: 'AMFI Compliant' },
+    { icon: '💳', text: 'Zero Commission' },
+    { icon: '📊', text: '1000+ Funds' },
+    { icon: '⚡', text: 'Instant KYC' },
+    { icon: '🛡️', text: '256-bit Encryption' },
+  ];
+
   mfSlides = [
     {
       tag: 'SIP Investing',
       title: 'Start Your SIP Journey Today',
-      desc: 'Invest as little as ₹500/month and watch your wealth grow with the power of compounding. SEBI-registered, zero commission.',
+      desc: 'Invest as little as ₹1,000/month and watch your wealth grow with the power of compounding. SEBI-registered, zero commission.',
       stats: [
-        { val: '₹500', label: 'Min SIP Amount' },
+        { val: '₹1,000', label: 'Min SIP Amount' },
         { val: '15%+', label: 'Avg. Returns' },
         { val: '0%', label: 'Commission' },
       ]
@@ -345,13 +417,16 @@ export class MutualFundPageComponent implements OnInit, OnDestroy {
     },
   ];
 
-  ngOnInit(): void { this.startAutoplay(); }
+  ngOnInit(): void {
+    this.nav.product.set('mf');
+    this.startAutoplay();
+  }
   ngOnDestroy(): void { clearInterval(this.timer); }
 
   private startAutoplay(): void {
     this.timer = setInterval(() => {
       this.currentSlide = (this.currentSlide + 1) % this.mfSlides.length;
-    }, 4500);
+    }, 4000);
   }
 
   nextSlide(): void {
