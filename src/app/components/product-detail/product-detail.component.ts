@@ -57,7 +57,7 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
               <h1 class="gps-slide-title">{{ slide.title }}</h1>
               <p class="gps-slide-desc">{{ slide.desc }}</p>
               <div class="gps-slide-btns">
-                <button class="pd-cta-btn pd-cta-cyan" (click)="nav.openModal()" type="button">
+                <button class="pd-cta-btn pd-cta-cyan" (click)="nav.openModalFor('gps')" type="button">
                   Get Started Free
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </button>
@@ -89,13 +89,13 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
         <div class="gps-counter">{{ currentGpsSlide + 1 }} / {{ gpsSlides.length }}</div>
 
       </div>
-      <app-features-section></app-features-section>
-      <app-benefits-section></app-benefits-section>
+      <app-features-section [productType]="'gps'"></app-features-section>
+      <app-benefits-section [productType]="'gps'"></app-benefits-section>
       <app-problem-section></app-problem-section>
       <app-live-tracking-section></app-live-tracking-section>
-      <app-reviews-section></app-reviews-section>
-      <app-pricing-section (openModal)="nav.openModal()"></app-pricing-section>
-      <app-cta-section (openModal)="nav.openModal()"></app-cta-section>
+      <app-reviews-section [productType]="'gps'"></app-reviews-section>
+      <app-pricing-section (openModal)="nav.openModalFor('gps')"></app-pricing-section>
+      <app-cta-section (openModal)="nav.openModalFor('gps')"></app-cta-section>
     </ng-container>
 
     <!-- Mutual Fund product (NavService path — router path uses MutualFundPageComponent) -->
@@ -104,17 +104,20 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
         <div class="pd-hero-inner">
           <span class="pd-tag" style="color:#3B82F6;border-color:rgba(59,130,246,0.3);background:rgba(59,130,246,0.07)">Wealth Management</span>
           <h1 class="pd-heading pd-heading-green">Grow Your Wealth</h1>
-          <p class="pd-sub">SEBI-registered mutual fund investments built for India's fleet operators. SIP plans starting at ₹500/month.</p>
-          <button class="pd-cta-btn pd-cta-green" (click)="nav.openModal()" type="button">
+          <p class="pd-sub">SEBI-registered mutual fund investments built for India's fleet operators. SIP plans starting at ₹1,000/month.</p>
+          <button class="pd-cta-btn pd-cta-green" (click)="nav.openModalFor('mf')" type="button">
             Start Investing Today
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div>
         <div class="pd-hero-glow pd-hero-glow-green" aria-hidden="true"></div>
       </div>
-      <app-mutual-fund-slider (openModal)="nav.openModal()"></app-mutual-fund-slider>
+      <app-mutual-fund-slider (openModal)="nav.openModalFor('mf')"></app-mutual-fund-slider>
+      <app-features-section [productType]="'mf'"></app-features-section>
+      <app-benefits-section [productType]="'mf'"></app-benefits-section>
+      <app-reviews-section [productType]="'mf'"></app-reviews-section>
       <app-mutual-fund-pricing></app-mutual-fund-pricing>
-      <app-cta-section (openModal)="nav.openModal()"></app-cta-section>
+      <app-cta-section [product]="'mf'" (openModal)="nav.openModalFor('mf')"></app-cta-section>
     </ng-container>
 
     <!-- Fastag product -->
@@ -363,9 +366,9 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
     }
 
     /* ── GPS Slide Backgrounds ───────────────────────── */
-    .gps-bg-0 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('images/gps%20slide-1.jpg.jpeg') center/cover no-repeat; }
-    .gps-bg-1 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('images/gps%20slide-2.jpg.jpeg') center/cover no-repeat; }
-    .gps-bg-2 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('images/gps%20slide-3.jpg.jpeg') center/cover no-repeat; }
+    .gps-bg-0 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('/images/gps%20slide-1.jpg.jpeg') center/cover no-repeat; }
+    .gps-bg-1 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('/images/gps%20slide-2.jpg.jpeg') center/cover no-repeat; }
+    .gps-bg-2 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('/images/gps%20slide-3.jpg.jpeg') center/cover no-repeat; }
 
     /* ── GPS Image Slider ─────────────────────────────── */
     .gps-slider {

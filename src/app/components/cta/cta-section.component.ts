@@ -1,5 +1,36 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+
+interface CtaConfig {
+  badge:    string;
+  title:    string;
+  accent:   string;
+  desc:     string;
+  primary:  string;
+  ghost:    string;
+  chips:    string[];
+}
+
+const CTA_CONFIGS: Record<string, CtaConfig> = {
+  gps: {
+    badge:   '14-day free trial · No credit card',
+    title:   'Ready to Run Your Fleet',
+    accent:  'on Live Data?',
+    desc:    'Launch your control center, cut fuel and delay losses, and make every dispatch decision with measurable confidence — starting today.',
+    primary: 'Start 14-Day Trial',
+    ghost:   'Book Live Demo',
+    chips:   ['Fast onboarding — live in 1 day', 'Dedicated support team', 'No long-term lock-in'],
+  },
+  mf: {
+    badge:   'Free Consultation · SEBI Registered',
+    title:   'Ready to Grow Your Wealth',
+    accent:  'with Smart Investments?',
+    desc:    'Start your SIP journey with SEBI-registered mutual funds — zero commission, expert guidance, and transparent returns. As little as ₹1,000/month.',
+    primary: 'Start Investing Now',
+    ghost:   'Get Free Consultation',
+    chips:   ['SEBI & AMFI Registered', 'Zero Commission', '₹1,000/month minimum SIP', 'Instant KYC Online'],
+  },
+};
 
 @Component({
   selector: 'app-cta-section',
@@ -32,24 +63,21 @@ import { Component, EventEmitter, Output } from '@angular/core';
         <!-- Badge -->
         <div class="cta-badge">
           <span class="badge-dot"></span>
-          14-day free trial · No credit card
+          {{ cfg.badge }}
         </div>
 
         <!-- Heading -->
         <h2 class="cta-title">
-          Ready to Run Your Fleet
-          <span class="cta-accent">on Live Data?</span>
+          {{ cfg.title }}
+          <span class="cta-accent">{{ cfg.accent }}</span>
         </h2>
 
-        <p class="cta-desc">
-          Launch your control center, cut fuel and delay losses, and make every
-          dispatch decision with measurable confidence — starting today.
-        </p>
+        <p class="cta-desc">{{ cfg.desc }}</p>
 
         <!-- Buttons -->
         <div class="cta-actions">
           <button type="button" class="btn-primary-cta" (click)="openModal.emit()">
-            Start 14-Day Trial
+            {{ cfg.primary }}
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
               <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -60,13 +88,13 @@ import { Component, EventEmitter, Output } from '@angular/core';
               stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <polygon points="5 3 19 12 5 21 5 3"/>
             </svg>
-            Book Live Demo
+            {{ cfg.ghost }}
           </button>
         </div>
 
         <!-- Trust chips -->
         <div class="cta-trust">
-          <div class="trust-chip" *ngFor="let chip of trustChips">
+          <div class="trust-chip" *ngFor="let chip of cfg.chips">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
               stroke="#22c55e" stroke-width="2.5" stroke-linecap="round">
               <path d="M20 6L9 17l-5-5"/>
@@ -275,7 +303,12 @@ import { Component, EventEmitter, Output } from '@angular/core';
   `],
 })
 export class CtaSectionComponent {
+  @Input() product: 'gps' | 'mf' = 'gps';
   @Output() openModal = new EventEmitter<void>();
+
+  get cfg(): CtaConfig {
+    return CTA_CONFIGS[this.product] ?? CTA_CONFIGS['gps'];
+  }
 
   particles = Array.from({ length: 14 }, (_, i) => ({
     x: Math.random() * 100,
@@ -283,11 +316,4 @@ export class CtaSectionComponent {
     size: Math.random() * 3 + 2,
     delay: (i * 0.4) % 6,
   }));
-
-  trustChips = [
-    'Fast onboarding — live in 1 day',
-    'Dedicated support team',
-    'No long-term lock-in',
-    'SEBI-registered investment partners',
-  ];
 }

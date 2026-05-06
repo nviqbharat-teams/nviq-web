@@ -47,12 +47,36 @@ export interface Service {
   order: number;
 }
 
+export type EnquirySource =
+  | 'contact-form'
+  | 'lead-modal'
+  | 'gps-enquiry'
+  | 'mf-enquiry'
+  | 'fastag-enquiry'
+  | 'drone-enquiry'
+  | 'other';
+
 export interface ContactPayload {
   name: string;
   email: string;
   phone?: string;
   message: string;
-  source?: 'contact-form' | 'lead-modal' | 'other';
+  source?: EnquirySource;
+  productType?: string;
+}
+
+export interface ProductEnquiryPayload {
+  name: string;
+  email: string;
+  phone: string;
+  // GPS-specific optional fields
+  company?:     string;
+  fleetSize?:   string;
+  vehicleType?: string;
+  // MF-specific optional fields
+  budget?:     string;
+  goal?:       string;
+  experience?: string;
 }
 
 // ─── Service ──────────────────────────────────────────────────────────────────
@@ -110,6 +134,49 @@ export class ApiService {
     return this.http.post<{ success: boolean; message: string }>(
       `${this.BASE}/contact`,
       payload
+    ).pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Product-specific enquiry submission.
+   * Routes to /contact with enriched product metadata.
+   * When backend adds dedicated endpoints (/gps, /mutual-fund etc.),
+   * only this method needs updating — no component changes required.
+   */
+  submitProductEnquiry(
+    productType: 'gps' | 'mf' | 'fastag' | 'drone',
+    payload: ProductEnquiryPayload,
+  ): Observable<{ success: boolean; message: string }> {
+    const meta: Record<string, { message: string; source: EnquirySource }> = {
+      gps: {
+        message: '[GPS Enquiry] Interested in GPS Fleet Tracking — Rs 499/vehicle/month.',
+        source:  'gps-enquiry',
+      },
+      mf: {
+        message: '[MF Enquiry] Interested in Mutual Fund investments — SIP from ₹1,000/month.',
+        source:  'mf-enquiry',
+      },
+      fastag: {
+        message: '[FASTag Enquiry] Interested in FASTag fleet management.',
+        source:  'fastag-enquiry',
+      },
+      drone: {
+        message: '[Drone Enquiry] Interested in agricultural drone solutions.',
+        source:  'drone-enquiry',
+      },
+    };
+
+    const { source } = meta[productType];
+    let { message } = meta[productType];
+    if (productType === 'gps' && (payload.company || payload.fleetSize || payload.vehicleType)) {
+      message += ` | Company: ${payload.company ?? '-'} | Fleet Size: ${payload.fleetSize ?? '-'} | Vehicle Type: ${payload.vehicleType ?? '-'}`;
+    }
+    if (productType === 'mf' && (payload.budget || payload.goal || payload.experience)) {
+      message += ` | Budget: ${payload.budget ?? '-'} | Goal: ${payload.goal ?? '-'} | Experience: ${payload.experience ?? '-'}`;
+    }
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.BASE}/contact`,
+      { ...payload, message, source, productType },
     ).pipe(catchError(this.handleError));
   }
 

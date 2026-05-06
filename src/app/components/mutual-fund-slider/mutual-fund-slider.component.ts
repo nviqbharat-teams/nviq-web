@@ -28,6 +28,7 @@ export interface MFSlide {
   highlight?: boolean;
   iconGrad: [string, string];
   glowColor: string;
+  iconPath: string;
 }
 
 @Component({
@@ -50,7 +51,7 @@ export interface MFSlide {
           Fintech × Fleet
         </div>
         <h2 class="mfs-title">
-          Drive with Money, 
+Invest Smart. Grow Wealth.
           <span class="title-accent">Mutual Fund Platform</span>
         </h2>
         <p class="mfs-subtitle">Invest Smartly, Track Easily, Grow Securely</p>
@@ -256,12 +257,16 @@ export interface MFSlide {
               </span>
 
               <!-- Icon -->
-              <div class="slide-icon" [ngClass]="'icon-grad-' + ((i % 7))">
-                <span class="icon-num">{{ String(i + 1).padStart(2, '0') }}</span>
+              <div class="slide-icon"
+                [style.background]="'linear-gradient(135deg,' + slide.iconGrad[0] + ',' + slide.iconGrad[1] + ')'">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path [attr.d]="slide.iconPath"/>
+                </svg>
               </div>
 
               <!-- Tag -->
-              <span class="slide-tag" [ngClass]="'tag-color-' + ((i % 7))">
+              <span class="slide-tag" [ngClass]="'tag-color-' + ((i % 6))">
                 {{ slide.tag }}
               </span>
 
@@ -305,8 +310,8 @@ export interface MFSlide {
             <div class="detail-icon"
               [style.background]="'linear-gradient(135deg,' + selectedSlide.iconGrad[0] + ',' + selectedSlide.iconGrad[1] + ')'">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
-                stroke="white" stroke-width="1.8" stroke-linecap="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path [attr.d]="selectedSlide.iconPath"/>
               </svg>
             </div>
             <span class="detail-tag"
@@ -520,12 +525,9 @@ export interface MFSlide {
       display: flex; align-items: center; justify-content: center;
       margin-bottom: 16px;
       transition: transform 0.3s ease;
+      flex-shrink: 0;
     }
     .slide-card.is-active .slide-icon { transform: scale(1.08) rotate(-3deg); }
-    .icon-num {
-      font-family: var(--font-mono);
-      font-size: 16px; font-weight: 800; color: rgba(255,255,255,0.9);
-    }
 
     .slide-tag {
       display: inline-block;
@@ -904,22 +906,13 @@ export interface MFSlide {
     .sip-invest-btn svg { transition: transform 0.2s ease; }
     .sip-invest-btn:hover svg { transform: translateX(4px); }
 
-    /* ─── Icon & Tag gradient classes (Swiper-clone safe) ── */
-    .icon-grad-0 { background: linear-gradient(135deg, #3B82F6, #2563EB); }
-    .icon-grad-1 { background: linear-gradient(135deg, #0EA5E9, #06B6D4); }
-    .icon-grad-2 { background: linear-gradient(135deg, #8B5CF6, #6366F1); }
-    .icon-grad-3 { background: linear-gradient(135deg, #F59E0B, #EF4444); }
-    .icon-grad-4 { background: linear-gradient(135deg, #F43F5E, #E11D48); }
-    .icon-grad-5 { background: linear-gradient(135deg, #3B82F6, #6366F1); }
-    .icon-grad-6 { background: linear-gradient(135deg, #A855F7, #3B82F6); }
-
+    /* ─── Tag gradient classes ── */
     .tag-color-0 { color: #3B82F6; border-color: #3B82F644; background: #3B82F611; }
-    .tag-color-1 { color: #0EA5E9; border-color: #0EA5E944; background: #0EA5E911; }
-    .tag-color-2 { color: #8B5CF6; border-color: #8B5CF644; background: #8B5CF611; }
-    .tag-color-3 { color: #F59E0B; border-color: #F59E0B44; background: #F59E0B11; }
+    .tag-color-1 { color: #10B981; border-color: #10B98144; background: #10B98111; }
+    .tag-color-2 { color: #F59E0B; border-color: #F59E0B44; background: #F59E0B11; }
+    .tag-color-3 { color: #8B5CF6; border-color: #8B5CF644; background: #8B5CF611; }
     .tag-color-4 { color: #F43F5E; border-color: #F43F5E44; background: #F43F5E11; }
-    .tag-color-5 { color: #3B82F6; border-color: #3B82F644; background: #3B82F611; }
-    .tag-color-6 { color: #A855F7; border-color: #A855F744; background: #A855F711; }
+    .tag-color-5 { color: #0EA5E9; border-color: #0EA5E944; background: #0EA5E911; }
 
     /* ─── Responsive ─────────────────────────────────────  */
     @media (max-width: 900px) {
@@ -959,8 +952,6 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
     { iconGrad: ['#A855F7', '#3B82F6'], glowColor: 'rgba(168,85,247,0.18)' },
   ];
 
-  readonly String = String;
-
   sectionVisible = true;
   selectedSlide!: MFSlide;
 
@@ -983,90 +974,88 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
   slides: MFSlide[] = [
     {
       id: 1,
-      title: 'Start SIP Easily',
-      tag: 'SIP',
+      title: 'SIP Investment',
+      tag: 'Systematic Plan',
       iconGrad: ['#3B82F6', '#2563EB'],
       glowColor: 'rgba(59,130,246,0.18)',
+      iconPath: 'M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15',
       lines: [
-        'Invest small amounts regularly',
-        'Build wealth over time',
+        'Start SIP from just ₹1,000/month',
+        'Auto-debit — never miss a payment',
+        'Power of compounding over time',
       ],
-      details: 'SIP (Systematic Investment Plan) allows disciplined investing through automatic monthly contributions. Harness the power of compounding to grow small amounts into significant wealth over time — with zero stress and maximum returns.',
+      details: 'Systematic Investment Plan (SIP) is the most disciplined way to build wealth. Set it once — our platform auto-debits on your chosen date every month. Even ₹1,000/month invested for 20 years at 12% grows to over ₹9.9 lakhs. Start small, grow big.',
     },
     {
       id: 2,
-      title: 'Track Your Portfolio',
-      tag: 'Analytics',
-      iconGrad: ['#0EA5E9', '#06B6D4'],
-      glowColor: 'rgba(14,165,233,0.18)',
+      title: 'Expected Returns',
+      tag: 'Returns',
+      iconGrad: ['#10B981', '#059669'],
+      glowColor: 'rgba(16,185,129,0.18)',
+      iconPath: 'M23 6l-9.5 9.5-5-5L1 18M17 6h6v6',
       lines: [
-        'Real-time performance tracking',
-        'Smart analytics dashboard',
+        '12–18% annualised returns (equity)',
+        'Performance benchmarked monthly',
+        'Historical data from 3–10 years',
       ],
-      details: 'Monitor every rupee with live charts, NAV updates, and profit/loss breakdowns. Our smart analytics dashboard surfaces insights on risk, diversification, and growth — so you always know exactly where your money stands.',
+      details: 'Top-performing equity mutual funds have consistently delivered 12–18% annualised returns over 5+ year horizons. Our platform shows you real historical returns, risk-adjusted performance scores, and projected growth so you can make informed decisions.',
     },
     {
       id: 3,
-      title: 'Expert Guidance',
-      tag: 'Advisory',
-      iconGrad: ['#8B5CF6', '#6366F1'],
-      glowColor: 'rgba(139,92,246,0.18)',
+      title: 'Risk Level',
+      tag: 'Risk Assessment',
+      iconGrad: ['#F59E0B', '#D97706'],
+      glowColor: 'rgba(245,158,11,0.18)',
+      iconPath: 'M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01',
       lines: [
-        'Connect with financial advisors',
-        'Get personalized investment advice',
+        'Low, Moderate & High risk options',
+        'Risk score for every fund',
+        'Rebalancing alerts when needed',
       ],
-      details: 'Access SEBI-registered advisors who craft personalised strategies based on your income, risk appetite, and goals. From first SIP to retirement planning — expert guidance at every step.',
+      details: 'Every investor has a unique risk appetite. Our risk profiler maps your income, age, and goals to a personalised risk score, then recommends the right mix — debt funds for stability, equity for growth, or hybrid for balance. Rebalancing alerts keep your portfolio on track.',
     },
     {
       id: 4,
-      title: 'Goal-Based Investment',
-      tag: 'Goals',
-      iconGrad: ['#F59E0B', '#EF4444'],
-      glowColor: 'rgba(245,158,11,0.18)',
+      title: 'Wealth Growth',
+      tag: 'Compounding',
+      badge: 'Popular',
+      iconGrad: ['#8B5CF6', '#6366F1'],
+      glowColor: 'rgba(139,92,246,0.18)',
+      iconPath: 'M18 20V10M12 20V4M6 20v-6',
       lines: [
-        'Plan your financial goals',
-        'Achieve milestones faster',
+        '₹5,000/month → ₹1Cr in 25 years',
+        'Goal-based milestone tracking',
+        'Inflation-adjusted projections',
       ],
-      details: 'Define milestones — a car, a house, education, retirement — and our platform maps the right fund mix and SIP amount to hit each target on schedule. Goal tracking keeps you motivated and on course.',
+      details: "The eighth wonder of the world — compounding — works best over time. Use our SIP calculator to visualise how ₹5,000/month grows to ₹1 Crore+ with a 12% return over 25 years. Set retirement, education, or home goals and track your countdown to financial freedom.",
     },
     {
       id: 5,
-      title: 'Secure Investment',
-      tag: 'Secure',
+      title: 'Tax Saving (ELSS)',
+      tag: 'Tax Saving',
       iconGrad: ['#F43F5E', '#E11D48'],
       glowColor: 'rgba(244,63,94,0.18)',
+      iconPath: 'M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82zM7 7h.01',
       lines: [
-        'Fully encrypted platform',
-        'Safe & trusted transactions',
+        'Save up to ₹46,800 in tax (80C)',
+        'Shortest lock-in — only 3 years',
+        'Market-linked returns on ELSS',
       ],
-      details: 'Bank-grade 256-bit AES encryption, two-factor authentication, and SEBI/AMFI compliance ensure your investments and personal data are completely protected. Every transaction is audited and tamper-proof.',
+      details: 'ELSS (Equity Linked Savings Scheme) funds qualify for ₹1.5L deduction under Section 80C — saving you up to ₹46,800 in tax per year. With the shortest lock-in of just 3 years among all 80C instruments and market-linked returns, ELSS is the smartest tax-saving investment.',
     },
     {
       id: 6,
-      title: 'Creator / Advisor Platform',
-      tag: 'Creator',
-      badge: 'New',
-      iconGrad: ['#3B82F6', '#6366F1'],
-      glowColor: 'rgba(37,99,235,0.18)',
+      title: 'Portfolio Management',
+      tag: 'Portfolio',
+      iconGrad: ['#0EA5E9', '#06B6D4'],
+      glowColor: 'rgba(14,165,233,0.18)',
+      iconPath: 'M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z',
       lines: [
-        'Advisors can create portfolios',
-        'Share strategies with users',
-        'Earn through client investments',
+        'Live NAV & returns tracking',
+        'Diversified across 1,000+ funds',
+        'One-click rebalancing',
       ],
-      details: 'Financial advisors and creators can build model portfolios, publish strategies, and earn a revenue share on every client SIP. A marketplace that rewards expertise and helps investors discover trusted guidance.',
-    },
-    {
-      id: 7,
-      title: 'Smart Recommendations',
-      tag: 'AI',
-      badge: 'AI',
-      iconGrad: ['#A855F7', '#3B82F6'],
-      glowColor: 'rgba(168,85,247,0.18)',
-      lines: [
-        'AI-based fund suggestions',
-        'Based on user behavior & goals',
-      ],
-      details: 'Our AI engine analyses your spending patterns, investment history, risk profile, and goals to surface the most relevant fund recommendations — updated in real-time as markets and your life circumstances change.',
+      details: 'Your complete investment dashboard — see all funds, NAV movements, total invested vs. current value, and gain/loss in real-time. Diversify across Large Cap, Mid Cap, Debt, and International funds. One-click rebalancing keeps your allocation aligned with your goals.',
     },
   ];
 
@@ -1084,6 +1073,13 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
 
   private fundToSlide(fund: Fund, index: number): MFSlide {
     const style = this.SLIDE_STYLES[index % this.SLIDE_STYLES.length];
+    const categoryIcons: Record<string, string> = {
+      'Equity':  'M23 6l-9.5 9.5-5-5L1 18M17 6h6v6',
+      'Debt':    'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4',
+      'Hybrid':  'M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z',
+      'ELSS':    'M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82zM7 7h.01',
+      'Index':   'M18 20V10M12 20V4M6 20v-6',
+    };
     return {
       id: index + 1,
       title: fund.fundName,
@@ -1092,9 +1088,11 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
       highlight: fund.isFeatured,
       iconGrad: style.iconGrad,
       glowColor: style.glowColor,
+      iconPath: categoryIcons[fund.category] ?? 'M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15',
       lines: [
-        `Risk: ${fund.risk}`,
+        `Risk Level: ${fund.risk}`,
         `Expected Returns: ${fund.returns}`,
+        `Min SIP: ₹${fund.minSIP}`,
       ],
       details: fund.description,
     };

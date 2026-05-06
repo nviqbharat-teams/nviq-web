@@ -2,8 +2,10 @@
   Component,
   AfterViewInit,
   OnDestroy,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NavService } from '../../services/nav.service';
 
 type TabKey = 'sip' | 'goal';
 
@@ -124,7 +126,7 @@ interface PricingPlan {
           </ul>
 
           <!-- CTA -->
-          <button class="plan-cta" [class.cta-primary]="plan.highlight" type="button">
+          <button class="plan-cta" [class.cta-primary]="plan.highlight" type="button" (click)="nav.openModalFor('mf')">
             {{ plan.cta }}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -553,6 +555,7 @@ interface PricingPlan {
   `],
 })
 export class MutualFundPricingComponent implements AfterViewInit, OnDestroy {
+  nav = inject(NavService);
 
   activeTab: TabKey = 'sip';
   visible = true;

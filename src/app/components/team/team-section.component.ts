@@ -1,13 +1,14 @@
-﻿import { Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 interface Member {
-  name: string;
-  role: string;
-  dept: string;
+  name:     string;
+  role:     string;
+  dept:     string;
   initials: string;
-  grad: string;
+  grad:     [string, string];
   linkedin: string;
+  bio:      string;
 }
 
 @Component({
@@ -16,225 +17,370 @@ interface Member {
   imports: [CommonModule],
   template: `
     <section class="tm-root">
+
+      <!-- Background -->
       <div class="tm-bg" aria-hidden="true">
-        <div class="tm-orb"></div>
+        <div class="tm-orb tm-orb-1"></div>
+        <div class="tm-orb tm-orb-2"></div>
+        <div class="tm-grid-bg"></div>
       </div>
 
       <div class="tm-container">
 
+        <!-- Header -->
         <header class="tm-header">
-          <p class="tm-eyebrow">Our Team</p>
-          <h1 class="tm-title">
-            The People Building<br>
+          <div class="tm-eyebrow">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Meet The Team
+          </div>
+          <h2 class="tm-title">
+            The People Behind<br>
             <span class="tm-accent">NViQ</span>
-          </h1>
+          </h2>
           <p class="tm-sub">
-            A team of engineers, product designers, and fintech experts united by a single goal:
-            making fleet businesses smarter and wealthier.
+            A passionate team of builders, operators, and creators — united by one mission:
+            making India's fleet businesses smarter and wealthier.
           </p>
         </header>
 
+        <!-- Cards -->
         <div class="tm-grid">
           <article
-            class="tm-card"
+            #cardRef
             *ngFor="let m of members; let i = index"
-            [style.animation-delay]="(i * 80) + 'ms'"
+            class="tm-card"
+            [class.visible]="visibleCards[i]"
+            [style.transition-delay]="(i * 100) + 'ms'"
           >
-            <!-- Avatar -->
-            <div class="tm-avatar" [style.background]="m.grad">
-              <span>{{ m.initials }}</span>
+            <!-- Glow border on hover -->
+            <div class="tm-card-glow"
+              [style.background]="'radial-gradient(circle at 50% 0%, ' + m.grad[0] + '22, transparent 65%)'">
             </div>
 
+            <!-- Avatar ring -->
+            <div class="tm-avatar-wrap">
+              <div class="tm-avatar-ring"
+                [style.background]="'conic-gradient(' + m.grad[0] + ', ' + m.grad[1] + ', ' + m.grad[0] + ')'">
+              </div>
+              <div class="tm-avatar"
+                [style.background]="'linear-gradient(135deg,' + m.grad[0] + ',' + m.grad[1] + ')'">
+                <span>{{ m.initials }}</span>
+              </div>
+            </div>
+
+            <!-- Badge -->
+            <span class="tm-badge"
+              [style.color]="m.grad[0]"
+              [style.border-color]="m.grad[0] + '44'"
+              [style.background]="m.grad[0] + '14'">
+              {{ m.dept }}
+            </span>
+
             <!-- Info -->
-            <div class="tm-info">
-              <h3 class="tm-name">{{ m.name }}</h3>
-              <p class="tm-role">{{ m.role }}</p>
-              <span class="tm-dept">{{ m.dept }}</span>
+            <h3 class="tm-name">{{ m.name }}</h3>
+            <p class="tm-role">{{ m.role }}</p>
+            <p class="tm-bio">{{ m.bio }}</p>
+
+            <!-- Divider -->
+            <div class="tm-divider"
+              [style.background]="'linear-gradient(90deg, transparent, ' + m.grad[0] + '55, transparent)'">
             </div>
 
             <!-- Social -->
-            <a [href]="m.linkedin" class="tm-linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <a [href]="m.linkedin" class="tm-social" target="_blank" rel="noopener" aria-label="LinkedIn"
+              [style.--hc]="m.grad[0]">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
               </svg>
               LinkedIn
             </a>
 
-            <!-- Hover bar -->
-            <div class="tm-bar"></div>
+            <!-- Bottom accent bar -->
+            <div class="tm-bar"
+              [style.background]="'linear-gradient(90deg,' + m.grad[0] + ',' + m.grad[1] + ')'">
+            </div>
           </article>
         </div>
 
-        <!-- Join CTA -->
-        <div class="tm-join">
-          <h2>Want to Build With Us?</h2>
-          <p>We're hiring engineers, designers, and product thinkers who care about India's fleet future.</p>
-          <a href="mailto:careers@nviq.in" class="tm-join-btn">
-            View Open Roles
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-        </div>
 
       </div>
     </section>
   `,
   styles: [`
+    /* ── Root ──────────────────────────────────────────── */
     .tm-root {
-      min-height: 100vh;
-      background: #0A0A0A;
-      padding: 100px 32px 80px;
-      position: relative; overflow: hidden;
+      position: relative;
+      padding: 100px 24px 110px;
+      background: #04080f;
+      overflow: hidden;
+      isolation: isolate;
     }
-    .tm-bg { position: absolute; inset: 0; pointer-events: none; }
+
+    /* ── Background ─────────────────────────────────────── */
+    .tm-bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
     .tm-orb {
-      position: absolute; border-radius: 50%; filter: blur(120px);
-      width: 700px; height: 700px;
-      background: radial-gradient(circle, rgba(37,99,235,0.06) 0%, transparent 65%);
-      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      position: absolute; border-radius: 50%;
+      filter: blur(120px); pointer-events: none;
+    }
+    .tm-orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(59,130,246,0.09) 0%, transparent 70%);
+      top: -80px; left: -100px;
+      animation: orbFloat1 20s ease-in-out infinite;
+    }
+    .tm-orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+      bottom: -60px; right: -80px;
+      animation: orbFloat2 24s ease-in-out infinite;
+    }
+    @keyframes orbFloat1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(60px,40px)} }
+    @keyframes orbFloat2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-50px,-40px)} }
+
+    .tm-grid-bg {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,0.025) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
     }
 
-    .tm-container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+    /* ── Container ──────────────────────────────────────── */
+    .tm-container {
+      max-width: 1100px; margin: 0 auto;
+      position: relative; z-index: 2;
+    }
 
-    /* Header */
-    .tm-header { text-align: center; max-width: 640px; margin: 0 auto 64px; }
+    /* ── Header ─────────────────────────────────────────── */
+    .tm-header {
+      text-align: center; max-width: 640px;
+      margin: 0 auto 72px;
+    }
     .tm-eyebrow {
-      display: inline-block;
-      color: #2563EB; font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.16em;
-      border: 1px solid rgba(37,99,235,0.25);
-      background: rgba(37,99,235,0.07);
-      padding: 5px 16px; border-radius: 999px; margin-bottom: 16px;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 18px; border-radius: 999px;
+      border: 1px solid rgba(59,130,246,0.25);
+      background: rgba(59,130,246,0.08);
+      color: #60A5FA; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      margin-bottom: 22px;
     }
     .tm-title {
       font-family: 'Outfit', sans-serif;
-      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
       font-weight: 900; letter-spacing: -0.04em;
-      color: #fff; line-height: 1.05; margin-bottom: 16px;
+      color: #F0F6FF; line-height: 1.06; margin-bottom: 16px;
     }
     .tm-accent {
-      background: linear-gradient(120deg, #2563EB, #60A5FA);
+      background: linear-gradient(120deg, #3B82F6, #818cf8);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .tm-sub { color: rgba(255,255,255,0.45); font-size: 1rem; line-height: 1.7; }
+    .tm-sub {
+      color: #475569; font-size: 1rem; line-height: 1.72;
+    }
 
-    /* Grid */
+    /* ── Grid ───────────────────────────────────────────── */
     .tm-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px; margin-bottom: 64px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 64px;
     }
 
-    /* Card */
+    /* ── Card ───────────────────────────────────────────── */
     .tm-card {
       position: relative;
-      padding: 28px 24px;
-      border-radius: 20px;
+      padding: 36px 24px 28px;
+      border-radius: 24px;
       border: 1px solid rgba(255,255,255,0.07);
-      background: rgba(14,14,14,0.9);
+      background: linear-gradient(160deg, rgba(10,16,30,0.95) 0%, rgba(6,10,20,0.98) 100%);
       display: flex; flex-direction: column; align-items: center;
-      gap: 12px; text-align: center; overflow: hidden;
-      animation: tmCardIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
-      transition: border-color 0.3s ease, transform 0.3s ease;
+      gap: 10px; text-align: center; overflow: hidden;
+      opacity: 0; transform: translateY(32px);
+      transition: opacity 0.6s ease, transform 0.6s ease,
+                  border-color 0.35s ease, box-shadow 0.35s ease;
+      cursor: default;
+    }
+    .tm-card.visible {
+      opacity: 1; transform: translateY(0);
     }
     .tm-card:hover {
-      border-color: rgba(255,255,255,0.14);
-      transform: translateY(-6px);
+      border-color: rgba(59,130,246,0.3);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(59,130,246,0.15);
+      transform: translateY(-8px);
     }
-    @keyframes tmCardIn {
-      from { opacity:0; transform:translateY(20px); }
-      to   { opacity:1; transform:none; }
-    }
+    .tm-card.visible:hover { transform: translateY(-8px); }
 
-    /* Avatar 
+    /* Glow overlay */
+    .tm-card-glow {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 200px; pointer-events: none;
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+    .tm-card:hover .tm-card-glow { opacity: 1; }
+
+    /* ── Avatar ─────────────────────────────────────────── */
+    .tm-avatar-wrap {
+      position: relative;
+      width: 88px; height: 88px;
+      margin-bottom: 4px;
+      flex-shrink: 0;
+    }
+    .tm-avatar-ring {
+      position: absolute; inset: -3px;
+      border-radius: 50%;
+      animation: ringRotate 6s linear infinite;
+      opacity: 0.7;
+    }
+    @keyframes ringRotate { to { transform: rotate(360deg); } }
+    .tm-card:hover .tm-avatar-ring { opacity: 1; }
     .tm-avatar {
-      width: 72px; height: 72px; border-radius: 50%;
+      position: absolute; inset: 3px;
+      border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-family: 'Outfit', sans-serif;
-      font-size: 1.4rem; font-weight: 800; color: #fff;
-      margin-bottom: 4px;
-      transition: transform 0.3s ease;
+      font-size: 1.6rem; font-weight: 900; color: #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
     }
     .tm-card:hover .tm-avatar { transform: scale(1.08); }
 
-    /* Info */
+    /* ── Badge ──────────────────────────────────────────── */
+    .tm-badge {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      padding: 4px 12px; border-radius: 999px;
+      border: 1px solid;
+      transition: all 0.25s ease;
+    }
+    .tm-card:hover .tm-badge { letter-spacing: 0.16em; }
+
+    /* ── Info ───────────────────────────────────────────── */
     .tm-name {
-      font-size: 1.05rem; font-weight: 800; color: #fff; letter-spacing: -0.01em;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem; font-weight: 800;
+      color: #F0F6FF; letter-spacing: -0.02em;
+      line-height: 1.2; margin: 0;
     }
     .tm-role {
-      font-size: 0.88rem; color: rgba(255,255,255,0.55); margin-top: 2px;
+      font-size: 0.82rem; color: #64748B;
+      line-height: 1.4; margin: 0;
     }
-    .tm-dept {
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.12em; color: #2563EB;
-      background: rgba(37,99,235,0.08);
-      border: 1px solid rgba(37,99,235,0.18);
-      padding: 3px 10px; border-radius: 999px;
+    .tm-bio {
+      font-size: 0.79rem; color: #334155;
+      line-height: 1.6; margin: 0;
     }
 
-    /* LinkedIn */
-    .tm-linkedin {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 7px 14px; border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.09);
-      color: rgba(255,255,255,0.45);
-      font-size: 12px; font-weight: 600; text-decoration: none;
-      transition: all 0.2s ease; margin-top: 4px;
+    /* ── Divider ────────────────────────────────────────── */
+    .tm-divider {
+      width: 100%; height: 1px;
+      margin: 4px 0;
     }
-    .tm-linkedin:hover {
-      color: #0A66C2; border-color: rgba(10,102,194,0.35);
+
+    /* ── Social ─────────────────────────────────────────── */
+    .tm-social {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 7px 16px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: #475569; font-size: 12px; font-weight: 600;
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+    .tm-social:hover {
+      color: #0A66C2;
+      border-color: rgba(10,102,194,0.35);
       background: rgba(10,102,194,0.08);
+      transform: translateY(-2px);
     }
 
-    /* Hover bar */
+    /* ── Bottom bar ─────────────────────────────────────── */
     .tm-bar {
       position: absolute; bottom: 0; left: 0;
       height: 2px; width: 0;
-      background: linear-gradient(90deg, #2563EB, transparent);
-      transition: width 0.4s ease;
+      transition: width 0.5s cubic-bezier(0.22,1,0.36,1);
+      border-radius: 999px;
     }
     .tm-card:hover .tm-bar { width: 100%; }
 
-    /* Join CTA */
-    .tm-join {
-      text-align: center; padding: 48px 32px;
-      border-radius: 24px;
-      border: 1px solid rgba(255,255,255,0.07);
-      background: rgba(14,14,14,0.8);
-      backdrop-filter: blur(10px);
+    /* ── Responsive ─────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .tm-grid { grid-template-columns: repeat(2, 1fr); }
     }
-    .tm-join h2 {
-      font-size: 2rem; font-weight: 800; color: #fff;
-      letter-spacing: -0.03em; margin-bottom: 12px;
-    }
-    .tm-join p {
-      color: rgba(255,255,255,0.45); font-size: 1rem;
-      line-height: 1.65; max-width: 500px; margin: 0 auto 28px;
-    }
-    .tm-join-btn {
-      display: inline-flex; align-items: center; gap: 9px;
-      height: 50px; padding: 0 28px; border-radius: 14px;
-      background: linear-gradient(135deg, #2563EB, #1D4ED8);
-      color: #fff; font-size: 14px; font-weight: 700;
-      text-decoration: none;
-      box-shadow: 0 8px 28px rgba(37,99,235,0.3);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-    .tm-join-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 14px 40px rgba(37,99,235,0.45);
-    }
+    @media (max-width: 600px) {
+      .tm-root { padding: 72px 16px 80px; }
+      .tm-grid { grid-template-columns: 1fr; max-width: 360px; margin-left: auto; margin-right: auto; }
 
-    @media (max-width: 900px)  { .tm-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 600px)  { .tm-grid { grid-template-columns: 1fr; } }
-  `]
+    }
+  `],
 })
-export class TeamSectionComponent {
+export class TeamSectionComponent implements AfterViewInit, OnDestroy {
+  @ViewChildren('cardRef') cardRefs!: QueryList<ElementRef<HTMLElement>>;
+
+  visibleCards: boolean[] = [];
+  private obs: IntersectionObserver | null = null;
+
   members: Member[] = [
-    { name: 'Suryaveer Singh',    role: 'CEO & Co-Founder',  dept: 'Leadership',   initials: 'SS', grad: 'linear-gradient(135deg,#2563EB,#1D4ED8)', linkedin: '#' },
-    { name: 'Savita',    role: 'Head of Product',   dept: 'Product',      initials: 'S', grad: 'linear-gradient(135deg,#22c55e,#16a34a)', linkedin: '#' },
-    { name: 'Devi singh',     role: 'Head of Finance',   dept: 'Finance',      initials: 'DS', grad: 'linear-gradient(135deg,#F59E0B,#D97706)', linkedin: '#' },
-    { name: 'Pranjal Sharma',   role: 'Lead Engineer',     dept: 'Engineering',  initials: 'PS', grad: 'linear-gradient(135deg,#A78BFA,#7C3AED)', linkedin: '#' },
-    { name: 'Savita',   role: 'Head of Operations',dept: 'Operations',   initials: 'S', grad: 'linear-gradient(135deg,#FB923C,#EA580C)', linkedin: '#' },
+    {
+      name:     'Devi Singh',
+      role:     'Business Operations & Coordination',
+      dept:     'Operations',
+      initials: 'DS',
+      grad:     ['#3B82F6', '#6366F1'],
+      linkedin: '#',
+      bio:      'Driving smooth operations and cross-team coordination to keep NViQ running at full throttle.',
+    },
+    {
+      name:     'Vinod Joshi',
+      role:     'Professional Photographer & Mentor',
+      dept:     'Creative & Advisory',
+      initials: 'VJ',
+      grad:     ['#F59E0B', '#EF4444'],
+      linkedin: '#',
+      bio:      'Bringing visual storytelling and strategic mentorship to shape the NViQ brand identity.',
+    },
+    {
+      name:     'Devesh Kumar',
+      role:     'Full Stack Developer',
+      dept:     'Engineering',
+      initials: 'DK',
+      grad:     ['#00D4FF', '#6366F1'],
+      linkedin: '#',
+      bio:      'Architecting and building the core platform — from GPS APIs to the investor dashboard.',
+    },
+    {
+      name:     'Pranjal Sharma',
+      role:     'Developer',
+      dept:     'Engineering',
+      initials: 'PS',
+      grad:     ['#A78BFA', '#EC4899'],
+      linkedin: '#',
+      bio:      'Building features, fixing bugs, and making sure every user interaction feels smooth.',
+    },
   ];
+
+  constructor() {
+    this.visibleCards = this.members.map(() => false);
+  }
+
+  ngAfterViewInit(): void {
+    this.obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        const idx = parseInt(e.target.getAttribute('data-tm') || '0', 10);
+        if (e.isIntersecting) this.visibleCards[idx] = true;
+      });
+    }, { threshold: 0.15 });
+
+    this.cardRefs.forEach((ref, i) => {
+      ref.nativeElement.setAttribute('data-tm', String(i));
+      this.obs!.observe(ref.nativeElement);
+    });
+  }
+
+  ngOnDestroy(): void { this.obs?.disconnect(); }
 }

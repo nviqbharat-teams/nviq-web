@@ -2,11 +2,13 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  Input,
   OnDestroy,
   QueryList,
   ViewChildren,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 interface Testimonial {
   name: string;
@@ -19,10 +21,17 @@ interface Testimonial {
   metricLabel?: string;
 }
 
+interface UserReview {
+  name:    string;
+  rating:  number;
+  comment: string;
+  date:    string;
+}
+
 @Component({
   selector: 'app-reviews-section',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <section class="rev-root" id="reviews">
 
@@ -39,10 +48,10 @@ interface Testimonial {
           Testimonials
         </p>
         <h2 class="rev-title">
-          What Operators Say After
-          <span class="title-accent">Switching to NViQ</span>
+          {{ productType === 'mf' ? 'What Investors Say After' : 'What Operators Say After' }}
+          <span class="title-accent">{{ productType === 'mf' ? 'Choosing NViQ Wealth' : 'Switching to NViQ' }}</span>
         </h2>
-        <p class="rev-sub">Trusted by fleet teams across India's logistics and transport sector.</p>
+        <p class="rev-sub">{{ productType === 'mf' ? 'Trusted by investors across India for transparent, zero-commission mutual fund guidance.' : "Trusted by fleet teams across India's logistics and transport sector." }}</p>
       </div>
 
       <!-- Cards grid -->
@@ -101,6 +110,144 @@ interface Testimonial {
             <path d="M20 6L9 17l-5-5"/>
           </svg>
           {{ t }}
+        </div>
+      </div>
+
+      <!-- ── User Review Section ───────────────────────── -->
+      <div class="ur-section">
+
+        <div class="ur-divider" aria-hidden="true"></div>
+
+        <div class="ur-layout">
+
+          <!-- Form -->
+          <div class="ur-form-wrap">
+            <div class="ur-form-header">
+              <h3 class="ur-form-title">Share Your Experience</h3>
+              <p class="ur-form-sub">Your feedback helps others make better decisions.</p>
+            </div>
+
+            <div class="ur-form" [class.ur-submitted]="reviewSubmitted">
+
+              <!-- Success state -->
+              <div *ngIf="reviewSubmitted" class="ur-success">
+                <div class="ur-success-icon">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                    stroke="#22c55e" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+                </div>
+                <p>Thank you! Your review has been added.</p>
+                <button class="ur-add-more" (click)="resetForm()">Add Another</button>
+              </div>
+
+              <!-- Form fields -->
+              <ng-container *ngIf="!reviewSubmitted">
+                <div class="ur-field">
+                  <label class="ur-label">Your Name</label>
+                  <input type="text" [(ngModel)]="reviewForm.name"
+                    placeholder="e.g. Rahul Mehta"
+                    class="ur-input" maxlength="40"/>
+                </div>
+
+                <div class="ur-field">
+                  <label class="ur-label">Rating</label>
+                  <div class="ur-stars">
+                    <button *ngFor="let s of [1,2,3,4,5]" type="button"
+                      class="ur-star"
+                      [class.ur-star-filled]="s <= reviewForm.rating"
+                      [class.ur-star-hover]="s <= hoverRating"
+                      (mouseenter)="hoverRating = s"
+                      (mouseleave)="hoverRating = 0"
+                      (click)="reviewForm.rating = s"
+                      [attr.aria-label]="s + ' star'">
+                      <svg width="24" height="24" viewBox="0 0 24 24"
+                        [attr.fill]="(s <= (hoverRating || reviewForm.rating)) ? '#FBBF24' : 'none'"
+                        [attr.stroke]="(s <= (hoverRating || reviewForm.rating)) ? '#FBBF24' : '#334155'"
+                        stroke-width="1.5">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="ur-field">
+                  <label class="ur-label">Your Review</label>
+                  <textarea [(ngModel)]="reviewForm.comment"
+                    placeholder="Share your experience with NViQ..."
+                    class="ur-textarea" rows="3" maxlength="300"></textarea>
+                  <span class="ur-char-count">{{ reviewForm.comment.length }}/300</span>
+                </div>
+
+                <p *ngIf="reviewError" class="ur-error">{{ reviewError }}</p>
+
+                <button type="button" class="ur-submit" (click)="submitReview()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                  </svg>
+                  Submit Review
+                </button>
+              </ng-container>
+
+            </div>
+          </div>
+
+          <!-- Live Reviews Carousel -->
+          <div class="ur-carousel-wrap"
+            (mouseenter)="pauseCarousel()"
+            (mouseleave)="resumeCarousel()">
+
+            <div class="ur-carousel-header">
+              <span class="ur-live-badge">
+                <span class="ur-live-dot"></span>
+                Live Reviews
+              </span>
+              <span class="ur-review-count">{{ userReviews.length }} review{{ userReviews.length !== 1 ? 's' : '' }}</span>
+            </div>
+
+            <div *ngIf="userReviews.length === 0" class="ur-empty">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
+                stroke="#334155" stroke-width="1.5" stroke-linecap="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              <p>Be the first to leave a review!</p>
+            </div>
+
+            <div class="ur-carousel" *ngIf="userReviews.length > 0">
+              <div class="ur-track"
+                [style.transform]="'translateX(-' + (carouselIndex * 100) + '%)'">
+                <div *ngFor="let r of userReviews" class="ur-review-card">
+                  <div class="ur-review-top">
+                    <div class="ur-review-avatar">{{ getInitials(r.name) }}</div>
+                    <div class="ur-review-meta">
+                      <strong>{{ r.name }}</strong>
+                      <span>{{ r.date }}</span>
+                    </div>
+                  </div>
+                  <div class="ur-review-stars">
+                    <svg *ngFor="let s of [1,2,3,4,5]" width="13" height="13" viewBox="0 0 24 24"
+                      [attr.fill]="s <= r.rating ? '#FBBF24' : 'none'"
+                      [attr.stroke]="s <= r.rating ? '#FBBF24' : '#334155'"
+                      stroke-width="1.5">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  </div>
+                  <p class="ur-review-text">"{{ r.comment }}"</p>
+                </div>
+              </div>
+
+              <!-- Carousel dots -->
+              <div class="ur-carousel-dots">
+                <button *ngFor="let r of userReviews; let i = index"
+                  class="ur-c-dot"
+                  [class.ur-c-dot-active]="i === carouselIndex"
+                  (click)="carouselIndex = i">
+                </button>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
 
@@ -302,15 +449,267 @@ interface Testimonial {
     /* ─── Responsive ─────────────────────────────────────  */
     @media (max-width: 1024px) { .rev-grid { grid-template-columns: repeat(2,1fr); } }
     @media (max-width: 640px)  { .rev-root { padding: 72px 16px 56px; } .rev-grid { grid-template-columns: 1fr; } }
+
+    /* ─── User Review Section ───────────────────────────── */
+    .ur-section {
+      position: relative; z-index: 2;
+      max-width: 1120px; margin: 0 auto;
+    }
+
+    .ur-divider {
+      height: 1px; margin: 48px 0;
+      background: linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent);
+    }
+
+    .ur-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ─── Form ──────────────────────────────────────────── */
+    .ur-form-header { margin-bottom: 20px; }
+    .ur-form-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem; font-weight: 800;
+      color: var(--text-primary); margin: 0 0 6px;
+      letter-spacing: -0.02em;
+    }
+    .ur-form-sub { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
+
+    .ur-form {
+      background: linear-gradient(160deg, rgba(12,18,32,0.95) 0%, rgba(8,13,26,0.98) 100%);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px; padding: 28px 24px;
+      display: flex; flex-direction: column; gap: 18px;
+    }
+
+    .ur-field { display: flex; flex-direction: column; gap: 7px; }
+    .ur-label {
+      font-size: 11.5px; font-weight: 700; color: #94A3B8;
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    .ur-input, .ur-textarea {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 12px; padding: 12px 16px;
+      color: #F0F6FF; font-size: 14px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      outline: none; width: 100%; box-sizing: border-box;
+      font-family: inherit;
+    }
+    .ur-input::placeholder, .ur-textarea::placeholder { color: #334155; }
+    .ur-input:focus, .ur-textarea:focus {
+      border-color: rgba(99,102,241,0.45);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.08);
+    }
+    .ur-textarea { resize: none; line-height: 1.6; }
+    .ur-char-count {
+      font-size: 11px; color: #334155; text-align: right; margin-top: -4px;
+    }
+
+    /* Stars */
+    .ur-stars { display: flex; gap: 4px; }
+    .ur-star {
+      background: none; border: none; padding: 2px;
+      cursor: pointer; transition: transform 0.15s ease;
+    }
+    .ur-star:hover { transform: scale(1.15); }
+
+    .ur-error { font-size: 12px; color: #f87171; margin: -8px 0; }
+
+    .ur-submit {
+      display: inline-flex; align-items: center; gap: 9px;
+      height: 48px; padding: 0 24px; border-radius: 12px; border: none;
+      background: linear-gradient(135deg, #6366F1, #3B82F6);
+      color: #fff; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 6px 20px rgba(99,102,241,0.25);
+      align-self: flex-start;
+    }
+    .ur-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(99,102,241,0.38);
+    }
+
+    /* Success state */
+    .ur-success {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 14px; padding: 20px 0; text-align: center;
+    }
+    .ur-success-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.25);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ur-success p { color: #94A3B8; font-size: 14px; margin: 0; }
+    .ur-add-more {
+      background: none; border: 1px solid rgba(255,255,255,0.1);
+      color: #64748B; font-size: 13px; font-weight: 600;
+      padding: 8px 20px; border-radius: 10px; cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ur-add-more:hover { color: #F0F6FF; border-color: rgba(255,255,255,0.2); }
+
+    /* ─── Live Carousel ─────────────────────────────────── */
+    .ur-carousel-wrap {
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    .ur-carousel-header {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .ur-live-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 5px 14px; border-radius: 999px;
+      border: 1px solid rgba(34,197,94,0.25);
+      background: rgba(34,197,94,0.07);
+      color: #22c55e; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .ur-live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #22c55e;
+      animation: livePulse 1.8s ease-in-out infinite;
+    }
+    @keyframes livePulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+      50%      { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+    }
+    .ur-review-count { font-size: 12px; color: #334155; font-weight: 600; }
+
+    .ur-empty {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px; padding: 48px 24px; text-align: center;
+      background: rgba(255,255,255,0.02);
+      border: 1px dashed rgba(255,255,255,0.07);
+      border-radius: 20px;
+    }
+    .ur-empty p { color: #334155; font-size: 13px; margin: 0; }
+
+    .ur-carousel {
+      overflow: hidden; border-radius: 20px; position: relative;
+    }
+    .ur-track {
+      display: flex;
+      transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .ur-review-card {
+      min-width: 100%; padding: 28px 24px;
+      background: linear-gradient(160deg, rgba(12,18,32,0.95) 0%, rgba(8,13,26,0.98) 100%);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      display: flex; flex-direction: column; gap: 14px;
+      box-sizing: border-box;
+      animation: ur-card-in 0.4s ease both;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .ur-review-card:hover {
+      border-color: rgba(99,102,241,0.3);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+    @keyframes ur-card-in {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .ur-review-top { display: flex; align-items: center; gap: 12px; }
+    .ur-review-avatar {
+      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #6366F1, #3B82F6);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 14px; font-weight: 800; color: #fff;
+    }
+    .ur-review-meta strong {
+      display: block; color: var(--text-primary); font-size: 14px; font-weight: 700;
+    }
+    .ur-review-meta span {
+      display: block; color: var(--text-muted); font-size: 11px; margin-top: 2px;
+    }
+
+    .ur-review-stars { display: flex; gap: 3px; }
+
+    .ur-review-text {
+      color: rgba(226,232,240,0.82); font-size: 0.92rem;
+      line-height: 1.7; margin: 0; font-style: italic;
+    }
+
+    .ur-carousel-dots {
+      display: flex; justify-content: center; gap: 7px; padding-top: 14px;
+    }
+    .ur-c-dot {
+      width: 7px; height: 7px; border-radius: 999px;
+      background: rgba(255,255,255,0.2); border: none; cursor: pointer; padding: 0;
+      transition: width 0.3s ease, background 0.3s ease;
+    }
+    .ur-c-dot-active { width: 22px; background: #6366F1; }
+
+    /* ─── Responsive ─────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .ur-layout { grid-template-columns: 1fr; }
+    }
   `],
 })
 export class ReviewsSectionComponent implements AfterViewInit, OnDestroy {
+  @Input() productType: 'gps' | 'mf' = 'gps';
   @ViewChildren('cardRef') cardRefs!: QueryList<ElementRef<HTMLElement>>;
 
   visibleCards: boolean[] = [true, true, true];
   private obs: IntersectionObserver | null = null;
 
-  testimonials: Testimonial[] = [
+  get testimonials(): Testimonial[] {
+    return this.productType === 'mf' ? this.mfTestimonials : this.gpsTestimonials;
+  }
+
+  get trustItems(): string[] {
+    return this.productType === 'mf' ? this.mfTrustItems : this.gpsTrustItems;
+  }
+
+  mfTestimonials: Testimonial[] = [
+    {
+      name: 'Priya Nair',
+      role: 'Software Engineer',
+      company: 'Bengaluru',
+      initials: 'PN',
+      avatarGrad: ['#6366F1', '#00D4FF'],
+      quote: 'I started a ₹5,000 SIP through NViQ Wealth and the onboarding was seamless. The goal tracker shows exactly how close I am to my home down-payment target — it keeps me motivated.',
+      metric: '₹5K',
+      metricLabel: 'Monthly SIP',
+    },
+    {
+      name: 'Karan Mehta',
+      role: 'Business Owner',
+      company: 'Mumbai',
+      initials: 'KM',
+      avatarGrad: ['#10B981', '#6366F1'],
+      quote: 'The ELSS fund recommendation saved me ₹46,000 in taxes last year while my portfolio grew 14%. Zero commission and a real advisor call every quarter — I wish I had started sooner.',
+      metric: '₹46K',
+      metricLabel: 'Tax Saved',
+    },
+    {
+      name: 'Sunita Reddy',
+      role: 'Doctor',
+      company: 'Hyderabad',
+      initials: 'SR',
+      avatarGrad: ['#F59E0B', '#EF4444'],
+      quote: 'Switching from my old broker was the best financial decision I made. NViQ Wealth is transparent, the returns are clearly displayed, and I never feel like I\'m being pushed into the wrong fund.',
+      metric: '14.2%',
+      metricLabel: '3-yr CAGR',
+    },
+  ];
+
+  mfTrustItems = [
+    'SEBI & AMFI Registered',
+    'Zero Commission on all funds',
+    '₹1,000/month minimum SIP',
+    'Instant KYC — fully online',
+  ];
+
+  gpsTestimonials: Testimonial[] = [
     {
       name: 'Rohit Sharma',
       role: 'Fleet Manager',
@@ -343,15 +742,68 @@ export class ReviewsSectionComponent implements AfterViewInit, OnDestroy {
     },
   ];
 
-  trustItems = [
+  gpsTrustItems = [
     'Trusted by 1,000+ fleet operators',
     'Average 4.9 / 5 rating',
     'Zero-complaint onboarding',
     'Live support — 7 days a week',
   ];
 
+  /* ── User Reviews ─────────────────────────────────── */
+  userReviews: UserReview[] = [];
+  carouselIndex = 0;
+  hoverRating   = 0;
+  reviewSubmitted = false;
+  reviewError     = '';
+  private carouselTimer: any;
+  private carouselPaused = false;
+
+  reviewForm = { name: '', rating: 0, comment: '' };
+
+  submitReview(): void {
+    const { name, rating, comment } = this.reviewForm;
+    if (!name.trim()) { this.reviewError = 'Please enter your name.'; return; }
+    if (rating === 0) { this.reviewError = 'Please select a star rating.'; return; }
+    if (!comment.trim() || comment.trim().length < 5) {
+      this.reviewError = 'Please write at least a short review.'; return;
+    }
+    this.reviewError = '';
+    const now = new Date();
+    this.userReviews.push({
+      name:    name.trim(),
+      rating,
+      comment: comment.trim(),
+      date:    now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+    });
+    this.carouselIndex = this.userReviews.length - 1;
+    this.reviewSubmitted = true;
+  }
+
+  resetForm(): void {
+    this.reviewForm = { name: '', rating: 0, comment: '' };
+    this.reviewSubmitted = false;
+    this.reviewError = '';
+    this.hoverRating = 0;
+  }
+
+  getInitials(name: string): string {
+    return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  }
+
+  pauseCarousel(): void  { this.carouselPaused = true; }
+  resumeCarousel(): void { this.carouselPaused = false; }
+
+  private startCarousel(): void {
+    this.carouselTimer = setInterval(() => {
+      if (!this.carouselPaused && this.userReviews.length > 1) {
+        this.carouselIndex = (this.carouselIndex + 1) % this.userReviews.length;
+      }
+    }, 2000);
+  }
+
   ngAfterViewInit(): void {
     setTimeout(() => { this.visibleCards = this.visibleCards.map(() => true); }, 80);
+    this.startCarousel();
 
     this.obs = new IntersectionObserver(
       (entries) => {
@@ -368,5 +820,8 @@ export class ReviewsSectionComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void { this.obs?.disconnect(); }
+  ngOnDestroy(): void {
+    this.obs?.disconnect();
+    clearInterval(this.carouselTimer);
+  }
 }

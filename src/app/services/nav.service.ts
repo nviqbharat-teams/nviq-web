@@ -15,6 +15,13 @@ export class NavService {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
   }
 
+  /** Open modal and pin which product context it belongs to. */
+  openModalFor(product: ProductKey): void {
+    this.product.set(product);
+    this.modalOpen.set(true);
+  }
+
+  /** Generic open — keeps current product context (use openModalFor when possible). */
   openModal(): void  { this.modalOpen.set(true);  }
   closeModal(): void { this.modalOpen.set(false); }
 }

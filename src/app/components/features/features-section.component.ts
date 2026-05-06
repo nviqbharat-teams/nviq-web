@@ -1,5 +1,5 @@
 import {
-  AfterViewInit, Component, ElementRef,
+  AfterViewInit, Component, ElementRef, Input,
   OnDestroy, QueryList, ViewChildren
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -22,11 +22,12 @@ interface FeatureCard {
       <div class="fs-container">
 
         <header class="fs-header">
-          <p class="fs-eyebrow">Fleet Value</p>
-          <h2 class="fs-title">What We Deliver<br><span class="fs-accent">to Your Fleet</span></h2>
+          <p class="fs-eyebrow">{{ productType === 'mf' ? 'Investment Value' : 'Fleet Value' }}</p>
+          <h2 class="fs-title">What We Deliver<br><span class="fs-accent">{{ productType === 'mf' ? 'to Your Portfolio' : 'to Your Fleet' }}</span></h2>
           <p class="fs-sub">
-            A focused operating layer that gives your team clear visibility,
-            safer decisions, and stronger control every day.
+            {{ productType === 'mf'
+              ? 'Expert-guided mutual fund solutions built to grow your wealth, minimise tax burden, and align with your financial goals.'
+              : 'A focused operating layer that gives your team clear visibility, safer decisions, and stronger control every day.' }}
           </p>
         </header>
 
@@ -195,31 +196,67 @@ interface FeatureCard {
   `],
 })
 export class FeaturesSectionComponent implements AfterViewInit, OnDestroy {
+  @Input() productType: 'gps' | 'mf' = 'gps';
   @ViewChildren('cardRef') cardRefs!: QueryList<ElementRef<HTMLElement>>;
 
   visibleCards: boolean[] = [];
   private cardEls: HTMLElement[] = [];
   private obs: IntersectionObserver | null = null;
 
-  features: FeatureCard[] = [
+  get features(): FeatureCard[] {
+    return this.productType === 'mf' ? this.mfFeatures : this.gpsFeatures;
+  }
+
+  mfFeatures: FeatureCard[] = [
+    {
+      icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z M17 3.34A10 10 0 1 1 2.06 10.99',
+      iconColor: '#38bdf8', glow: 'rgba(56,189,248,0.1)',
+      title: 'SIP Automation',
+      description: 'Set up systematic investment plans once and let compounding do the heavy lifting — no manual intervention needed.',
+      bullets: ['Auto-debit on your chosen date', 'Pause or modify anytime', 'Step-up SIP for rising income'],
+    },
+    {
+      icon: 'M23 6l-9.5 9.5-5-5L1 18M17 6h6v6',
+      iconColor: '#34d399', glow: 'rgba(52,211,153,0.1)',
+      title: 'Goal-Based Planning',
+      description: 'Map every rupee to a life goal — retirement, education, or home — and track progress in real time.',
+      bullets: ['Retirement & education calculators', 'Goal progress dashboard', 'Rebalancing alerts when off-track'],
+    },
+    {
+      icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4',
+      iconColor: '#a78bfa', glow: 'rgba(167,139,250,0.1)',
+      title: 'Risk Management',
+      description: 'Personalised risk profiling matches you to the right funds — so your portfolio never keeps you up at night.',
+      bullets: ['Risk appetite questionnaire', 'Volatility-adjusted allocation', 'Downside protection strategies'],
+    },
+    {
+      icon: 'M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82zM7 7h.01',
+      iconColor: '#fb923c', glow: 'rgba(251,146,60,0.1)',
+      title: 'Tax Optimisation (ELSS)',
+      description: 'Save up to ₹46,800 in taxes annually while building long-term wealth through ELSS equity funds.',
+      bullets: ['₹1.5L deduction under Sec 80C', 'Shortest 3-year lock-in among 80C', 'Equity-linked growth potential'],
+    },
+  ];
+
+  gpsFeatures: FeatureCard[] = [
     {
       icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z M12 5v2M12 17v2M5 12H3M21 12h-2',
       iconColor: '#38bdf8', glow: 'rgba(56,189,248,0.1)',
-      title: 'Essential Tracking',
+      title: 'Smart Tracking',
       description: 'Always-on location visibility with clean route history to keep operations grounded.',
       bullets: ['Live GPS position every 10 seconds','Full route history with timestamps','Geofence alerts for boundary violations'],
     },
     {
       icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4',
       iconColor: '#34d399', glow: 'rgba(52,211,153,0.1)',
-      title: 'Advanced Tracking',
+      title: 'Business Summary',
       description: 'Route intelligence and behavioral context to reduce delays and improve utilization.',
       bullets: ['Driver behavior scoring — speed, braking, idling','Smart route deviation detection','Trip efficiency & utilization analytics'],
     },
     {
       icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z',
       iconColor: '#a78bfa', glow: 'rgba(167,139,250,0.1)',
-      title: 'Intelligent Tracking',
+      title: 'Drive Behaviour',
       description: 'Smart signal interpretation that helps teams respond faster to live fleet conditions.',
       bullets: ['AI anomaly detection on sensor data','Predictive maintenance alerts','Real-time exception dashboard'],
     },

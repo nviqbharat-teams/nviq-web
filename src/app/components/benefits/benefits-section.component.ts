@@ -1,5 +1,5 @@
 import {
-  AfterViewInit, Component, ElementRef, NgZone,
+  AfterViewInit, Component, ElementRef, Input, NgZone,
   OnDestroy, QueryList, ViewChildren
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -35,12 +35,13 @@ interface Benefit {
             Why NViQ
           </p>
           <h2 class="ben-title">
-            Built for Fleet Operators<br>
-            <span class="ben-accent">Who Think Ahead</span>
+            {{ productType === 'mf' ? 'Built for Investors' : 'Built for Fleet Operators' }}<br>
+            <span class="ben-accent">{{ productType === 'mf' ? 'Who Think Long-Term' : 'Who Think Ahead' }}</span>
           </h2>
           <p class="ben-sub">
-            Every feature is built around reducing cost, eliminating guesswork,
-            and giving your team a measurable edge.
+            {{ productType === 'mf'
+              ? 'Every feature is designed to maximise returns, cut tax burden, and give you total clarity over your financial future.'
+              : 'Every feature is built around reducing cost, eliminating guesswork, and giving your team a measurable edge.' }}
           </p>
         </header>
 
@@ -208,6 +209,7 @@ interface Benefit {
   `]
 })
 export class BenefitsSectionComponent implements AfterViewInit, OnDestroy {
+  @Input() productType: 'gps' | 'mf' = 'gps';
   @ViewChildren('cardRef') cardRefs!: QueryList<ElementRef<HTMLElement>>;
 
   visibleCards: boolean[] = [];
@@ -215,7 +217,38 @@ export class BenefitsSectionComponent implements AfterViewInit, OnDestroy {
   private obs: IntersectionObserver | null = null;
   private cardEls: HTMLElement[] = [];
 
-  benefits: Benefit[] = [
+  get benefits(): Benefit[] {
+    return this.productType === 'mf' ? this.mfBenefits : this.gpsBenefits;
+  }
+
+  mfBenefits: Benefit[] = [
+    {
+      iconPath: 'M23 6l-9.5 9.5-5-5L1 18M17 6h6v6',
+      iconColor: '#00D4FF', glow: 'rgba(0,212,255,0.1)',
+      title: 'Portfolio Returns', desc: 'Equity mutual funds have historically delivered 12–15% CAGR over 10+ years — well ahead of FDs and savings accounts.',
+      stat: '14', statLabel: 'Avg. 10-yr CAGR %', statTarget: 14, statSuffix: '%'
+    },
+    {
+      iconPath: 'M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82zM7 7h.01',
+      iconColor: '#34D399', glow: 'rgba(52,211,153,0.1)',
+      title: 'Tax Savings (ELSS)', desc: 'ELSS funds let you claim up to ₹1.5L deduction under Sec 80C — saving up to ₹46,800 in tax every financial year.',
+      stat: '46800', statLabel: '₹ Max Tax Saved/yr', statTarget: 46800, statSuffix: ''
+    },
+    {
+      iconPath: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
+      iconColor: '#A78BFA', glow: 'rgba(167,139,250,0.1)',
+      title: 'Expert Guidance', desc: 'SEBI-registered advisors review your portfolio quarterly and recommend rebalancing to keep you on track for every goal.',
+      stat: '5K+', statLabel: 'Investors Guided', statTarget: 5000, statSuffix: '+'
+    },
+    {
+      iconPath: 'M12 2l8 4v6c0 5-3.3 8.6-8 10-4.7-1.4-8-5-8-10V6l8-4zM9.2 12.4l2 2 3.6-4',
+      iconColor: '#FB923C', glow: 'rgba(251,146,60,0.1)',
+      title: 'Secure Platform', desc: 'Bank-grade 256-bit encryption, SEBI & AMFI registration, and 2FA protect every transaction and document.',
+      stat: '99.9', statLabel: '% Uptime SLA', statTarget: 99.9, statSuffix: '%'
+    },
+  ];
+
+  gpsBenefits: Benefit[] = [
     {
       iconPath: 'M12 21s6-5.2 6-10a6 6 0 1 0-12 0c0 4.8 6 10 6 10zM12 11m-2 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0',
       iconColor: '#00D4FF', glow: 'rgba(0,212,255,0.1)',

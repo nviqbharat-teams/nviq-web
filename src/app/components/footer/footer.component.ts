@@ -1,6 +1,7 @@
-﻿import { Component } from '@angular/core';
+﻿import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { NavService } from '../../services/nav.service';
 
 @Component({
   selector: 'app-footer',
@@ -26,9 +27,7 @@ import { RouterLink } from '@angular/router';
               </span>
               <span>NV<span style="color:#3B82F6">i</span>Q</span>
             </a>
-            <p class="f-tagline">
-              Drive with Data. Real-time GPS intelligence for safer, faster, and more profitable fleet operations.
-            </p>
+            <p class="f-tagline">{{ isMF ? mfContent.tagline : gpsContent.tagline }}</p>
             <div class="f-socials">
               <a href="#" class="f-social" aria-label="LinkedIn">in</a>
               <a href="#" class="f-social" aria-label="X">x</a>
@@ -38,12 +37,21 @@ import { RouterLink } from '@angular/router';
 
           <div class="footer-links">
             <div class="f-col">
-              <h4>Product</h4>
-              <a routerLink="/services">Live GPS Tracking</a>
-              <a routerLink="/services">Smart Alerts</a>
-              <a routerLink="/services">Route Analytics</a>
-              <a routerLink="/services">Fuel Intelligence</a>
-              <a routerLink="/services">API Access</a>
+              <h4>{{ isMF ? 'Invest' : 'Product' }}</h4>
+              <ng-container *ngIf="!isMF">
+                <a routerLink="/services">Live GPS Tracking</a>
+                <a routerLink="/services">Smart Alerts</a>
+                <a routerLink="/services">Route Analytics</a>
+                <a routerLink="/services">Fuel Intelligence</a>
+                <a routerLink="/services">API Access</a>
+              </ng-container>
+              <ng-container *ngIf="isMF">
+                <a routerLink="/mutual-fund">SIP Investment</a>
+                <a routerLink="/mutual-fund">ELSS Tax Saving</a>
+                <a routerLink="/mutual-fund">Portfolio Tracking</a>
+                <a routerLink="/mutual-fund">Risk Assessment</a>
+                <a routerLink="/mutual-fund">Fund Comparison</a>
+              </ng-container>
             </div>
             <div class="f-col">
               <h4>Company</h4>
@@ -66,10 +74,10 @@ import { RouterLink } from '@angular/router';
 
         <div class="footer-cta-banner">
           <div class="fcta-left">
-            <h3>Ready to run your fleet on data?</h3>
-            <p>Start your 14-day trial and bring every dispatch decision on one live dashboard.</p>
+            <h3>{{ isMF ? mfContent.ctaTitle : gpsContent.ctaTitle }}</h3>
+            <p>{{ isMF ? mfContent.ctaDesc : gpsContent.ctaDesc }}</p>
           </div>
-          <a routerLink="/contact" class="fcta-btn">Start Free Trial -></a>
+          <a routerLink="/contact" class="fcta-btn">{{ isMF ? mfContent.ctaBtn : gpsContent.ctaBtn }} -></a>
         </div>
 
         <div class="footer-bottom">
@@ -296,4 +304,25 @@ import { RouterLink } from '@angular/router';
     }
   `]
 })
-export class FooterComponent {}
+export class FooterComponent {
+  private nav    = inject(NavService);
+  private router = inject(Router);
+
+  get isMF(): boolean {
+    return this.router.url.includes('mutual-fund') || this.nav.product() === 'mf';
+  }
+
+  gpsContent = {
+    tagline: 'Drive with Data. Real-time GPS intelligence for safer, faster, and more profitable fleet operations.',
+    ctaTitle: 'Ready to run your fleet on data?',
+    ctaDesc: 'Start your 14-day trial and bring every dispatch decision on one live dashboard.',
+    ctaBtn: 'Start Free Trial',
+  };
+
+  mfContent = {
+    tagline: 'Invest with Confidence. SEBI-registered mutual fund guidance for your financial goals.',
+    ctaTitle: 'Start your SIP journey today.',
+    ctaDesc: 'Zero commission, expert guidance, and ₹1,000/month minimum — invest in India\'s top funds.',
+    ctaBtn: 'Get Free Consultation',
+  };
+}

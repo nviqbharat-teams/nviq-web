@@ -1,32 +1,60 @@
-﻿import { Component } from '@angular/core';
+import {
+  Component, OnInit, OnDestroy, NgZone
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TiltDirective }         from '../../directives/tilt.directive';
+import { RevealDirective }       from '../../directives/reveal.directive';
+import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.component';
 
 @Component({
   selector: 'app-about-section',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TiltDirective, RevealDirective, ParticleCanvasComponent],
   template: `
+    <!-- ══ ABOUT HERO ════════════════════════════════════ -->
+    <section class="ab-hero" aria-label="About NViQ">
+      <div class="ab-hero-left">
+        <span class="ab-hero-tag">About NViQ</span>
+        <h1 class="ab-hero-title">About <span class="ab-hero-accent">Us</span></h1>
+        <div class="ab-hero-divider"></div>
+        <p class="ab-hero-sub">We are more than just a team,<br>we are a family.</p>
+        <p class="ab-hero-desc">We work together with passion and dedication to deliver the best solutions and build lasting relationships.</p>
+        <div class="ab-hero-chips">
+          <span class="ab-chip">Founded 2026</span>
+          <span class="ab-chip">SEBI Registered</span>
+          <span class="ab-chip">Pan-India</span>
+        </div>
+      </div>
+      <div class="ab-hero-right">
+        <div class="ab-hero-img-wrap">
+          <img src="/images/about%20slide.jpg.png" alt="NViQ Team" class="ab-hero-img" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ ABOUT CONTENT ══════════════════════════════════ -->
     <section class="ab-root">
       <div class="ab-bg" aria-hidden="true">
-        <div class="ab-orb ab-orb-1"></div>
-        <div class="ab-orb ab-orb-2"></div>
+        <div class="ab-orb ab-orb-1 float-y"></div>
+        <div class="ab-orb ab-orb-2 float-y delay-300"></div>
+        <div class="ab-grid-bg"></div>
       </div>
 
       <div class="ab-container">
 
         <!-- Header -->
-        <header class="ab-header">
+        <header class="ab-header" appReveal="up">
           <p class="ab-eyebrow">About NViQ</p>
-          <h1 class="ab-title">
+          <h2 class="ab-title">
             Redefining How India's<br>
             <span class="ab-accent">Fleets Operate & Invest</span>
-          </h1>
+          </h2>
         </header>
 
         <!-- Mission block -->
         <div class="ab-mission">
-          <div class="ab-mission-text">
-            <h2>Our Mission</h2>
+          <div class="ab-mission-text" appReveal="left" [revealDelay]="80">
+            <h3>Our Mission</h3>
             <p>
               NViQ is India's first unified Fleet Intelligence + Fintech platform. We believe
               fleet operators shouldn't have to choose between operational excellence and financial growth.
@@ -34,12 +62,15 @@ import { CommonModule } from '@angular/common';
               — the data tools and investment infrastructure previously only available to the biggest players.
             </p>
             <p>
-              Founded in 2024, we're building at the intersection of GPS technology,
+              Founded in 2026, we're building at the intersection of GPS technology,
               AI-powered analytics, and SEBI-registered investment management — all in one platform
               that works on day one without changing how you operate.
             </p>
           </div>
-          <div class="ab-mission-stats">
+
+          <!-- Stats card with 3D tilt -->
+          <div class="ab-mission-stats glass-dark" appTilt [tiltMax]="8" [tiltGlow]="'rgba(59,130,246,0.2)'"
+            appReveal="right" [revealDelay]="160">
             <div class="ab-stat" *ngFor="let s of stats">
               <strong [style.color]="s.color">{{ s.val }}</strong>
               <span>{{ s.label }}</span>
@@ -48,19 +79,40 @@ import { CommonModule } from '@angular/common';
         </div>
 
         <!-- Values -->
-        <div class="ab-values-header">
-          <h2>What We Stand For</h2>
+        <div class="ab-values-header" appReveal="up" [revealDelay]="60">
+          <h3>What We Stand For</h3>
         </div>
         <div class="ab-values">
-          <div class="ab-value" *ngFor="let v of values">
+          <div class="ab-value glass-dark" *ngFor="let v of values; let i = index"
+            appTilt [tiltMax]="10" [tiltGlow]="v.color + '30'"
+            appReveal="up" [revealDelay]="i * 80">
             <div class="ab-value-icon" [style.background]="v.glow" [style.border-color]="v.color + '33'">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
                 [attr.stroke]="v.color" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path [attr.d]="v.icon"/>
               </svg>
             </div>
-            <h3>{{ v.title }}</h3>
+            <h4>{{ v.title }}</h4>
             <p>{{ v.desc }}</p>
+          </div>
+        </div>
+
+        <!-- Timeline / Milestones -->
+        <div class="ab-timeline-wrap" appReveal="up" [revealDelay]="80">
+          <div class="ab-timeline-header">
+            <h3>Our Journey</h3>
+          </div>
+          <div class="ab-timeline">
+            <div class="ab-tl-item" *ngFor="let m of milestones; let i = index"
+              appReveal="up" [revealDelay]="i * 120"
+              [class.ab-tl-right]="i % 2 === 1">
+              <div class="ab-tl-dot" [style.background]="m.color"></div>
+              <div class="ab-tl-card glass-dark" appTilt [tiltMax]="6" [tiltGlow]="m.color + '22'">
+                <span class="ab-tl-year" [style.color]="m.color">{{ m.year }}</span>
+                <h4>{{ m.title }}</h4>
+                <p>{{ m.desc }}</p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -68,9 +120,110 @@ import { CommonModule } from '@angular/common';
     </section>
   `,
   styles: [`
+    /* ── About Hero ───────────────────────────────────── */
+    .ab-hero {
+      display: flex; align-items: center;
+      gap: 60px;
+      padding: 80px 80px 80px 80px;
+      background: linear-gradient(135deg, #020810 0%, #050d1a 100%);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      min-height: 480px;
+    }
+
+    .ab-hero-left {
+      flex: 1; display: flex; flex-direction: column;
+      animation: abHeroIn 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes abHeroIn {
+      from { opacity: 0; transform: translateX(-28px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .ab-hero-tag {
+      display: inline-flex; align-items: center;
+      padding: 5px 16px; border-radius: 999px;
+      border: 1px solid rgba(59,130,246,0.35);
+      background: rgba(59,130,246,0.1);
+      color: #60A5FA; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      margin-bottom: 20px; width: fit-content;
+    }
+
+    .ab-hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2.8rem, 5vw, 4.5rem);
+      font-weight: 900; letter-spacing: -0.03em;
+      color: #F0F6FF; margin: 0 0 16px; line-height: 1.05;
+    }
+    .ab-hero-accent {
+      background: linear-gradient(120deg, #3B82F6, #6366F1);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .ab-hero-divider {
+      width: 56px; height: 3px;
+      background: linear-gradient(90deg, #3B82F6, #6366F1);
+      border-radius: 999px; margin-bottom: 22px;
+    }
+
+    .ab-hero-sub {
+      font-size: 1.15rem; font-weight: 700;
+      color: #3B82F6; line-height: 1.5; margin: 0 0 12px;
+    }
+
+    .ab-hero-desc {
+      font-size: 0.97rem; color: #64748B;
+      line-height: 1.72; margin: 0 0 28px; max-width: 460px;
+    }
+
+    .ab-hero-chips {
+      display: flex; gap: 10px; flex-wrap: wrap;
+    }
+    .ab-chip {
+      padding: 5px 14px; border-radius: 999px;
+      border: 1px solid rgba(59,130,246,0.2);
+      background: rgba(59,130,246,0.07);
+      color: #94A3B8; font-size: 12px; font-weight: 600;
+    }
+
+    .ab-hero-right {
+      flex: 0 0 460px;
+      animation: abHeroImgIn 0.8s cubic-bezier(0.22,1,0.36,1) 0.15s both;
+    }
+    @keyframes abHeroImgIn {
+      from { opacity: 0; transform: translateX(28px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .ab-hero-img-wrap {
+      background: rgba(59,130,246,0.06);
+      border: 1px solid rgba(59,130,246,0.12);
+      border-radius: 24px; overflow: hidden;
+      padding: 32px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .ab-hero-img {
+      width: 100%; max-width: 380px;
+      height: auto; display: block;
+      filter: drop-shadow(0 8px 32px rgba(59,130,246,0.15));
+    }
+
+    @media (max-width: 1024px) {
+      .ab-hero { flex-direction: column; padding: 60px 40px; text-align: center; }
+      .ab-hero-tag, .ab-hero-divider { margin-left: auto; margin-right: auto; }
+      .ab-hero-desc { max-width: 100%; }
+      .ab-hero-chips { justify-content: center; }
+      .ab-hero-right { flex: 0 0 auto; width: 100%; max-width: 400px; }
+    }
+    @media (max-width: 600px) {
+      .ab-hero { padding: 48px 20px; }
+      .ab-hero-title { font-size: 2.4rem; }
+    }
+    /* ── About Content Section ────────────────────────── */
     .ab-root {
-      min-height: 100vh;
-      background: #0A0A0A;
+      min-height: 100vh; background: #0A0A0A;
       padding: 100px 32px 80px;
       position: relative; overflow: hidden;
     }
@@ -85,8 +238,16 @@ import { CommonModule } from '@angular/common';
     }
     .ab-orb-2 {
       width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(37,99,235,0.05) 0%, transparent 65%);
+      background: radial-gradient(circle, rgba(99,102,241,0.05) 0%, transparent 65%);
       bottom: -80px; left: -80px;
+    }
+    .ab-grid-bg {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 85% 75% at 50% 50%, black 10%, transparent 80%);
     }
 
     .ab-container { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
@@ -94,11 +255,11 @@ import { CommonModule } from '@angular/common';
     /* Header */
     .ab-header { text-align: center; max-width: 720px; margin: 0 auto 72px; }
     .ab-eyebrow {
-      display: inline-block;
-      color: #2563EB; font-size: 11px; font-weight: 700;
+      display: inline-block; color: #3B82F6;
+      font-size: 11px; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.16em;
-      border: 1px solid rgba(37,99,235,0.25);
-      background: rgba(37,99,235,0.07);
+      border: 1px solid rgba(59,130,246,0.25);
+      background: rgba(59,130,246,0.07);
       padding: 5px 16px; border-radius: 999px; margin-bottom: 16px;
     }
     .ab-title {
@@ -108,7 +269,7 @@ import { CommonModule } from '@angular/common';
       color: #fff; line-height: 1.05;
     }
     .ab-accent {
-      background: linear-gradient(120deg, #2563EB, #60A5FA);
+      background: linear-gradient(120deg, #3B82F6, #818cf8);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
     }
@@ -118,76 +279,185 @@ import { CommonModule } from '@angular/common';
       display: grid; grid-template-columns: 1fr 340px;
       gap: 60px; align-items: start; margin-bottom: 72px;
     }
-    .ab-mission-text h2 {
+    .ab-mission-text h3 {
       font-size: 1.8rem; font-weight: 800;
       color: #fff; margin-bottom: 20px; letter-spacing: -0.02em;
     }
     .ab-mission-text p {
-      color: rgba(255,255,255,0.55);
+      color: rgba(255,255,255,0.52);
       font-size: 1rem; line-height: 1.8; margin-bottom: 16px;
     }
     .ab-mission-stats {
       display: flex; flex-direction: column; gap: 24px;
       padding: 32px; border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.07);
-      background: rgba(16,16,16,0.8);
-      backdrop-filter: blur(10px);
     }
     .ab-stat strong {
       display: block;
-      font-size: 2.4rem; font-weight: 900; letter-spacing: -0.03em;
-      line-height: 1;
+      font-size: 2.4rem; font-weight: 900; letter-spacing: -0.03em; line-height: 1;
     }
     .ab-stat span {
-      font-size: 12px; color: rgba(255,255,255,0.4);
+      font-size: 12px; color: rgba(255,255,255,0.38);
       font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
       margin-top: 4px; display: block;
     }
 
+    /* Visual Image Grid */
+    .ab-visual-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 16px; height: 380px; margin-bottom: 72px;
+    }
+    .ab-visual-card {
+      position: relative; border-radius: 20px; overflow: hidden;
+      cursor: pointer;
+    }
+    .ab-vc-tall { grid-row: span 1; }
+    .ab-vc-bg {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      transition: transform .7s cubic-bezier(0.23,1,0.32,1);
+    }
+    .ab-visual-card:hover .ab-vc-bg { transform: scale(1.07); }
+
+    /* CSS gradient placeholders — swap to real images once you have them */
+    .ab-vc-bg-0 {
+      background:
+        linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)),
+        url('/images/about-team.jpg') center/cover,
+        linear-gradient(135deg, #1a2744 0%, #0f172a 50%, #1e3a5f 100%);
+    }
+    .ab-vc-bg-1 {
+      background:
+        linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)),
+        url('/images/about-office.jpg') center/cover,
+        linear-gradient(135deg, #1a1044 0%, #0f0a2a 50%, #2d1b69 100%);
+    }
+    .ab-vc-bg-2 {
+      background:
+        linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)),
+        url('/images/about-tech.jpg') center/cover,
+        linear-gradient(135deg, #0f2a1a 0%, #0a1f10 50%, #1a3a1a 100%);
+    }
+
+    .ab-vc-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 16px 20px;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+      z-index: 3;
+    }
+    .ab-vc-tag {
+      display: inline-block;
+      padding: 2px 10px; border-radius: 999px;
+      background: rgba(59,130,246,0.2); border: 1px solid rgba(59,130,246,0.35);
+      color: #60A5FA; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      margin-bottom: 4px;
+    }
+    .ab-vc-label p {
+      color: #fff; font-size: 14px; font-weight: 700; margin: 0;
+    }
+
     /* Values */
-    .ab-values-header { text-align: center; margin-bottom: 36px; }
-    .ab-values-header h2 {
+    .ab-values-header {
+      text-align: center; margin-bottom: 36px;
+    }
+    .ab-values-header h3 {
       font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.02em;
     }
     .ab-values {
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+      margin-bottom: 80px;
     }
     .ab-value {
-      padding: 28px 22px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.07);
-      background: rgba(14,14,14,0.8);
+      padding: 28px 22px; border-radius: 18px;
       display: flex; flex-direction: column; gap: 12px;
-      transition: border-color 0.3s ease, transform 0.3s ease;
-    }
-    .ab-value:hover {
-      border-color: rgba(255,255,255,0.14);
-      transform: translateY(-4px);
     }
     .ab-value-icon {
       width: 48px; height: 48px; border-radius: 12px; border: 1px solid;
       display: flex; align-items: center; justify-content: center;
     }
-    .ab-value h3 {
-      font-size: 1rem; font-weight: 800; color: #fff; letter-spacing: -0.01em;
-    }
-    .ab-value p {
-      font-size: 0.85rem; color: rgba(255,255,255,0.45); line-height: 1.65;
-    }
+    .ab-value h4 { font-size: 1rem; font-weight: 800; color: #fff; letter-spacing: -0.01em; }
+    .ab-value p  { font-size: 0.84rem; color: rgba(255,255,255,0.42); line-height: 1.65; }
 
-    @media (max-width: 1024px) { .ab-values { grid-template-columns: repeat(2,1fr); } }
-    @media (max-width: 768px)  {
+    /* Timeline */
+    .ab-timeline-header {
+      text-align: center; margin-bottom: 48px;
+    }
+    .ab-timeline-header h3 {
+      font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.02em;
+    }
+    .ab-timeline {
+      position: relative;
+      display: flex; flex-direction: column; gap: 32px;
+      max-width: 800px; margin: 0 auto;
+    }
+    .ab-timeline::before {
+      content: '';
+      position: absolute; left: 50%; top: 0; bottom: 0;
+      width: 1px; background: linear-gradient(to bottom, transparent, rgba(59,130,246,0.35) 20%, rgba(59,130,246,0.35) 80%, transparent);
+      transform: translateX(-50%);
+    }
+    .ab-tl-item {
+      display: flex; align-items: center;
+      justify-content: flex-end; gap: 28px;
+      padding-right: calc(50% + 20px);
+    }
+    .ab-tl-item.ab-tl-right {
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      padding-right: 0; padding-left: calc(50% + 20px);
+    }
+    .ab-tl-dot {
+      position: absolute; left: 50%;
+      transform: translateX(-50%);
+      width: 12px; height: 12px; border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(0,0,0,0.8), 0 0 16px rgba(59,130,246,0.5);
+      flex-shrink: 0;
+    }
+    .ab-tl-card {
+      max-width: 340px; padding: 24px 28px; border-radius: 16px;
+    }
+    .ab-tl-year {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      display: block; margin-bottom: 6px;
+    }
+    .ab-tl-card h4 {
+      font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 6px;
+    }
+    .ab-tl-card p { font-size: 0.84rem; color: rgba(255,255,255,0.45); line-height: 1.6; }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .ab-values { grid-template-columns: repeat(2,1fr); }
+      .ab-visual-grid { grid-template-columns: 1fr 1fr; height: auto; }
+      .ab-vc-tall { grid-row: auto; height: 220px; }
+      .ab-visual-card { height: 200px; }
+    }
+    @media (max-width: 768px) {
+      .ab-slide-content { padding: 0 24px; }
       .ab-mission { grid-template-columns: 1fr; }
       .ab-values { grid-template-columns: 1fr; }
+      .ab-visual-grid { grid-template-columns: 1fr; height: auto; }
+      .ab-visual-card { height: 200px; }
+      .ab-timeline::before { left: 20px; }
+      .ab-tl-item, .ab-tl-item.ab-tl-right {
+        flex-direction: column; padding: 0 0 0 48px;
+        align-items: flex-start;
+      }
+      .ab-tl-dot { left: 20px; }
     }
   `]
 })
-export class AboutSectionComponent {
+export class AboutSectionComponent implements OnInit, OnDestroy {
+  private timer: any;
+
   stats = [
-    { val: '10,000+', label: 'Vehicles Tracked',  color: '#00D4FF' },
-    { val: '₹500+Cr', label: 'Assets Managed',    color: '#22c55e' },
-    { val: '99.92%',  label: 'Platform Uptime',   color: '#A78BFA' },
-    { val: '2024',    label: 'Founded in India',   color: '#2563EB' },
+    { val: '2026',   label: 'Founded in India',  color: '#60A5FA' },
+    { val: '99.9%',  label: 'Platform Uptime',   color: '#a78bfa' },
+    { val: 'SEBI',   label: 'Registered',         color: '#22c55e' },
+    { val: 'India',  label: 'Headquartered',      color: '#3B82F6' },
   ];
 
   values = [
@@ -198,14 +468,8 @@ export class AboutSectionComponent {
       desc: 'Every product decision is backed by measurable outcomes. No vanity features.',
     },
     {
-      icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
-      color: '#22c55e', glow: 'rgba(34,197,94,0.1)',
-      title: 'Trust & Compliance',
-      desc: 'SEBI-registered, audit-ready, and built on transparent infrastructure.',
-    },
-    {
       icon: 'M13 2L3 14h9l-1 8 10-12h-9z',
-      color: '#2563EB', glow: 'rgba(37,99,235,0.1)',
+      color: '#3B82F6', glow: 'rgba(59,130,246,0.1)',
       title: 'Speed to Value',
       desc: 'Onboard in a day. See measurable impact within the first week.',
     },
@@ -213,7 +477,52 @@ export class AboutSectionComponent {
       icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
       color: '#F59E0B', glow: 'rgba(245,158,11,0.1)',
       title: 'Built for India',
-      desc: 'Designed for the real-world conditions of Indian fleet operations and investors.',
+      desc: 'Designed for the real-world conditions of Indian fleet businesses.',
+    },
+    {
+      icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4',
+      color: '#22c55e', glow: 'rgba(34,197,94,0.1)',
+      title: 'SEBI Compliant',
+      desc: 'SEBI & AMFI registered mutual fund platform — zero commission, full transparency.',
+    },
+    {
+      icon: 'M23 6l-9.5 9.5-5-5L1 18M17 6h6v6',
+      color: '#A78BFA', glow: 'rgba(167,139,250,0.1)',
+      title: 'Wealth for All',
+      desc: 'SIP investments starting ₹1,000/month — making wealth creation accessible to every Indian.',
+    },
+    {
+      icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM12 6v6l4 2',
+      color: '#FB923C', glow: 'rgba(251,146,60,0.1)',
+      title: 'Long-Term Thinking',
+      desc: 'We optimise for your 10-year outcome, not the next quarter. Compounding is our strategy.',
     },
   ];
+
+  milestones = [
+    {
+      year: 'Q1 2026', color: '#3B82F6',
+      title: 'Company Founded',
+      desc: 'NViQ incorporated in India with a vision to unify fleet ops and fintech.',
+    },
+    {
+      year: 'Q2 2026', color: '#22c55e',
+      title: 'GPS Platform Launch',
+      desc: 'Live GPS tracking goes live across 500 vehicles in pilot across 3 cities.',
+    },
+    {
+      year: 'Q3 2026', color: '#a78bfa',
+      title: 'SEBI Registration',
+      desc: 'Mutual fund platform receives SEBI registration. Zero-commission SIPs activated.',
+    },
+    {
+      year: 'Q4 2026', color: '#f59e0b',
+      title: '10,000 Vehicles Milestone',
+      desc: 'Fleet tracking crosses 10,000 active vehicles and ₹500Cr+ in managed assets.',
+    },
+  ];
+
+  constructor(private ngZone: NgZone) {}
+  ngOnInit(): void {}
+  ngOnDestroy(): void { clearInterval(this.timer); }
 }

@@ -99,7 +99,7 @@ type InvestmentPlan = {
                 id="sip-monthly"
                 class="slider"
                 type="range"
-                min="500"
+                min="1000"
                 max="3000"
                 [value]="monthly"
                 (input)="onMonthlyChange($event)"
@@ -243,7 +243,7 @@ export class MutualFundsSectionComponent implements OnDestroy {
   ];
 
   sipPlans: InvestmentPlan[] = [
-    { name: 'Starter', amount: '\u20B9500/month', detail: 'Begin disciplined investing with a low monthly SIP.' },
+    { name: 'Starter', amount: '\u20B91,000/month', detail: 'Begin disciplined investing with a low monthly SIP.' },
     { name: 'Growth', amount: '\u20B92,000/month', detail: 'Balanced wealth-building plan for consistent compounding.', badge: 'Most Popular', highlight: true },
     { name: 'Premium', amount: '\u20B93,000+/month', detail: 'Aggressive long-term SIP for faster corpus growth.' },
   ];

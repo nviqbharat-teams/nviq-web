@@ -414,3 +414,179 @@ body {
 @media (max-width: 480px) {
   .hide-sm { display: none !important; }
 }
+
+/* ============================================================
+   3D & DEPTH UTILITIES
+   ============================================================ */
+.scene-3d        { perspective: 1000px; transform-style: preserve-3d; }
+.depth-layer-1   { transform: translateZ(20px); }
+.depth-layer-2   { transform: translateZ(40px); }
+.depth-layer-3   { transform: translateZ(60px); }
+
+/* ============================================================
+   GLASSMORPHISM CARDS
+   ============================================================ */
+.glass {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+}
+.glass-dark {
+  background: rgba(8,8,12,0.6);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+}
+.glass-blue {
+  background: rgba(59,130,246,0.07);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(59,130,246,0.18);
+  border-radius: 20px;
+}
+.glass:hover, .glass-dark:hover {
+  border-color: rgba(99,102,241,0.25);
+  box-shadow: 0 8px 48px rgba(59,130,246,0.12), 0 0 0 1px rgba(99,102,241,0.1);
+  transition: border-color .3s ease, box-shadow .3s ease;
+}
+
+/* ============================================================
+   FLOATING ANIMATIONS
+   ============================================================ */
+@keyframes floatY {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-14px); }
+}
+@keyframes floatX {
+  0%,100% { transform: translateX(0); }
+  50%      { transform: translateX(-10px); }
+}
+@keyframes floatDiag {
+  0%,100% { transform: translate(0,0) rotate(0deg); }
+  33%      { transform: translate(-6px,-10px) rotate(2deg); }
+  66%      { transform: translate(6px,-6px) rotate(-1deg); }
+}
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes morphBlob {
+  0%,100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  50%     { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+}
+@keyframes gradientFlow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes glowPulse {
+  0%,100% { box-shadow: 0 0 20px rgba(59,130,246,0.2); }
+  50%      { box-shadow: 0 0 60px rgba(59,130,246,0.5), 0 0 100px rgba(99,102,241,0.2); }
+}
+@keyframes shimmerSlide {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+.float-y  { animation: floatY     4s ease-in-out infinite; }
+.float-x  { animation: floatX     5s ease-in-out infinite; }
+.float-d  { animation: floatDiag  6s ease-in-out infinite; }
+.spin-slow { animation: spinSlow  20s linear infinite; }
+.morph-blob { animation: morphBlob 8s ease-in-out infinite; }
+.glow-pulse { animation: glowPulse 3s ease-in-out infinite; }
+
+/* Stagger delay helpers */
+.delay-100 { animation-delay: .1s; }
+.delay-200 { animation-delay: .2s; }
+.delay-300 { animation-delay: .3s; }
+.delay-400 { animation-delay: .4s; }
+.delay-500 { animation-delay: .5s; }
+
+/* ============================================================
+   IMAGE 3D CARD (reusable with tilt directive)
+   ============================================================ */
+.img-3d-wrap {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.img-3d-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  transition: transform .6s cubic-bezier(0.23,1,0.32,1);
+}
+.img-3d-wrap:hover img {
+  transform: scale(1.06);
+}
+.img-3d-wrap::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom,
+    transparent 40%,
+    rgba(0,0,0,0.55) 100%);
+  pointer-events: none;
+}
+
+/* Shimmer effect on images */
+.img-shimmer {
+  position: relative; overflow: hidden;
+}
+.img-shimmer::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(105deg,
+    transparent 40%,
+    rgba(255,255,255,0.06) 50%,
+    transparent 60%);
+  z-index: 2; pointer-events: none;
+  animation: shimmerSlide 3.5s ease-in-out infinite;
+}
+
+/* ============================================================
+   SCROLL PARALLAX (JS-driven, CSS fallback)
+   ============================================================ */
+.parallax-layer {
+  will-change: transform;
+  transition: transform .05s linear;
+}
+
+/* ============================================================
+   PAGE TRANSITION HOST
+   ============================================================ */
+.page-enter {
+  animation: pageEnterFade .45s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes pageEnterFade {
+  from { opacity: 0; transform: translateY(20px) scale(0.99); }
+  to   { opacity: 1; transform: none; }
+}
+.page-exit {
+  animation: pageExitFade .3s cubic-bezier(0.4,0,1,1) both;
+}
+@keyframes pageExitFade {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: translateY(-12px) scale(0.99); }
+}
+
+/* ============================================================
+   HERO DEPTH GLOW
+   ============================================================ */
+.hero-depth-glow {
+  position: absolute; border-radius: 50%;
+  filter: blur(100px); pointer-events: none;
+  animation: glowPulse 5s ease-in-out infinite;
+}
+
+/* ============================================================
+   RESPONSIVE 3D TWEAKS
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Reduce tilt/parallax intensity on touch devices */
+  .img-3d-wrap { border-radius: 14px; }
+  .scene-3d    { perspective: 600px; }
+}
