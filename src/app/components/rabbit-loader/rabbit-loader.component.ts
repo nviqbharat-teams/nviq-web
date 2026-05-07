@@ -19,7 +19,7 @@ import { CommonModule } from '@angular/common';
 
         <!-- Logo wrapper -->
         <div class="rl-logo-wrap">
-          <img src="/logo.png" alt="NViQ" class="rl-logo" />
+          <img src="/images/logo.png.jpeg" alt="NViQ" class="rl-logo" />
         </div>
 
         <!-- Brand name -->
@@ -44,7 +44,7 @@ import { CommonModule } from '@angular/common';
     <!-- Inline spinner -->
     <div *ngIf="!fullScreen" class="rl-inline">
       <div class="rl-inline-glow"></div>
-      <img src="/logo.png" alt="NViQ" class="rl-inline-logo" />
+      <img src="/images/logo.png.jpeg" alt="NViQ" class="rl-inline-logo" />
       <p *ngIf="text" class="rl-inline-text">{{ text }}</p>
     </div>
   `,
