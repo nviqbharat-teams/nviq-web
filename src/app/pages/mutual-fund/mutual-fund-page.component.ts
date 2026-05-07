@@ -82,13 +82,48 @@ import { ReviewFormComponent } from '../../components/review-form/review-form.co
 
     <!-- Trust bar -->
     <div class="mf-trust-bar" appReveal="up" [revealDelay]="0">
-      <div class="mf-trust-item" *ngFor="let t of trustItems" appTilt [tiltMax]="6" [tiltScale]="1.04">
-        <span class="mf-trust-icon">{{ t.icon }}</span>
+
+      <!-- Primary badge: AMFI + ARN -->
+      <div class="mf-trust-item mf-trust-primary" appTilt [tiltMax]="6" [tiltScale]="1.04">
+        <span class="mf-trust-icon">🎯</span>
         <div class="mf-trust-body">
-          <span class="mf-trust-text">{{ t.text }}</span>
-          <span class="mf-trust-sub" *ngIf="t.sub">{{ t.sub }}</span>
+          <span class="mf-trust-text">Free Consultation &bull; AMFI Registered</span>
+          <span class="mf-trust-sub mf-trust-arn">ARN No: 359231</span>
         </div>
       </div>
+
+      <div class="mf-trust-item" appTilt [tiltMax]="6" [tiltScale]="1.04">
+        <span class="mf-trust-icon">💳</span>
+        <div class="mf-trust-body">
+          <span class="mf-trust-text">Zero Commission</span>
+          <span class="mf-trust-sub">On all funds</span>
+        </div>
+      </div>
+
+      <div class="mf-trust-item" appTilt [tiltMax]="6" [tiltScale]="1.04">
+        <span class="mf-trust-icon">📊</span>
+        <div class="mf-trust-body">
+          <span class="mf-trust-text">1000+ Funds</span>
+          <span class="mf-trust-sub">Curated selection</span>
+        </div>
+      </div>
+
+      <div class="mf-trust-item" appTilt [tiltMax]="6" [tiltScale]="1.04">
+        <span class="mf-trust-icon">⚡</span>
+        <div class="mf-trust-body">
+          <span class="mf-trust-text">Instant KYC</span>
+          <span class="mf-trust-sub">Fully online</span>
+        </div>
+      </div>
+
+      <div class="mf-trust-item" appTilt [tiltMax]="6" [tiltScale]="1.04">
+        <span class="mf-trust-icon">🛡️</span>
+        <div class="mf-trust-body">
+          <span class="mf-trust-text">256-bit Encryption</span>
+          <span class="mf-trust-sub">Bank-grade security</span>
+        </div>
+      </div>
+
     </div>
 
     <!-- MF Slider (SIP Calculator + Fund Cards) -->
@@ -358,10 +393,10 @@ import { ReviewFormComponent } from '../../components/review-form/review-form.co
       cursor: default;
       transition: border-color 0.2s ease, background 0.2s ease;
     }
-    .mf-trust-item:first-child {
-      border-color: rgba(59,130,246,0.35);
-      background: rgba(59,130,246,0.1);
-      box-shadow: 0 0 18px rgba(59,130,246,0.12), inset 0 0 12px rgba(59,130,246,0.06);
+    .mf-trust-primary {
+      border-color: rgba(59,130,246,0.4) !important;
+      background: rgba(59,130,246,0.12) !important;
+      box-shadow: 0 0 20px rgba(59,130,246,0.15), inset 0 0 14px rgba(59,130,246,0.06);
     }
     .mf-trust-item:hover {
       border-color: rgba(59,130,246,0.3);
@@ -369,14 +404,14 @@ import { ReviewFormComponent } from '../../components/review-form/review-form.co
     }
     .mf-trust-icon { font-size: 18px; flex-shrink: 0; }
     .mf-trust-body {
-      display: flex; flex-direction: column; gap: 2px;
+      display: flex; flex-direction: column; gap: 3px;
     }
     .mf-trust-text {
       font-size: 13px; font-weight: 700;
       color: rgba(255,255,255,0.82);
       line-height: 1.2;
     }
-    .mf-trust-item:first-child .mf-trust-text {
+    .mf-trust-primary .mf-trust-text {
       background: linear-gradient(90deg, #60A5FA, #818CF8);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -386,10 +421,11 @@ import { ReviewFormComponent } from '../../components/review-form/review-form.co
       color: rgba(255,255,255,0.35);
       letter-spacing: 0.04em;
     }
-    .mf-trust-item:first-child .mf-trust-sub {
-      color: #60A5FA;
-      font-weight: 700;
-      letter-spacing: 0.06em;
+    .mf-trust-arn {
+      color: #60A5FA !important;
+      font-weight: 700 !important;
+      font-size: 11px !important;
+      letter-spacing: 0.08em !important;
     }
 
     @media (max-width: 768px) {
