@@ -122,7 +122,7 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
       position: relative;
       width: 100%;
       min-height: 92vh;
-      display: flex; align-items: center; justify-content: flex-start;
+      display: flex; align-items: center; justify-content: flex-end;
       background: url('/images/about%20slide.jpg.png') center center / cover no-repeat;
       overflow: hidden;
     }
@@ -130,17 +130,17 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
     .ab-hero-overlay {
       position: absolute; inset: 0;
       background: linear-gradient(
-        120deg,
-        rgba(2,6,16,0.82) 0%,
-        rgba(5,15,35,0.72) 55%,
-        rgba(0,0,0,0.40) 100%
+        -120deg,
+        rgba(2,6,16,0.88) 0%,
+        rgba(5,15,35,0.78) 50%,
+        rgba(0,0,0,0.20) 100%
       );
       z-index: 1;
     }
 
     .ab-hero-glow {
       position: absolute;
-      bottom: -120px; left: -80px;
+      bottom: -120px; right: -80px;
       width: 700px; height: 700px;
       border-radius: 50%;
       background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 65%);
@@ -150,7 +150,7 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
 
     .ab-hero-content {
       position: relative; z-index: 3;
-      max-width: 680px;
+      max-width: 620px;
       padding: 0 80px;
       animation: abHeroIn 0.8s cubic-bezier(0.22,1,0.36,1) both;
     }
@@ -215,8 +215,10 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
 
     @media (max-width: 1024px) {
       .ab-hero { min-height: 75vh; justify-content: center; }
-      .ab-hero-content { padding: 60px 40px; text-align: center; }
-      .ab-hero-tag, .ab-hero-divider { margin-left: auto; margin-right: auto; }
+      .ab-hero-overlay { background: linear-gradient(to top, rgba(2,6,16,0.9) 0%, rgba(2,6,16,0.65) 100%); }
+      .ab-hero-content { padding: 60px 40px; text-align: center; max-width: 100%; }
+      .ab-hero-tag { margin-left: auto; margin-right: auto; }
+      .ab-hero-divider { margin-left: auto; margin-right: auto; }
       .ab-hero-chips { justify-content: center; }
       .ab-hero-desc { max-width: 100%; }
     }
