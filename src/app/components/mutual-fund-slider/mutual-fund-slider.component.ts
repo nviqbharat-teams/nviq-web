@@ -658,7 +658,7 @@ Invest Smart. Grow Wealth.
       position: relative; z-index: 2;
       text-align: center;
       font-size: 12px;
-      color: rgba(255,255,255,0.7);
+      color: #60A5FA;
       font-family: 'Outfit', sans-serif;
       margin: 20px auto 0;
       padding: 0 24px 14px;
