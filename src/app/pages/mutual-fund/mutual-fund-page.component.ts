@@ -84,7 +84,10 @@ import { ReviewFormComponent } from '../../components/review-form/review-form.co
     <div class="mf-trust-bar" appReveal="up" [revealDelay]="0">
       <div class="mf-trust-item" *ngFor="let t of trustItems" appTilt [tiltMax]="6" [tiltScale]="1.04">
         <span class="mf-trust-icon">{{ t.icon }}</span>
-        <span class="mf-trust-text">{{ t.text }}</span>
+        <div class="mf-trust-body">
+          <span class="mf-trust-text">{{ t.text }}</span>
+          <span class="mf-trust-sub" *ngIf="t.sub">{{ t.sub }}</span>
+        </div>
       </div>
     </div>
 
@@ -343,28 +346,59 @@ import { ReviewFormComponent } from '../../components/review-form/review-form.co
     /* ── Trust bar ───────────────────────────────────────── */
     .mf-trust-bar {
       display: flex; flex-wrap: wrap; justify-content: center;
-      gap: 12px 24px; padding: 28px 32px;
+      gap: 10px 16px; padding: 24px 32px;
       background: rgba(10,10,20,0.95);
       border-bottom: 1px solid rgba(255,255,255,0.05);
     }
     .mf-trust-item {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px 20px; border-radius: 12px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 18px; border-radius: 12px;
       border: 1px solid rgba(59,130,246,0.15);
       background: rgba(59,130,246,0.05);
       cursor: default;
+      transition: border-color 0.2s ease, background 0.2s ease;
     }
-    .mf-trust-icon { font-size: 18px; }
+    .mf-trust-item:first-child {
+      border-color: rgba(59,130,246,0.35);
+      background: rgba(59,130,246,0.1);
+      box-shadow: 0 0 18px rgba(59,130,246,0.12), inset 0 0 12px rgba(59,130,246,0.06);
+    }
+    .mf-trust-item:hover {
+      border-color: rgba(59,130,246,0.3);
+      background: rgba(59,130,246,0.09);
+    }
+    .mf-trust-icon { font-size: 18px; flex-shrink: 0; }
+    .mf-trust-body {
+      display: flex; flex-direction: column; gap: 2px;
+    }
     .mf-trust-text {
-      font-size: 13px; font-weight: 600;
-      color: rgba(255,255,255,0.65);
+      font-size: 13px; font-weight: 700;
+      color: rgba(255,255,255,0.82);
+      line-height: 1.2;
+    }
+    .mf-trust-item:first-child .mf-trust-text {
+      background: linear-gradient(90deg, #60A5FA, #818CF8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .mf-trust-sub {
+      font-size: 10.5px; font-weight: 600;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.04em;
+    }
+    .mf-trust-item:first-child .mf-trust-sub {
+      color: #60A5FA;
+      font-weight: 700;
+      letter-spacing: 0.06em;
     }
 
     @media (max-width: 768px) {
       .mfp-back-bar { padding: 10px 16px; }
       .mfp-hero { min-height: 50vh; padding: 60px 16px; }
-      .mf-trust-bar { padding: 20px 16px; gap: 10px; }
-      .mf-trust-item { padding: 8px 14px; }
+      .mf-trust-bar { padding: 18px 16px; gap: 8px 12px; }
+      .mf-trust-item { padding: 8px 12px; }
+      .mf-trust-text { font-size: 12px; }
+      .mf-trust-sub { font-size: 10px; }
     }
   `]
 })
@@ -376,12 +410,11 @@ export class MutualFundPageComponent implements OnInit, OnDestroy {
   private timer: any;
 
   trustItems = [
-    { icon: '🔒', text: 'SEBI Registered' },
-    { icon: '🏦', text: 'AMFI Compliant' },
-    { icon: '💳', text: 'Zero Commission' },
-    { icon: '📊', text: '1000+ Funds' },
-    { icon: '⚡', text: 'Instant KYC' },
-    { icon: '🛡️', text: '256-bit Encryption' },
+    { icon: '🎯', text: 'Free Consultation • AMFI Registered', sub: 'ARN No: 359231' },
+    { icon: '💳', text: 'Zero Commission', sub: 'On all funds' },
+    { icon: '📊', text: '1000+ Funds', sub: 'Curated selection' },
+    { icon: '⚡', text: 'Instant KYC', sub: 'Fully online' },
+    { icon: '🛡️', text: '256-bit Encryption', sub: 'Bank-grade security' },
   ];
 
   mfSlides = [
