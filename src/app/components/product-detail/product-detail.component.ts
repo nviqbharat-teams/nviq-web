@@ -6,7 +6,6 @@ import { FeaturesSectionComponent } from '../features/features-section.component
 import { BenefitsSectionComponent } from '../benefits/benefits-section.component';
 import { ProblemSectionComponent } from '../problem/problem-section.component';
 import { LiveTrackingSectionComponent } from '../live-tracking/live-tracking-section.component';
-import { ReviewsSectionComponent } from '../reviews/reviews-section.component';
 import { PricingSectionComponent } from '../pricing/pricing-section.component';
 import { CtaSectionComponent } from '../cta/cta-section.component';
 import { MutualFundSliderComponent } from '../mutual-fund-slider/mutual-fund-slider.component';
@@ -22,7 +21,6 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
     BenefitsSectionComponent,
     ProblemSectionComponent,
     LiveTrackingSectionComponent,
-    ReviewsSectionComponent,
     PricingSectionComponent,
     CtaSectionComponent,
     MutualFundSliderComponent,
@@ -93,7 +91,6 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
       <app-benefits-section [productType]="'gps'"></app-benefits-section>
       <app-problem-section></app-problem-section>
       <app-live-tracking-section></app-live-tracking-section>
-      <app-reviews-section [productType]="'gps'"></app-reviews-section>
       <app-pricing-section (openModal)="nav.openModalFor('gps')"></app-pricing-section>
       <app-cta-section (openModal)="nav.openModalFor('gps')"></app-cta-section>
     </ng-container>
@@ -115,7 +112,6 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
       <app-mutual-fund-slider (openModal)="nav.openModalFor('mf')"></app-mutual-fund-slider>
       <app-features-section [productType]="'mf'"></app-features-section>
       <app-benefits-section [productType]="'mf'"></app-benefits-section>
-      <app-reviews-section [productType]="'mf'"></app-reviews-section>
       <app-mutual-fund-pricing></app-mutual-fund-pricing>
       <app-cta-section [product]="'mf'" (openModal)="nav.openModalFor('mf')"></app-cta-section>
     </ng-container>
