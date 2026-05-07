@@ -574,10 +574,9 @@ Invest Smart. Grow Wealth.
     .detail-card {
       padding: 36px 32px 32px;
       border-radius: 24px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 8px 48px rgba(0,0,0,0.35);
-      backdrop-filter: blur(20px);
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.07);
+      box-shadow: 0 8px 48px rgba(0,0,0,0.12), 0 2px 12px rgba(0,0,0,0.06);
       animation: detailIn 0.35s ease;
     }
     @keyframes detailIn {
@@ -587,31 +586,31 @@ Invest Smart. Grow Wealth.
 
     .detail-title {
       font-family: var(--font-display);
-      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
       font-weight: 900; letter-spacing: -0.03em;
-      color: #fff; margin: 0 0 12px; line-height: 1.15;
+      color: #0F172A; margin: 0 0 12px; line-height: 1.15;
     }
 
     .detail-desc {
-      color: rgba(255,255,255,0.55);
+      color: #64748B;
       font-size: 0.95rem; line-height: 1.7;
       margin: 0 0 22px;
     }
 
     .detail-lines {
       list-style: none; padding: 0; margin: 0 0 28px;
-      display: flex; flex-direction: column; gap: 12px;
+      display: flex; flex-direction: column; gap: 14px;
     }
     .detail-lines li {
       display: flex; align-items: center; gap: 12px;
-      color: rgba(255,255,255,0.82); font-size: 0.95rem; font-weight: 500;
+      color: #334155; font-size: 0.95rem; font-weight: 500;
     }
     .detail-check {
       width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
-      background: rgba(59,130,246,0.15);
-      border: 1px solid rgba(59,130,246,0.35);
+      background: rgba(59,130,246,0.1);
+      border: 1.5px solid rgba(59,130,246,0.35);
       display: flex; align-items: center; justify-content: center;
-      color: #60A5FA;
+      color: #3B82F6;
     }
 
     .detail-cta {
@@ -621,7 +620,7 @@ Invest Smart. Grow Wealth.
       background: linear-gradient(135deg, #3B82F6, #6366F1);
       color: #fff; font-family: var(--font-display);
       font-size: 15px; font-weight: 700; cursor: pointer;
-      box-shadow: 0 8px 32px rgba(37,99,235,0.35);
+      box-shadow: 0 8px 32px rgba(37,99,235,0.3);
       transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
     .detail-cta:hover {
