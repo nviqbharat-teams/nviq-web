@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
 interface Review {
   name: string;
@@ -21,33 +20,10 @@ interface Review {
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.Default,
-  animations: [
-    trigger('slideIn', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(-20px)' }),
-        animate('400ms cubic-bezier(0.4, 0, 0.2, 1)', style({ opacity: 1, transform: 'translateY(0)' })),
-      ]),
-    ]),
-    trigger('fadeUp', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(24px)' }),
-        animate('500ms cubic-bezier(0.4, 0, 0.2, 1)', style({ opacity: 1, transform: 'translateY(0)' })),
-      ]),
-    ]),
-    trigger('flashIn', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'scale(0.96)' }),
-        animate('300ms ease-out', style({ opacity: 1, transform: 'scale(1)' })),
-      ]),
-      transition(':leave', [
-        animate('200ms ease-in', style({ opacity: 0, transform: 'scale(0.96)' })),
-      ]),
-    ]),
-  ],
   template: `
     <div class="rf-wrapper">
       <!-- Form Section -->
-      <div class="rf-form-card" @slideIn>
+      <div class="rf-form-card">
         <div class="rf-form-header">
           <h3 class="rf-title">Write a Review</h3>
           <p class="rf-subtitle">Share your experience with this product</p>
@@ -117,7 +93,7 @@ interface Review {
         </form>
 
         <!-- Success Flash -->
-        <div class="rf-success" *ngIf="showSuccess" @flashIn>
+        <div class="rf-success" *ngIf="showSuccess">
           <svg viewBox="0 0 24 24" class="rf-success-icon" xmlns="http://www.w3.org/2000/svg">
             <path d="M20 6L9 17l-5-5"/>
           </svg>
@@ -151,7 +127,6 @@ interface Review {
           <div
             class="rf-review-card"
             *ngFor="let review of reviews; trackBy: trackByIndex"
-            @fadeUp
           >
             <div class="rf-review-top">
               <div class="rf-avatar">{{ getInitials(review.name) }}</div>
