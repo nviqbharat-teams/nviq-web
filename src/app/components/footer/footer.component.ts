@@ -72,7 +72,7 @@ import { NavService } from '../../services/nav.service';
           </div>
         </div>
 
-        <div class="footer-cta-banner">
+        <div class="footer-cta-banner" *ngIf="showCta">
           <div class="fcta-left">
             <h3>{{ isMF ? mfContent.ctaTitle : gpsContent.ctaTitle }}</h3>
             <p>{{ isMF ? mfContent.ctaDesc : gpsContent.ctaDesc }}</p>
@@ -310,6 +310,11 @@ export class FooterComponent {
 
   get isMF(): boolean {
     return this.router.url.includes('mutual-fund') || this.nav.product() === 'mf';
+  }
+
+  get showCta(): boolean {
+    const url = this.router.url;
+    return !url.includes('/contact') && !url.includes('/about');
   }
 
   gpsContent = {
