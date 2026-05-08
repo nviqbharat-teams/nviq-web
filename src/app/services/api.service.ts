@@ -47,6 +47,14 @@ export interface Service {
   order: number;
 }
 
+export interface LiveGpsStats {
+  vehiclesOnline: number;
+  tripsTracked: number;
+  smartAlerts: number;
+  citiesCovered: number;
+  updatedAt: string;
+}
+
 export type EnquirySource =
   | 'contact-form'
   | 'lead-modal'
@@ -123,6 +131,11 @@ export class ApiService {
 
   getServices(): Observable<ApiResponse<Service[]>> {
     return this.http.get<ApiResponse<Service[]>>(`${this.BASE}/services`)
+      .pipe(catchError(this.handleError));
+  }
+
+  getLiveGpsStats(): Observable<ApiResponse<LiveGpsStats>> {
+    return this.http.get<ApiResponse<LiveGpsStats>>(`${this.BASE}/live-stats/gps`)
       .pipe(catchError(this.handleError));
   }
 

@@ -39,11 +39,13 @@ import { NavService } from '../../services/nav.service';
             <div class="f-col">
               <h4>{{ isMF ? 'Invest' : 'Product' }}</h4>
               <ng-container *ngIf="!isMF">
-                <a routerLink="/services">Live GPS Tracking</a>
-                <a routerLink="/services">Smart Alerts</a>
-                <a routerLink="/services">Route Analytics</a>
-                <a routerLink="/services">Fuel Intelligence</a>
-                <a routerLink="/services">API Access</a>
+                <a routerLink="/services">Mutual Fund Solutions</a>
+                <a routerLink="/services">GPS Tracking</a>
+                <a routerLink="/services">AI Fleet Profitability Tools</a>
+                <a routerLink="/services">FASTag Services</a>
+                <a routerLink="/services">Vehicle Insurance</a>
+                <a routerLink="/services">AIS 140 Devices</a>
+                <a routerLink="/services">Drone Solutions</a>
               </ng-container>
               <ng-container *ngIf="isMF">
                 <a routerLink="/mutual-fund">SIP Investment</a>
@@ -325,7 +327,7 @@ export class FooterComponent {
   };
 
   mfContent = {
-    tagline: 'Invest with Confidence. SEBI-registered mutual fund guidance for your financial goals.',
+    tagline: 'Free Consultation • AMFI Registered • ARN No: 359231. Smart mutual fund investment solutions with SIP plans starting at ₹1,000/month.',
     ctaTitle: 'Start your SIP journey today.',
     ctaDesc: 'Zero commission, expert guidance, and ₹1,000/month minimum — invest in India\'s top funds.',
     ctaBtn: 'Get Free Consultation',

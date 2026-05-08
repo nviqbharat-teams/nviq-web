@@ -191,7 +191,7 @@ type InvestmentPlan = {
           </span>
           <div>
             <p class="trust-title">Offered via trusted financial partners</p>
-            <p class="trust-subtitle">SEBI registered partners</p>
+            <p class="trust-subtitle">Free Consultation • AMFI Registered • ARN No: 359231</p>
           </div>
         </div>
 
@@ -366,4 +366,3 @@ export class MutualFundsSectionComponent implements OnDestroy {
     return Number.isFinite(parsed) ? parsed : fallback;
   }
 }
-

@@ -36,7 +36,7 @@ import { ReviewFormComponent } from '../../components/review-form/review-form.co
     </div>
 
     <!-- Image Slider Hero -->
-    <div class="mf-slider">
+    <div class="mf-slider" (mouseenter)="pauseAutoplay()" (mouseleave)="resumeAutoplay()">
       <app-particle-canvas [count]="40" [lines]="true" [parallax]="0.012"></app-particle-canvas>
 
       <div class="mf-slides-track">
@@ -513,6 +513,14 @@ export class MutualFundPageComponent implements OnInit, OnDestroy {
   goToSlide(i: number): void {
     clearInterval(this.timer);
     this.currentSlide = i;
+    this.startAutoplay();
+  }
+
+  pauseAutoplay(): void {
+    clearInterval(this.timer);
+  }
+
+  resumeAutoplay(): void {
     this.startAutoplay();
   }
 

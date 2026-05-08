@@ -1,6 +1,7 @@
 ﻿import {
   AfterViewInit,
   CUSTOM_ELEMENTS_SCHEMA,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -223,7 +224,7 @@ Invest Smart. Grow Wealth.
       </div>
 
       <!-- ── Swiper Carousel ── -->
-      <div class="swiper-shell" [class.visible]="sectionVisible">
+      <div class="swiper-shell" [class.visible]="sectionVisible" *ngIf="slides.length > 0">
         <swiper-container
           #swiperEl
           class="mf-swiper"
@@ -347,7 +348,7 @@ Invest Smart. Grow Wealth.
 
       <!-- Disclaimer -->
       <p class="mf-disclaimer">
-        ⚠️ Mutual Funds are subject to market risks. Read all scheme-related documents carefully before investing. &nbsp;|&nbsp; AMFI Registered · ARN No: 359231
+        ⚠️ Mutual Funds are subject to market risks. Read all scheme-related documents carefully before investing. &nbsp;|&nbsp; Free Consultation • AMFI Registered · ARN No: 359231
       </p>
 
     </section>
@@ -889,6 +890,14 @@ Invest Smart. Grow Wealth.
     .tag-color-4 { color: #F43F5E; border-color: #F43F5E44; background: #F43F5E11; }
     .tag-color-5 { color: #0EA5E9; border-color: #0EA5E944; background: #0EA5E911; }
 
+    /* ─── Image rendering ────────────────────────────────── */
+    img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      display: block;
+    }
+
     /* ─── Responsive ─────────────────────────────────────  */
     @media (max-width: 900px) {
       .sip-card { grid-template-columns: 1fr; }
@@ -912,6 +921,7 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
 
   private ngZone = inject(NgZone);
   private api    = inject(ApiService);
+  private cdr    = inject(ChangeDetectorRef);
 
   private readonly SLIDE_STYLES: Array<{ iconGrad: [string, string]; glowColor: string }> = [
     { iconGrad: ['#3B82F6', '#2563EB'], glowColor: 'rgba(59,130,246,0.18)' },
@@ -1036,6 +1046,20 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
         if (res.success && res.data?.length) {
           this.slides = res.data.map((fund, i) => this.fundToSlide(fund, i));
           this.selectedSlide = this.slides[0];
+          
+          // Trigger change detection to render the swiper
+          this.cdr.detectChanges();
+          
+          // Refresh swiper after DOM updates
+          setTimeout(() => {
+            const swiper = this.swiperEl?.nativeElement?.swiper;
+            if (swiper) {
+              swiper.update();
+              swiper.autoplay?.start?.();
+            }
+            // Dispatch resize event for responsive calculations
+            window.dispatchEvent(new Event('resize'));
+          }, 100);
         }
       },
       error: () => { /* fallback: keep hardcoded slides */ }
@@ -1076,10 +1100,12 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
     // Show immediately — component is only rendered when already on screen
     setTimeout(() => {
       this.sectionVisible = true;
+      this.cdr.detectChanges();
 
       // Sync swiper auto-play with the detail panel
       const swiper = this.swiperEl?.nativeElement?.swiper;
       if (swiper) {
+        swiper.update();
         swiper.on('slideChange', () => {
           this.ngZone.run(() => {
             const idx = swiper.realIndex ?? 0;
@@ -1095,6 +1121,7 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
         (entries) => {
           if (entries[0].isIntersecting) {
             this.sectionVisible = true;
+            this.cdr.detectChanges();
             obs.disconnect();
           }
         },

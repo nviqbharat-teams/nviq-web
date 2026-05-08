@@ -104,7 +104,7 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
         <div class="pd-hero-inner">
           <span class="pd-tag" style="color:#3B82F6;border-color:rgba(59,130,246,0.3);background:rgba(59,130,246,0.07)">Wealth Management</span>
           <h1 class="pd-heading pd-heading-green">Grow Your Wealth</h1>
-          <p class="pd-sub">SEBI-registered mutual fund investments built for India's fleet operators. SIP plans starting at ₹1,000/month.</p>
+          <p class="pd-sub">Free Consultation • AMFI Registered • ARN No: 359231. Smart mutual fund investment solutions with SIP plans starting at ₹1,000/month.</p>
           <button class="pd-cta-btn pd-cta-green" (click)="nav.openModalFor('mf')" type="button">
             Start Investing Today
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>

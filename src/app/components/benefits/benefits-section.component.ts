@@ -237,13 +237,13 @@ export class BenefitsSectionComponent implements AfterViewInit, OnDestroy {
     {
       iconPath: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
       iconColor: '#A78BFA', glow: 'rgba(167,139,250,0.1)',
-      title: 'Expert Guidance', desc: 'SEBI-registered advisors review your portfolio quarterly and recommend rebalancing to keep you on track for every goal.',
+      title: 'Expert Guidance', desc: 'Free Consultation • AMFI Registered guidance with ARN No: 359231 helps review your portfolio quarterly and keeps every goal on track.',
       stat: '5K+', statLabel: 'Investors Guided', statTarget: 5000, statSuffix: '+'
     },
     {
       iconPath: 'M12 2l8 4v6c0 5-3.3 8.6-8 10-4.7-1.4-8-5-8-10V6l8-4zM9.2 12.4l2 2 3.6-4',
       iconColor: '#FB923C', glow: 'rgba(251,146,60,0.1)',
-      title: 'Secure Platform', desc: 'Bank-grade 256-bit encryption, SEBI & AMFI registration, and 2FA protect every transaction and document.',
+      title: 'Secure Platform', desc: 'Bank-grade 256-bit encryption, AMFI registration, ARN No: 359231, and 2FA protect every transaction and document.',
       stat: '99.9', statLabel: '% Uptime SLA', statTarget: 99.9, statSuffix: '%'
     },
   ];
@@ -270,7 +270,7 @@ export class BenefitsSectionComponent implements AfterViewInit, OnDestroy {
     {
       iconPath: 'M12 2l8 4v6c0 5-3.3 8.6-8 10-4.7-1.4-8-5-8-10V6l8-4zM9.2 12.4l2 2 3.6-4',
       iconColor: '#FB923C', glow: 'rgba(251,146,60,0.1)',
-      title: 'Certified Compliance', desc: 'Stay audit-ready with automated logs, digital trip sheets, and SEBI-aligned financial reporting for mixed fleets.',
+      title: 'Certified Compliance', desc: 'Stay audit-ready with automated logs, digital trip sheets, and compliance-ready financial reporting for mixed fleets.',
       stat: '99.9', statLabel: '% Uptime SLA', statTarget: 99.9, statSuffix: '%'
     },
   ];

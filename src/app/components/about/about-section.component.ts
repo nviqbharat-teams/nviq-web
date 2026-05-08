@@ -2,6 +2,10 @@ import {
   Component, OnInit, OnDestroy, NgZone
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subscription, interval } from 'rxjs';
+import { io, Socket } from 'socket.io-client';
+import { ApiService, LiveGpsStats } from '../../services/api.service';
+import { environment } from '../../../environments/environment';
 import { TiltDirective }         from '../../directives/tilt.directive';
 import { RevealDirective }       from '../../directives/reveal.directive';
 import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.component';
@@ -23,7 +27,8 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
         <p class="ab-hero-desc">With passion and precision, we deliver cutting-edge GPS, fintech, and AI solutions that empower fleet businesses across India to operate smarter and grow faster.</p>
         <div class="ab-hero-chips">
           <span class="ab-chip">Founded 2026</span>
-          <span class="ab-chip">SEBI Registered</span>
+          <span class="ab-chip">Free Consultation • AMFI Registered</span>
+          <span class="ab-chip">ARN No: 359231</span>
           <span class="ab-chip">Pan-India</span>
         </div>
       </div>
@@ -60,7 +65,7 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
             </p>
             <p>
               Founded in 2026, we're building at the intersection of GPS technology,
-              AI-powered analytics, and SEBI-registered investment management — all in one platform
+              AI-powered analytics, and Free Consultation • AMFI Registered investment support with ARN No: 359231 — all in one platform
               that works on day one without changing how you operate.
             </p>
           </div>
@@ -108,6 +113,21 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
                 <span class="ab-tl-year" [style.color]="m.color">{{ m.year }}</span>
                 <h4>{{ m.title }}</h4>
                 <p>{{ m.desc }}</p>
+                <ng-container *ngIf="m.liveStats">
+                  <div class="ab-live-row">
+                    <span class="ab-live-pill">Live Stats</span>
+                    <span class="ab-live-status">
+                      <span class="ab-live-pulse"></span>
+                      Updated {{ lastGpsStatsUpdateLabel }}
+                    </span>
+                  </div>
+                  <div class="ab-live-grid">
+                    <div class="ab-live-stat" *ngFor="let stat of gpsLiveStatCards">
+                      <strong>{{ formatLiveValue(stat.value, stat.suffix) }}</strong>
+                      <span>{{ stat.label }}</span>
+                    </div>
+                  </div>
+                </ng-container>
               </div>
             </div>
           </div>
@@ -433,6 +453,49 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
       font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 6px;
     }
     .ab-tl-card p { font-size: 0.84rem; color: rgba(255,255,255,0.45); line-height: 1.6; }
+    .ab-live-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-top: 18px; margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .ab-live-pill {
+      display: inline-flex; align-items: center;
+      padding: 5px 10px; border-radius: 999px;
+      border: 1px solid rgba(59,130,246,0.28);
+      background: rgba(59,130,246,0.1);
+      color: #8ec5ff; font-size: 10px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.14em;
+    }
+    .ab-live-status {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 600;
+    }
+    .ab-live-pulse {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #38bdf8; box-shadow: 0 0 14px rgba(56,189,248,0.8);
+      animation: abPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes abPulse {
+      0%, 100% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+    .ab-live-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px; margin-top: 4px;
+    }
+    .ab-live-stat {
+      padding: 12px 14px; border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .ab-live-stat strong {
+      display: block; color: #fff; font-size: 1.2rem;
+      font-weight: 900; letter-spacing: -0.03em; line-height: 1.1;
+    }
+    .ab-live-stat span {
+      display: block; margin-top: 4px;
+      color: rgba(255,255,255,0.46); font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
 
     /* Responsive */
     @media (max-width: 1024px) {
@@ -453,16 +516,21 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
         align-items: flex-start;
       }
       .ab-tl-dot { left: 20px; }
+      .ab-live-grid { grid-template-columns: 1fr; }
     }
   `]
 })
 export class AboutSectionComponent implements OnInit, OnDestroy {
   private timer: any;
+  private pollingSub?: Subscription;
+  private socket?: Socket;
+  private animationHandles = new Map<string, number>();
+  private readonly socketUrl = environment.apiUrl.replace(/\/api$/, '');
 
   stats = [
     { val: '2026',   label: 'Founded in India',  color: '#60A5FA' },
     { val: '99.9%',  label: 'Platform Uptime',   color: '#a78bfa' },
-    { val: 'SEBI',   label: 'Registered',         color: '#22c55e' },
+    { val: 'AMFI',   label: 'ARN No: 359231',     color: '#22c55e' },
     { val: 'India',  label: 'Headquartered',      color: '#3B82F6' },
   ];
 
@@ -488,8 +556,8 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
     {
       icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4',
       color: '#22c55e', glow: 'rgba(34,197,94,0.1)',
-      title: 'SEBI Compliant',
-      desc: 'SEBI & AMFI registered mutual fund platform — zero commission, full transparency.',
+      title: 'AMFI Registered',
+      desc: 'Free Consultation • AMFI Registered mutual fund platform with ARN No: 359231, zero commission, and full transparency.',
     },
     {
       icon: 'M23 6l-9.5 9.5-5-5L1 18M17 6h6v6',
@@ -518,17 +586,129 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
     },
     {
       year: 'Q3 2026', color: '#a78bfa',
-      title: 'SEBI Registration',
-      desc: 'Mutual fund platform receives SEBI registration. Zero-commission SIPs activated.',
+      title: 'AMFI Registration',
+      desc: 'Mutual fund platform launches with Free Consultation • AMFI Registered support and ARN No: 359231.',
     },
     {
       year: 'Q4 2026', color: '#f59e0b',
-      title: '10,000 Vehicles Milestone',
-      desc: 'Fleet tracking crosses 10,000 active vehicles and ₹500Cr+ in managed assets.',
+      title: '0 Active Vehicles',
+      desc: 'Real-time GPS tracking actively monitoring commercial fleets across India with smart alerts, live tracking, fuel analytics, and route intelligence.',
+      liveStats: true,
     },
   ];
 
-  constructor(private ngZone: NgZone) {}
-  ngOnInit(): void {}
-  ngOnDestroy(): void { clearInterval(this.timer); }
+  gpsLiveStatCards = [
+    { key: 'vehiclesOnline', label: 'Vehicles Online', value: 0, suffix: '+' },
+    { key: 'tripsTracked', label: 'Trips Tracked', value: 0, suffix: '+' },
+    { key: 'smartAlerts', label: 'Smart Alerts', value: 0, suffix: '+' },
+    { key: 'citiesCovered', label: 'Cities Covered', value: 0, suffix: '+' },
+  ];
+
+  lastGpsStatsUpdateLabel = 'just now';
+
+  constructor(
+    private ngZone: NgZone,
+    private apiService: ApiService,
+  ) {}
+
+  ngOnInit(): void {
+    this.startGpsStatsFeed();
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.timer);
+    this.pollingSub?.unsubscribe();
+    this.socket?.disconnect();
+    this.animationHandles.forEach((handle) => cancelAnimationFrame(handle));
+    this.animationHandles.clear();
+  }
+
+  private startGpsStatsFeed(): void {
+    this.fetchGpsStats();
+    this.pollingSub = interval(15000).subscribe(() => this.fetchGpsStats());
+
+    this.socket = io(this.socketUrl, {
+      transports: ['websocket', 'polling'],
+      path: '/socket.io',
+      timeout: 3000,
+      reconnection: false,
+    });
+
+    this.socket.on('gps:live-stats', (stats: LiveGpsStats) => {
+      this.ngZone.run(() => this.applyGpsStats(stats));
+    });
+
+    this.socket.on('connect_error', () => {
+      this.socket?.disconnect();
+    });
+  }
+
+  private fetchGpsStats(): void {
+    this.apiService.getLiveGpsStats().subscribe({
+      next: (response) => this.applyGpsStats(response.data),
+      error: () => undefined,
+    });
+  }
+
+  private applyGpsStats(stats: LiveGpsStats): void {
+    const nextValues: Record<string, number> = {
+      vehiclesOnline: stats.vehiclesOnline,
+      tripsTracked: stats.tripsTracked,
+      smartAlerts: stats.smartAlerts,
+      citiesCovered: stats.citiesCovered,
+    };
+
+    this.gpsLiveStatCards.forEach((card) => {
+      const targetValue = nextValues[card.key];
+      this.animateLiveValue(card.key, card.value, targetValue);
+    });
+
+    this.lastGpsStatsUpdateLabel = this.formatUpdatedAt(stats.updatedAt);
+  }
+
+  private animateLiveValue(key: string, fromValue: number, toValue: number): void {
+    if (fromValue === toValue) return;
+
+    const existing = this.animationHandles.get(key);
+    if (existing) cancelAnimationFrame(existing);
+
+    const start = performance.now();
+    const duration = 900;
+
+    const tick = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.round(fromValue + ((toValue - fromValue) * eased));
+
+      this.gpsLiveStatCards = this.gpsLiveStatCards.map((card) =>
+        card.key === key ? { ...card, value } : card
+      );
+
+      if (progress < 1) {
+        const handle = requestAnimationFrame(tick);
+        this.animationHandles.set(key, handle);
+      } else {
+        this.animationHandles.delete(key);
+      }
+    };
+
+    const handle = requestAnimationFrame(tick);
+    this.animationHandles.set(key, handle);
+  }
+
+  formatLiveValue(value: number, suffix = ''): string {
+    return `${new Intl.NumberFormat('en-IN').format(value)}${suffix}`;
+  }
+
+  private formatUpdatedAt(updatedAt: string): string {
+    const diffMs = Date.now() - new Date(updatedAt).getTime();
+    const diffSeconds = Math.max(0, Math.round(diffMs / 1000));
+    if (diffSeconds < 5) return 'just now';
+    if (diffSeconds < 60) return `${diffSeconds}s ago`;
+
+    const diffMinutes = Math.round(diffSeconds / 60);
+    if (diffMinutes < 60) return `${diffMinutes}m ago`;
+
+    return 'recently';
+  }
 }
