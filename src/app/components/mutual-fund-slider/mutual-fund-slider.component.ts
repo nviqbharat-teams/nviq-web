@@ -1,6 +1,7 @@
 ﻿import {
   AfterViewInit,
   CUSTOM_ELEMENTS_SCHEMA,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -223,7 +224,7 @@ Invest Smart. Grow Wealth.
       </div>
 
       <!-- ── Swiper Carousel ── -->
-      <div class="swiper-shell" [class.visible]="sectionVisible">
+      <div class="swiper-shell" [class.visible]="sectionVisible" *ngIf="slides.length > 0">
         <swiper-container
           #swiperEl
           class="mf-swiper"
@@ -304,46 +305,30 @@ Invest Smart. Grow Wealth.
 
       <!-- ── Detail Panel ── -->
       <div class="detail-panel" [class.visible]="sectionVisible" *ngIf="selectedSlide">
-        <div class="detail-inner" [style.--accent]="selectedSlide.iconGrad[0]">
+        <div class="detail-card" [style.--accent]="selectedSlide.iconGrad[0]">
 
-          <div class="detail-left">
-            <div class="detail-icon"
-              [style.background]="'linear-gradient(135deg,' + selectedSlide.iconGrad[0] + ',' + selectedSlide.iconGrad[1] + ')'">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
-                stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path [attr.d]="selectedSlide.iconPath"/>
-              </svg>
-            </div>
-            <span class="detail-tag"
-              [style.color]="selectedSlide.iconGrad[0]"
-              [style.background]="selectedSlide.iconGrad[0] + '18'">
-              {{ selectedSlide.tag }}
-            </span>
-          </div>
+          <h2 class="detail-title">{{ selectedSlide.title }}</h2>
+          <p class="detail-desc">{{ selectedSlide.details }}</p>
 
-          <div class="detail-body">
-            <h2 class="detail-title">{{ selectedSlide.title }}</h2>
-            <p class="detail-desc">{{ selectedSlide.details }}</p>
-            <ul class="detail-lines">
-              <li *ngFor="let line of selectedSlide.lines">
+          <ul class="detail-lines">
+            <li *ngFor="let line of selectedSlide.lines">
+              <span class="detail-check">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
                   <path d="M20 6L9 17l-5-5"/>
                 </svg>
-                {{ line }}
-              </li>
-            </ul>
-          </div>
+              </span>
+              {{ line }}
+            </li>
+          </ul>
 
-          <div class="detail-right">
-            <button class="detail-cta" (click)="openModal.emit()" type="button">
-              Get Started
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </button>
-          </div>
+          <button class="detail-cta" (click)="openModal.emit()" type="button">
+            Get Started
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
 
         </div>
       </div>
@@ -363,7 +348,7 @@ Invest Smart. Grow Wealth.
 
       <!-- Disclaimer -->
       <p class="mf-disclaimer">
-        ⚠️ Mutual Funds are subject to market risks. Read all scheme-related documents carefully before investing.
+        ⚠️ Mutual Funds are subject to market risks. Read all scheme-related documents carefully before investing. &nbsp;|&nbsp; Free Consultation • AMFI Registered · ARN No: 359231
       </p>
 
     </section>
@@ -580,80 +565,71 @@ Invest Smart. Grow Wealth.
     /* ─── Detail panel ───────────────────────────────────  */
     .detail-panel {
       position: relative; z-index: 2;
-      max-width: 1060px; margin: 0 auto;
-      padding: 0 20px 0;
+      max-width: 520px; margin: 0 auto;
+      padding: 0 20px;
       opacity: 0; transform: translateY(20px);
       transition: opacity 0.65s ease 0.2s, transform 0.65s ease 0.2s;
     }
     .detail-panel.visible { opacity: 1; transform: none; }
 
-    .detail-inner {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-      padding: 28px 32px;
-      border-radius: 20px;
-      border: 1px solid rgba(var(--accent-rgb, 0,212,255), 0.2);
-      background: var(--bg-card);
-      border-color: color-mix(in srgb, var(--accent, var(--brand-cyan)) 30%, transparent);
-      box-shadow: 0 4px 32px rgba(0,0,0,0.2);
-      backdrop-filter: blur(12px);
+    .detail-card {
+      padding: 36px 32px 32px;
+      border-radius: 24px;
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.07);
+      box-shadow: 0 8px 48px rgba(0,0,0,0.12), 0 2px 12px rgba(0,0,0,0.06);
       animation: detailIn 0.35s ease;
     }
     @keyframes detailIn {
-      from { opacity: 0; transform: translateY(8px); }
+      from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: none; }
     }
 
-    .detail-left {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 10px; flex-shrink: 0;
-    }
-    .detail-icon {
-      width: 60px; height: 60px; border-radius: 16px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .detail-tag {
-      padding: 3px 12px; border-radius: 999px;
-      font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      white-space: nowrap;
-    }
-
-    .detail-body { flex: 1; min-width: 0; }
     .detail-title {
       font-family: var(--font-display);
-      font-size: 1.4rem; font-weight: 900;
-      color: var(--text-primary); margin: 0 0 8px;
-      letter-spacing: -0.02em;
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      font-weight: 900; letter-spacing: -0.03em;
+      color: #0F172A; margin: 0 0 12px; line-height: 1.15;
     }
+
     .detail-desc {
-      color: var(--text-secondary); font-size: 0.9rem;
-      line-height: 1.6; margin: 0 0 14px;
+      color: #64748B;
+      font-size: 0.95rem; line-height: 1.7;
+      margin: 0 0 22px;
     }
+
     .detail-lines {
-      list-style: none; padding: 0; margin: 0;
-      display: flex; flex-wrap: wrap; gap: 8px 20px;
+      list-style: none; padding: 0; margin: 0 0 28px;
+      display: flex; flex-direction: column; gap: 14px;
     }
     .detail-lines li {
-      display: flex; align-items: center; gap: 6px;
-      color: var(--text-secondary); font-size: 0.82rem;
+      display: flex; align-items: center; gap: 12px;
+      color: #334155; font-size: 0.95rem; font-weight: 500;
     }
-    .detail-lines li svg { color: #3B82F6; flex-shrink: 0; }
+    .detail-check {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(59,130,246,0.1);
+      border: 1.5px solid rgba(59,130,246,0.35);
+      display: flex; align-items: center; justify-content: center;
+      color: #3B82F6;
+    }
 
-    .detail-right { flex-shrink: 0; }
     .detail-cta {
-      display: inline-flex; align-items: center; gap: 8px;
-      height: 46px; padding: 0 26px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; height: 56px; border-radius: 16px;
       border: none;
-      background: linear-gradient(135deg, var(--brand-cyan), var(--brand-indigo));
+      background: linear-gradient(135deg, #3B82F6, #6366F1);
       color: #fff; font-family: var(--font-display);
-      font-size: 13.5px; font-weight: 700; cursor: pointer;
-      box-shadow: 0 4px 20px rgba(37,99,235,0.25);
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      box-shadow: 0 8px 32px rgba(37,99,235,0.3);
       transition: transform 0.25s ease, box-shadow 0.25s ease;
-      white-space: nowrap;
     }
-    .detail-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(37,99,235,0.35); }
+    .detail-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 48px rgba(37,99,235,0.5);
+    }
+    .detail-cta svg { transition: transform 0.2s ease; }
+    .detail-cta:hover svg { transform: translateX(4px); }
 
     /* ─── Dot nav ────────────────────────────────────────  */
     .dot-nav {
@@ -683,7 +659,7 @@ Invest Smart. Grow Wealth.
       position: relative; z-index: 2;
       text-align: center;
       font-size: 12px;
-      color: rgba(255,255,255,0.7);
+      color: #60A5FA;
       font-family: 'Outfit', sans-serif;
       margin: 20px auto 0;
       padding: 0 24px 14px;
@@ -914,12 +890,16 @@ Invest Smart. Grow Wealth.
     .tag-color-4 { color: #F43F5E; border-color: #F43F5E44; background: #F43F5E11; }
     .tag-color-5 { color: #0EA5E9; border-color: #0EA5E944; background: #0EA5E911; }
 
+    /* ─── Image rendering ────────────────────────────────── */
+    img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      display: block;
+    }
+
     /* ─── Responsive ─────────────────────────────────────  */
     @media (max-width: 900px) {
-      .detail-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
-      .detail-left { flex-direction: row; }
-      .detail-right { width: 100%; }
-      .detail-cta { width: 100%; justify-content: center; }
       .sip-card { grid-template-columns: 1fr; }
       .sip-inputs { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
     }
@@ -941,6 +921,7 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
 
   private ngZone = inject(NgZone);
   private api    = inject(ApiService);
+  private cdr    = inject(ChangeDetectorRef);
 
   private readonly SLIDE_STYLES: Array<{ iconGrad: [string, string]; glowColor: string }> = [
     { iconGrad: ['#3B82F6', '#2563EB'], glowColor: 'rgba(59,130,246,0.18)' },
@@ -1065,6 +1046,20 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
         if (res.success && res.data?.length) {
           this.slides = res.data.map((fund, i) => this.fundToSlide(fund, i));
           this.selectedSlide = this.slides[0];
+          
+          // Trigger change detection to render the swiper
+          this.cdr.detectChanges();
+          
+          // Refresh swiper after DOM updates
+          setTimeout(() => {
+            const swiper = this.swiperEl?.nativeElement?.swiper;
+            if (swiper) {
+              swiper.update();
+              swiper.autoplay?.start?.();
+            }
+            // Dispatch resize event for responsive calculations
+            window.dispatchEvent(new Event('resize'));
+          }, 100);
         }
       },
       error: () => { /* fallback: keep hardcoded slides */ }
@@ -1105,10 +1100,12 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
     // Show immediately — component is only rendered when already on screen
     setTimeout(() => {
       this.sectionVisible = true;
+      this.cdr.detectChanges();
 
       // Sync swiper auto-play with the detail panel
       const swiper = this.swiperEl?.nativeElement?.swiper;
       if (swiper) {
+        swiper.update();
         swiper.on('slideChange', () => {
           this.ngZone.run(() => {
             const idx = swiper.realIndex ?? 0;
@@ -1124,6 +1121,7 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
         (entries) => {
           if (entries[0].isIntersecting) {
             this.sectionVisible = true;
+            this.cdr.detectChanges();
             obs.disconnect();
           }
         },

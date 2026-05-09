@@ -8,7 +8,7 @@ import { CtaSectionComponent } from '../../components/cta/cta-section.component'
 import { TiltDirective } from '../../directives/tilt.directive';
 import { RevealDirective } from '../../directives/reveal.directive';
 import { ParticleCanvasComponent } from '../../components/particle-canvas/particle-canvas.component';
-import { ReviewsSectionComponent } from '../../components/reviews/reviews-section.component';
+import { ReviewFormComponent } from '../../components/review-form/review-form.component';
 
 @Component({
   selector: 'app-mutual-fund-page',
@@ -21,7 +21,7 @@ import { ReviewsSectionComponent } from '../../components/reviews/reviews-sectio
     TiltDirective,
     RevealDirective,
     ParticleCanvasComponent,
-    ReviewsSectionComponent,
+    ReviewFormComponent,
   ],
   template: `
     <!-- Back bar -->
@@ -36,7 +36,7 @@ import { ReviewsSectionComponent } from '../../components/reviews/reviews-sectio
     </div>
 
     <!-- Image Slider Hero -->
-    <div class="mf-slider">
+    <div class="mf-slider" (mouseenter)="pauseAutoplay()" (mouseleave)="resumeAutoplay()">
       <app-particle-canvas [count]="40" [lines]="true" [parallax]="0.012"></app-particle-canvas>
 
       <div class="mf-slides-track">
@@ -82,10 +82,48 @@ import { ReviewsSectionComponent } from '../../components/reviews/reviews-sectio
 
     <!-- Trust bar -->
     <div class="mf-trust-bar" appReveal="up" [revealDelay]="0">
-      <div class="mf-trust-item" *ngFor="let t of trustItems" appTilt [tiltMax]="6" [tiltScale]="1.04">
-        <span class="mf-trust-icon">{{ t.icon }}</span>
-        <span class="mf-trust-text">{{ t.text }}</span>
+
+      <!-- Primary badge: AMFI + ARN -->
+      <div class="mf-trust-item mf-trust-primary" appTilt [tiltMax]="6" [tiltScale]="1.04">
+        <span class="mf-trust-icon">🎯</span>
+        <div class="mf-trust-body">
+          <span class="mf-trust-text">Free Consultation &bull; AMFI Registered</span>
+          <span class="mf-trust-sub mf-trust-arn">ARN No: 359231</span>
+        </div>
       </div>
+
+      <div class="mf-trust-item" appTilt [tiltMax]="6" [tiltScale]="1.04">
+        <span class="mf-trust-icon">💳</span>
+        <div class="mf-trust-body">
+          <span class="mf-trust-text">Zero Commission</span>
+          <span class="mf-trust-sub">On all funds</span>
+        </div>
+      </div>
+
+      <div class="mf-trust-item" appTilt [tiltMax]="6" [tiltScale]="1.04">
+        <span class="mf-trust-icon">📊</span>
+        <div class="mf-trust-body">
+          <span class="mf-trust-text">1000+ Funds</span>
+          <span class="mf-trust-sub">Curated selection</span>
+        </div>
+      </div>
+
+      <div class="mf-trust-item" appTilt [tiltMax]="6" [tiltScale]="1.04">
+        <span class="mf-trust-icon">⚡</span>
+        <div class="mf-trust-body">
+          <span class="mf-trust-text">Instant KYC</span>
+          <span class="mf-trust-sub">Fully online</span>
+        </div>
+      </div>
+
+      <div class="mf-trust-item" appTilt [tiltMax]="6" [tiltScale]="1.04">
+        <span class="mf-trust-icon">🛡️</span>
+        <div class="mf-trust-body">
+          <span class="mf-trust-text">256-bit Encryption</span>
+          <span class="mf-trust-sub">Bank-grade security</span>
+        </div>
+      </div>
+
     </div>
 
     <!-- MF Slider (SIP Calculator + Fund Cards) -->
@@ -98,8 +136,8 @@ import { ReviewsSectionComponent } from '../../components/reviews/reviews-sectio
       <app-mutual-fund-pricing></app-mutual-fund-pricing>
     </div>
 
-    <!-- Reviews -->
-    <app-reviews-section [productType]="'mf'"></app-reviews-section>
+    <!-- User Reviews -->
+    <app-review-form [productType]="'mf'"></app-review-form>
 
     <!-- CTA -->
     <div appReveal="up" [revealDelay]="80">
@@ -343,28 +381,60 @@ import { ReviewsSectionComponent } from '../../components/reviews/reviews-sectio
     /* ── Trust bar ───────────────────────────────────────── */
     .mf-trust-bar {
       display: flex; flex-wrap: wrap; justify-content: center;
-      gap: 12px 24px; padding: 28px 32px;
+      gap: 10px 16px; padding: 24px 32px;
       background: rgba(10,10,20,0.95);
       border-bottom: 1px solid rgba(255,255,255,0.05);
     }
     .mf-trust-item {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px 20px; border-radius: 12px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 18px; border-radius: 12px;
       border: 1px solid rgba(59,130,246,0.15);
       background: rgba(59,130,246,0.05);
       cursor: default;
+      transition: border-color 0.2s ease, background 0.2s ease;
     }
-    .mf-trust-icon { font-size: 18px; }
+    .mf-trust-primary {
+      border-color: rgba(59,130,246,0.4) !important;
+      background: rgba(59,130,246,0.12) !important;
+      box-shadow: 0 0 20px rgba(59,130,246,0.15), inset 0 0 14px rgba(59,130,246,0.06);
+    }
+    .mf-trust-item:hover {
+      border-color: rgba(59,130,246,0.3);
+      background: rgba(59,130,246,0.09);
+    }
+    .mf-trust-icon { font-size: 18px; flex-shrink: 0; }
+    .mf-trust-body {
+      display: flex; flex-direction: column; gap: 3px;
+    }
     .mf-trust-text {
-      font-size: 13px; font-weight: 600;
-      color: rgba(255,255,255,0.65);
+      font-size: 13px; font-weight: 700;
+      color: rgba(255,255,255,0.82);
+      line-height: 1.2;
+    }
+    .mf-trust-primary .mf-trust-text {
+      background: linear-gradient(90deg, #60A5FA, #818CF8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .mf-trust-sub {
+      font-size: 10.5px; font-weight: 600;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.04em;
+    }
+    .mf-trust-arn {
+      color: #60A5FA !important;
+      font-weight: 700 !important;
+      font-size: 11px !important;
+      letter-spacing: 0.08em !important;
     }
 
     @media (max-width: 768px) {
       .mfp-back-bar { padding: 10px 16px; }
       .mfp-hero { min-height: 50vh; padding: 60px 16px; }
-      .mf-trust-bar { padding: 20px 16px; gap: 10px; }
-      .mf-trust-item { padding: 8px 14px; }
+      .mf-trust-bar { padding: 18px 16px; gap: 8px 12px; }
+      .mf-trust-item { padding: 8px 12px; }
+      .mf-trust-text { font-size: 12px; }
+      .mf-trust-sub { font-size: 10px; }
     }
   `]
 })
@@ -376,19 +446,18 @@ export class MutualFundPageComponent implements OnInit, OnDestroy {
   private timer: any;
 
   trustItems = [
-    { icon: '🔒', text: 'SEBI Registered' },
-    { icon: '🏦', text: 'AMFI Compliant' },
-    { icon: '💳', text: 'Zero Commission' },
-    { icon: '📊', text: '1000+ Funds' },
-    { icon: '⚡', text: 'Instant KYC' },
-    { icon: '🛡️', text: '256-bit Encryption' },
+    { icon: '🎯', text: 'Free Consultation • AMFI Registered', sub: 'ARN No: 359231' },
+    { icon: '💳', text: 'Zero Commission', sub: 'On all funds' },
+    { icon: '📊', text: '1000+ Funds', sub: 'Curated selection' },
+    { icon: '⚡', text: 'Instant KYC', sub: 'Fully online' },
+    { icon: '🛡️', text: '256-bit Encryption', sub: 'Bank-grade security' },
   ];
 
   mfSlides = [
     {
       tag: 'SIP Investing',
       title: 'Start Your SIP Journey Today',
-      desc: 'Invest as little as ₹1,000/month and watch your wealth grow with the power of compounding. SEBI-registered, zero commission.',
+      desc: 'Invest as little as ₹1,000/month and watch your wealth grow with the power of compounding. AMFI-registered, zero commission.',
       stats: [
         { val: '₹1,000', label: 'Min SIP Amount' },
         { val: '15%+', label: 'Avg. Returns' },
@@ -408,10 +477,10 @@ export class MutualFundPageComponent implements OnInit, OnDestroy {
     {
       tag: 'Secure & Trusted',
       title: 'Bank-Grade Security for Your Money',
-      desc: 'Your investments are protected with 256-bit encryption, two-factor authentication, and full SEBI/AMFI compliance.',
+      desc: 'Your investments are protected with 256-bit encryption, two-factor authentication, and full AMFI compliance. ARN No: 359231.',
       stats: [
         { val: '256-bit', label: 'Encryption' },
-        { val: 'SEBI', label: 'Registered' },
+        { val: 'AMFI', label: 'ARN: 359231' },
         { val: '₹0', label: 'Hidden Charges' },
       ]
     },
@@ -444,6 +513,14 @@ export class MutualFundPageComponent implements OnInit, OnDestroy {
   goToSlide(i: number): void {
     clearInterval(this.timer);
     this.currentSlide = i;
+    this.startAutoplay();
+  }
+
+  pauseAutoplay(): void {
+    clearInterval(this.timer);
+  }
+
+  resumeAutoplay(): void {
     this.startAutoplay();
   }
 

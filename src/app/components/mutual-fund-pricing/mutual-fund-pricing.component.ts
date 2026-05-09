@@ -676,7 +676,8 @@ export class MutualFundPricingComponent implements AfterViewInit, OnDestroy {
     'Zero Entry Load on all funds',
     'Zero Exit Load on most funds*',
     'No hidden charges — ever',
-    '100% SEBI regulated & audited',
+    'Free Consultation • AMFI Registered',
+    'ARN No: 359231',
   ];
 
   get activePlans(): PricingPlan[] {
@@ -709,4 +710,3 @@ export class MutualFundPricingComponent implements AfterViewInit, OnDestroy {
     this.obs?.disconnect();
   }
 }
-

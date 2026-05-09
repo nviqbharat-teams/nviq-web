@@ -27,13 +27,13 @@ const PRODUCT_CONFIG: Record<string, ModalConfig> = {
     trustItems: ['No payment required now', 'Setup in 10 minutes', 'Built for fleet owners'],
   },
   mf: {
-    badge:      'SEBI Registered • Zero Commission',
+    badge:      'Free Consultation • AMFI Registered',
     badgeColor: '#6EE7B7',
     title:      'Start Your SIP Journey Today',
     subtitle:   'Invest in top mutual funds from',
     accentText: '₹1,000 per month',
     buttonText: 'Get Free Consultation',
-    trustItems: ['No investment required now', 'SEBI & AMFI compliant', 'Zero hidden charges'],
+    trustItems: ['ARN No: 359231', 'No investment required now', 'Zero hidden charges'],
   },
   fastag: {
     badge:      'NHAI Certified FASTag',

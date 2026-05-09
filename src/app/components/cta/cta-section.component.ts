@@ -22,13 +22,13 @@ const CTA_CONFIGS: Record<string, CtaConfig> = {
     chips:   ['Fast onboarding — live in 1 day', 'Dedicated support team', 'No long-term lock-in'],
   },
   mf: {
-    badge:   'Free Consultation · SEBI Registered',
+    badge:   'Free Consultation • AMFI Registered',
     title:   'Ready to Grow Your Wealth',
     accent:  'with Smart Investments?',
-    desc:    'Start your SIP journey with SEBI-registered mutual funds — zero commission, expert guidance, and transparent returns. As little as ₹1,000/month.',
+    desc:    'Start your SIP journey with Free Consultation • AMFI Registered support and ARN No: 359231 — zero commission, expert guidance, and transparent returns. As little as ₹1,000/month.',
     primary: 'Start Investing Now',
     ghost:   'Get Free Consultation',
-    chips:   ['SEBI & AMFI Registered', 'Zero Commission', '₹1,000/month minimum SIP', 'Instant KYC Online'],
+    chips:   ['Free Consultation • AMFI Registered', 'ARN No: 359231', 'Zero Commission', '₹1,000/month minimum SIP'],
   },
 };
 

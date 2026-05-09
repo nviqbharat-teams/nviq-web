@@ -67,8 +67,7 @@ import { CommonModule } from '@angular/common';
 
         <!-- Sub -->
         <p class="hero-sub" [class.reveal]="vis" style="transition-delay:220ms">
-          The only platform that unifies <strong>real-time GPS fleet intelligence</strong> with
-          <strong>SEBI-registered mutual fund investments</strong> — for India's modern fleet operators.
+          <strong>Free Consultation • AMFI Registered • ARN No: 359231.</strong> Smart mutual fund investment solutions with SIP plans starting at <strong>₹1,000/month.</strong>
         </p>
 
         <!-- CTAs -->

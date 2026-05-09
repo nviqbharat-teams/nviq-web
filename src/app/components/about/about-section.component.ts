@@ -2,6 +2,10 @@ import {
   Component, OnInit, OnDestroy, NgZone
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subscription, interval } from 'rxjs';
+import { io, Socket } from 'socket.io-client';
+import { ApiService, LiveGpsStats } from '../../services/api.service';
+import { environment } from '../../../environments/environment';
 import { TiltDirective }         from '../../directives/tilt.directive';
 import { RevealDirective }       from '../../directives/reveal.directive';
 import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.component';
@@ -13,21 +17,19 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
   template: `
     <!-- ══ ABOUT HERO ════════════════════════════════════ -->
     <section class="ab-hero" aria-label="About NViQ">
-      <div class="ab-hero-left">
+      <div class="ab-hero-overlay"></div>
+      <div class="ab-hero-glow"></div>
+      <div class="ab-hero-content">
         <span class="ab-hero-tag">About NViQ</span>
-        <h1 class="ab-hero-title">About <span class="ab-hero-accent">Us</span></h1>
+        <h1 class="ab-hero-title">We Are <span class="ab-hero-accent">NViQ</span></h1>
         <div class="ab-hero-divider"></div>
-        <p class="ab-hero-sub">We are more than just a team,<br>we are a family.</p>
-        <p class="ab-hero-desc">We work together with passion and dedication to deliver the best solutions and build lasting relationships.</p>
+        <p class="ab-hero-sub">More than a team — we are a family<br>redefining Indian fleet intelligence.</p>
+        <p class="ab-hero-desc">With passion and precision, we deliver cutting-edge GPS, fintech, and AI solutions that empower fleet businesses across India to operate smarter and grow faster.</p>
         <div class="ab-hero-chips">
           <span class="ab-chip">Founded 2026</span>
-          <span class="ab-chip">SEBI Registered</span>
+          <span class="ab-chip">Free Consultation • AMFI Registered</span>
+          <span class="ab-chip">ARN No: 359231</span>
           <span class="ab-chip">Pan-India</span>
-        </div>
-      </div>
-      <div class="ab-hero-right">
-        <div class="ab-hero-img-wrap">
-          <img src="/images/about%20slide.jpg.png" alt="NViQ Team" class="ab-hero-img" />
         </div>
       </div>
     </section>
@@ -63,7 +65,7 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
             </p>
             <p>
               Founded in 2026, we're building at the intersection of GPS technology,
-              AI-powered analytics, and SEBI-registered investment management — all in one platform
+              AI-powered analytics, and Free Consultation • AMFI Registered investment support with ARN No: 359231 — all in one platform
               that works on day one without changing how you operate.
             </p>
           </div>
@@ -111,6 +113,21 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
                 <span class="ab-tl-year" [style.color]="m.color">{{ m.year }}</span>
                 <h4>{{ m.title }}</h4>
                 <p>{{ m.desc }}</p>
+                <ng-container *ngIf="m.liveStats">
+                  <div class="ab-live-row">
+                    <span class="ab-live-pill">Live Stats</span>
+                    <span class="ab-live-status">
+                      <span class="ab-live-pulse"></span>
+                      Updated {{ lastGpsStatsUpdateLabel }}
+                    </span>
+                  </div>
+                  <div class="ab-live-grid">
+                    <div class="ab-live-stat" *ngFor="let stat of gpsLiveStatCards">
+                      <strong>{{ formatLiveValue(stat.value, stat.suffix) }}</strong>
+                      <span>{{ stat.label }}</span>
+                    </div>
+                  </div>
+                </ng-container>
               </div>
             </div>
           </div>
@@ -122,104 +139,113 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
   styles: [`
     /* ── About Hero ───────────────────────────────────── */
     .ab-hero {
-      display: flex; align-items: center;
-      gap: 60px;
-      padding: 80px 80px 80px 80px;
-      background: linear-gradient(135deg, #020810 0%, #050d1a 100%);
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      min-height: 480px;
+      position: relative;
+      width: 100%;
+      min-height: 92vh;
+      display: flex; align-items: center; justify-content: flex-end;
+      background: url('/images/about%20slide.jpg.png') center center / cover no-repeat;
+      overflow: hidden;
     }
 
-    .ab-hero-left {
-      flex: 1; display: flex; flex-direction: column;
-      animation: abHeroIn 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    .ab-hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        -120deg,
+        rgba(2,6,16,0.88) 0%,
+        rgba(5,15,35,0.78) 50%,
+        rgba(0,0,0,0.20) 100%
+      );
+      z-index: 1;
+    }
+
+    .ab-hero-glow {
+      position: absolute;
+      bottom: -120px; right: -80px;
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 65%);
+      filter: blur(60px);
+      z-index: 2; pointer-events: none;
+    }
+
+    .ab-hero-content {
+      position: relative; z-index: 3;
+      max-width: 620px;
+      padding: 0 80px;
+      animation: abHeroIn 0.8s cubic-bezier(0.22,1,0.36,1) both;
     }
     @keyframes abHeroIn {
-      from { opacity: 0; transform: translateX(-28px); }
+      from { opacity: 0; transform: translateY(28px); }
       to   { opacity: 1; transform: none; }
     }
 
     .ab-hero-tag {
       display: inline-flex; align-items: center;
-      padding: 5px 16px; border-radius: 999px;
-      border: 1px solid rgba(59,130,246,0.35);
-      background: rgba(59,130,246,0.1);
+      padding: 6px 18px; border-radius: 999px;
+      border: 1px solid rgba(59,130,246,0.45);
+      background: rgba(59,130,246,0.12);
       color: #60A5FA; font-size: 11px; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.14em;
-      margin-bottom: 20px; width: fit-content;
+      margin-bottom: 24px; width: fit-content;
+      box-shadow: 0 0 20px rgba(59,130,246,0.15);
     }
 
     .ab-hero-title {
       font-family: 'Outfit', sans-serif;
-      font-size: clamp(2.8rem, 5vw, 4.5rem);
+      font-size: clamp(3rem, 6vw, 5.5rem);
       font-weight: 900; letter-spacing: -0.03em;
-      color: #F0F6FF; margin: 0 0 16px; line-height: 1.05;
+      color: #F0F6FF; margin: 0 0 18px; line-height: 1.0;
+      text-shadow: 0 4px 40px rgba(0,0,0,0.5);
     }
     .ab-hero-accent {
-      background: linear-gradient(120deg, #3B82F6, #6366F1);
+      background: linear-gradient(120deg, #3B82F6, #818CF8);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
+      filter: drop-shadow(0 0 24px rgba(59,130,246,0.5));
     }
 
     .ab-hero-divider {
-      width: 56px; height: 3px;
+      width: 64px; height: 3px;
       background: linear-gradient(90deg, #3B82F6, #6366F1);
-      border-radius: 999px; margin-bottom: 22px;
+      border-radius: 999px; margin-bottom: 24px;
+      box-shadow: 0 0 16px rgba(59,130,246,0.5);
     }
 
     .ab-hero-sub {
-      font-size: 1.15rem; font-weight: 700;
-      color: #3B82F6; line-height: 1.5; margin: 0 0 12px;
+      font-size: clamp(1.05rem, 2vw, 1.25rem); font-weight: 700;
+      color: rgba(255,255,255,0.9); line-height: 1.5; margin: 0 0 14px;
     }
 
     .ab-hero-desc {
-      font-size: 0.97rem; color: #64748B;
-      line-height: 1.72; margin: 0 0 28px; max-width: 460px;
+      font-size: 0.97rem; color: rgba(255,255,255,0.55);
+      line-height: 1.78; margin: 0 0 32px; max-width: 520px;
     }
 
     .ab-hero-chips {
       display: flex; gap: 10px; flex-wrap: wrap;
     }
     .ab-chip {
-      padding: 5px 14px; border-radius: 999px;
-      border: 1px solid rgba(59,130,246,0.2);
-      background: rgba(59,130,246,0.07);
-      color: #94A3B8; font-size: 12px; font-weight: 600;
-    }
-
-    .ab-hero-right {
-      flex: 0 0 460px;
-      animation: abHeroImgIn 0.8s cubic-bezier(0.22,1,0.36,1) 0.15s both;
-    }
-    @keyframes abHeroImgIn {
-      from { opacity: 0; transform: translateX(28px); }
-      to   { opacity: 1; transform: none; }
-    }
-
-    .ab-hero-img-wrap {
-      background: rgba(59,130,246,0.06);
-      border: 1px solid rgba(59,130,246,0.12);
-      border-radius: 24px; overflow: hidden;
-      padding: 32px;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    .ab-hero-img {
-      width: 100%; max-width: 380px;
-      height: auto; display: block;
-      filter: drop-shadow(0 8px 32px rgba(59,130,246,0.15));
+      padding: 6px 16px; border-radius: 999px;
+      border: 1px solid rgba(59,130,246,0.3);
+      background: rgba(59,130,246,0.1);
+      color: #93C5FD; font-size: 12px; font-weight: 600;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 12px rgba(59,130,246,0.1);
     }
 
     @media (max-width: 1024px) {
-      .ab-hero { flex-direction: column; padding: 60px 40px; text-align: center; }
-      .ab-hero-tag, .ab-hero-divider { margin-left: auto; margin-right: auto; }
-      .ab-hero-desc { max-width: 100%; }
+      .ab-hero { min-height: 75vh; justify-content: center; }
+      .ab-hero-overlay { background: linear-gradient(to top, rgba(2,6,16,0.9) 0%, rgba(2,6,16,0.65) 100%); }
+      .ab-hero-content { padding: 60px 40px; text-align: center; max-width: 100%; }
+      .ab-hero-tag { margin-left: auto; margin-right: auto; }
+      .ab-hero-divider { margin-left: auto; margin-right: auto; }
       .ab-hero-chips { justify-content: center; }
-      .ab-hero-right { flex: 0 0 auto; width: 100%; max-width: 400px; }
+      .ab-hero-desc { max-width: 100%; }
     }
     @media (max-width: 600px) {
-      .ab-hero { padding: 48px 20px; }
-      .ab-hero-title { font-size: 2.4rem; }
+      .ab-hero { min-height: 65vh; }
+      .ab-hero-content { padding: 48px 24px; }
+      .ab-hero-title { font-size: 2.6rem; }
     }
     /* ── About Content Section ────────────────────────── */
     .ab-root {
@@ -427,6 +453,49 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
       font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 6px;
     }
     .ab-tl-card p { font-size: 0.84rem; color: rgba(255,255,255,0.45); line-height: 1.6; }
+    .ab-live-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-top: 18px; margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .ab-live-pill {
+      display: inline-flex; align-items: center;
+      padding: 5px 10px; border-radius: 999px;
+      border: 1px solid rgba(59,130,246,0.28);
+      background: rgba(59,130,246,0.1);
+      color: #8ec5ff; font-size: 10px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.14em;
+    }
+    .ab-live-status {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 600;
+    }
+    .ab-live-pulse {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #38bdf8; box-shadow: 0 0 14px rgba(56,189,248,0.8);
+      animation: abPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes abPulse {
+      0%, 100% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+    .ab-live-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px; margin-top: 4px;
+    }
+    .ab-live-stat {
+      padding: 12px 14px; border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .ab-live-stat strong {
+      display: block; color: #fff; font-size: 1.2rem;
+      font-weight: 900; letter-spacing: -0.03em; line-height: 1.1;
+    }
+    .ab-live-stat span {
+      display: block; margin-top: 4px;
+      color: rgba(255,255,255,0.46); font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
 
     /* Responsive */
     @media (max-width: 1024px) {
@@ -447,16 +516,21 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
         align-items: flex-start;
       }
       .ab-tl-dot { left: 20px; }
+      .ab-live-grid { grid-template-columns: 1fr; }
     }
   `]
 })
 export class AboutSectionComponent implements OnInit, OnDestroy {
   private timer: any;
+  private pollingSub?: Subscription;
+  private socket?: Socket;
+  private animationHandles = new Map<string, number>();
+  private readonly socketUrl = environment.apiUrl.replace(/\/api$/, '');
 
   stats = [
     { val: '2026',   label: 'Founded in India',  color: '#60A5FA' },
     { val: '99.9%',  label: 'Platform Uptime',   color: '#a78bfa' },
-    { val: 'SEBI',   label: 'Registered',         color: '#22c55e' },
+    { val: 'AMFI',   label: 'ARN No: 359231',     color: '#22c55e' },
     { val: 'India',  label: 'Headquartered',      color: '#3B82F6' },
   ];
 
@@ -482,8 +556,8 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
     {
       icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4',
       color: '#22c55e', glow: 'rgba(34,197,94,0.1)',
-      title: 'SEBI Compliant',
-      desc: 'SEBI & AMFI registered mutual fund platform — zero commission, full transparency.',
+      title: 'AMFI Registered',
+      desc: 'Free Consultation • AMFI Registered mutual fund platform with ARN No: 359231, zero commission, and full transparency.',
     },
     {
       icon: 'M23 6l-9.5 9.5-5-5L1 18M17 6h6v6',
@@ -512,17 +586,129 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
     },
     {
       year: 'Q3 2026', color: '#a78bfa',
-      title: 'SEBI Registration',
-      desc: 'Mutual fund platform receives SEBI registration. Zero-commission SIPs activated.',
+      title: 'AMFI Registration',
+      desc: 'Mutual fund platform launches with Free Consultation • AMFI Registered support and ARN No: 359231.',
     },
     {
       year: 'Q4 2026', color: '#f59e0b',
-      title: '10,000 Vehicles Milestone',
-      desc: 'Fleet tracking crosses 10,000 active vehicles and ₹500Cr+ in managed assets.',
+      title: '0 Active Vehicles',
+      desc: 'Real-time GPS tracking actively monitoring commercial fleets across India with smart alerts, live tracking, fuel analytics, and route intelligence.',
+      liveStats: true,
     },
   ];
 
-  constructor(private ngZone: NgZone) {}
-  ngOnInit(): void {}
-  ngOnDestroy(): void { clearInterval(this.timer); }
+  gpsLiveStatCards = [
+    { key: 'vehiclesOnline', label: 'Vehicles Online', value: 0, suffix: '+' },
+    { key: 'tripsTracked', label: 'Trips Tracked', value: 0, suffix: '+' },
+    { key: 'smartAlerts', label: 'Smart Alerts', value: 0, suffix: '+' },
+    { key: 'citiesCovered', label: 'Cities Covered', value: 0, suffix: '+' },
+  ];
+
+  lastGpsStatsUpdateLabel = 'just now';
+
+  constructor(
+    private ngZone: NgZone,
+    private apiService: ApiService,
+  ) {}
+
+  ngOnInit(): void {
+    this.startGpsStatsFeed();
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.timer);
+    this.pollingSub?.unsubscribe();
+    this.socket?.disconnect();
+    this.animationHandles.forEach((handle) => cancelAnimationFrame(handle));
+    this.animationHandles.clear();
+  }
+
+  private startGpsStatsFeed(): void {
+    this.fetchGpsStats();
+    this.pollingSub = interval(15000).subscribe(() => this.fetchGpsStats());
+
+    this.socket = io(this.socketUrl, {
+      transports: ['websocket', 'polling'],
+      path: '/socket.io',
+      timeout: 3000,
+      reconnection: false,
+    });
+
+    this.socket.on('gps:live-stats', (stats: LiveGpsStats) => {
+      this.ngZone.run(() => this.applyGpsStats(stats));
+    });
+
+    this.socket.on('connect_error', () => {
+      this.socket?.disconnect();
+    });
+  }
+
+  private fetchGpsStats(): void {
+    this.apiService.getLiveGpsStats().subscribe({
+      next: (response) => this.applyGpsStats(response.data),
+      error: () => undefined,
+    });
+  }
+
+  private applyGpsStats(stats: LiveGpsStats): void {
+    const nextValues: Record<string, number> = {
+      vehiclesOnline: stats.vehiclesOnline,
+      tripsTracked: stats.tripsTracked,
+      smartAlerts: stats.smartAlerts,
+      citiesCovered: stats.citiesCovered,
+    };
+
+    this.gpsLiveStatCards.forEach((card) => {
+      const targetValue = nextValues[card.key];
+      this.animateLiveValue(card.key, card.value, targetValue);
+    });
+
+    this.lastGpsStatsUpdateLabel = this.formatUpdatedAt(stats.updatedAt);
+  }
+
+  private animateLiveValue(key: string, fromValue: number, toValue: number): void {
+    if (fromValue === toValue) return;
+
+    const existing = this.animationHandles.get(key);
+    if (existing) cancelAnimationFrame(existing);
+
+    const start = performance.now();
+    const duration = 900;
+
+    const tick = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.round(fromValue + ((toValue - fromValue) * eased));
+
+      this.gpsLiveStatCards = this.gpsLiveStatCards.map((card) =>
+        card.key === key ? { ...card, value } : card
+      );
+
+      if (progress < 1) {
+        const handle = requestAnimationFrame(tick);
+        this.animationHandles.set(key, handle);
+      } else {
+        this.animationHandles.delete(key);
+      }
+    };
+
+    const handle = requestAnimationFrame(tick);
+    this.animationHandles.set(key, handle);
+  }
+
+  formatLiveValue(value: number, suffix = ''): string {
+    return `${new Intl.NumberFormat('en-IN').format(value)}${suffix}`;
+  }
+
+  private formatUpdatedAt(updatedAt: string): string {
+    const diffMs = Date.now() - new Date(updatedAt).getTime();
+    const diffSeconds = Math.max(0, Math.round(diffMs / 1000));
+    if (diffSeconds < 5) return 'just now';
+    if (diffSeconds < 60) return `${diffSeconds}s ago`;
+
+    const diffMinutes = Math.round(diffSeconds / 60);
+    if (diffMinutes < 60) return `${diffMinutes}m ago`;
+
+    return 'recently';
+  }
 }

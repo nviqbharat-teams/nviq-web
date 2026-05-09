@@ -15,7 +15,6 @@ import { ProductShowcaseComponent } from '../product-showcase/product-showcase.c
     `
       .pp-wrap {
         background: #0A0A0A;
-        min-height: 100vh;
       }
     `,
   ],

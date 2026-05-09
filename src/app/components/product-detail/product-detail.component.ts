@@ -6,8 +6,8 @@ import { FeaturesSectionComponent } from '../features/features-section.component
 import { BenefitsSectionComponent } from '../benefits/benefits-section.component';
 import { ProblemSectionComponent } from '../problem/problem-section.component';
 import { LiveTrackingSectionComponent } from '../live-tracking/live-tracking-section.component';
-import { ReviewsSectionComponent } from '../reviews/reviews-section.component';
 import { PricingSectionComponent } from '../pricing/pricing-section.component';
+import { ReviewFormComponent } from '../review-form/review-form.component';
 import { CtaSectionComponent } from '../cta/cta-section.component';
 import { MutualFundSliderComponent } from '../mutual-fund-slider/mutual-fund-slider.component';
 import { MutualFundPricingComponent } from '../mutual-fund-pricing/mutual-fund-pricing.component';
@@ -22,8 +22,8 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
     BenefitsSectionComponent,
     ProblemSectionComponent,
     LiveTrackingSectionComponent,
-    ReviewsSectionComponent,
     PricingSectionComponent,
+    ReviewFormComponent,
     CtaSectionComponent,
     MutualFundSliderComponent,
     MutualFundPricingComponent,
@@ -93,7 +93,7 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
       <app-benefits-section [productType]="'gps'"></app-benefits-section>
       <app-problem-section></app-problem-section>
       <app-live-tracking-section></app-live-tracking-section>
-      <app-reviews-section [productType]="'gps'"></app-reviews-section>
+      <app-review-form [productType]="'gps'"></app-review-form>
       <app-pricing-section (openModal)="nav.openModalFor('gps')"></app-pricing-section>
       <app-cta-section (openModal)="nav.openModalFor('gps')"></app-cta-section>
     </ng-container>
@@ -104,7 +104,7 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
         <div class="pd-hero-inner">
           <span class="pd-tag" style="color:#3B82F6;border-color:rgba(59,130,246,0.3);background:rgba(59,130,246,0.07)">Wealth Management</span>
           <h1 class="pd-heading pd-heading-green">Grow Your Wealth</h1>
-          <p class="pd-sub">SEBI-registered mutual fund investments built for India's fleet operators. SIP plans starting at ₹1,000/month.</p>
+          <p class="pd-sub">Free Consultation • AMFI Registered • ARN No: 359231. Smart mutual fund investment solutions with SIP plans starting at ₹1,000/month.</p>
           <button class="pd-cta-btn pd-cta-green" (click)="nav.openModalFor('mf')" type="button">
             Start Investing Today
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -115,8 +115,8 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
       <app-mutual-fund-slider (openModal)="nav.openModalFor('mf')"></app-mutual-fund-slider>
       <app-features-section [productType]="'mf'"></app-features-section>
       <app-benefits-section [productType]="'mf'"></app-benefits-section>
-      <app-reviews-section [productType]="'mf'"></app-reviews-section>
       <app-mutual-fund-pricing></app-mutual-fund-pricing>
+      <app-review-form [productType]="'mf'"></app-review-form>
       <app-cta-section [product]="'mf'" (openModal)="nav.openModalFor('mf')"></app-cta-section>
     </ng-container>
 

@@ -122,7 +122,7 @@ const servicesData = [
   },
   {
     title:       'Mutual Fund Platform',
-    description: 'Goal-based SIP investing powered by AI recommendations. Track NAV, manage portfolios, and grow wealth with SEBI-registered advisory.',
+    description: 'Goal-based SIP investing powered by AI recommendations. Track NAV, manage portfolios, and grow wealth with Free Consultation • AMFI Registered support. ARN No: 359231.',
     icon:        '📈',
     isActive:    true,
     order:       2,
