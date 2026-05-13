@@ -657,6 +657,11 @@ export class LeadModalComponent implements OnChanges {
       this.errorMsg = 'Please fill all required fields.';
       return;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      this.errorMsg = 'Please enter a valid email address (e.g. you@gmail.com).';
+      return;
+    }
     if ((selectedProduct === 'gps' || selectedProduct === 'fastag') && (!company.trim() || !fleetSize)) {
       this.errorMsg = 'Please fill company name and fleet size.';
       return;
