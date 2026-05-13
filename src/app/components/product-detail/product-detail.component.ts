@@ -10,7 +10,6 @@ import { PricingSectionComponent } from '../pricing/pricing-section.component';
 import { ReviewFormComponent } from '../review-form/review-form.component';
 import { CtaSectionComponent } from '../cta/cta-section.component';
 import { MutualFundSliderComponent } from '../mutual-fund-slider/mutual-fund-slider.component';
-import { MutualFundPricingComponent } from '../mutual-fund-pricing/mutual-fund-pricing.component';
 import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.component';
 import { AmcPartnersComponent } from '../amc-partners/amc-partners.component';
 
@@ -27,7 +26,6 @@ import { AmcPartnersComponent } from '../amc-partners/amc-partners.component';
     ReviewFormComponent,
     CtaSectionComponent,
     MutualFundSliderComponent,
-    MutualFundPricingComponent,
     ComingSoonSectionComponent,
     AmcPartnersComponent,
   ],
@@ -140,7 +138,6 @@ import { AmcPartnersComponent } from '../amc-partners/amc-partners.component';
       <app-amc-partners></app-amc-partners>
 
       <app-features-section [productType]="'mf'"></app-features-section>
-      <app-mutual-fund-pricing></app-mutual-fund-pricing>
       <app-review-form [productType]="'mf'"></app-review-form>
       <app-cta-section [product]="'mf'"></app-cta-section>
     </ng-container>
