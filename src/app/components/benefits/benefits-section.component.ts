@@ -275,7 +275,7 @@ export class BenefitsSectionComponent implements AfterViewInit, OnDestroy {
       iconPath: 'M12 21s6-5.2 6-10a6 6 0 1 0-12 0c0 4.8 6 10 6 10zM12 11m-2 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0',
       iconColor: '#00D4FF', glow: 'rgba(0,212,255,0.08)',
       tag: 'Basic',
-      title: 'Core Series',
+      title: 'NViQ Lite',
       desc: 'Entry-level GPS tracking for small fleets. Real-time location, trip history, and driver behavior monitoring out of the box.',
       stat: '', statLabel: '', statTarget: 0, statSuffix: ''
     },
@@ -283,7 +283,7 @@ export class BenefitsSectionComponent implements AfterViewInit, OnDestroy {
       iconPath: 'M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01',
       iconColor: '#34D399', glow: 'rgba(52,211,153,0.08)',
       tag: '4G',
-      title: 'Smart Series',
+      title: 'NViQ Smart',
       desc: 'High-speed 4G connectivity with live alerts, geo-fencing, and route analytics for growing mid-size fleets.',
       stat: '', statLabel: '', statTarget: 0, statSuffix: ''
     },
@@ -291,7 +291,7 @@ export class BenefitsSectionComponent implements AfterViewInit, OnDestroy {
       iconPath: 'M23 6l-9.5 9.5-5-5L1 18M17 6h6v6',
       iconColor: '#A78BFA', glow: 'rgba(167,139,250,0.08)',
       tag: 'Pro',
-      title: 'Intelli Series',
+      title: 'NViQ Pro',
       desc: 'AI-powered fleet intelligence with predictive maintenance, fuel cost analytics, and advanced multi-branch reporting.',
       stat: '', statLabel: '', statTarget: 0, statSuffix: ''
     },
@@ -299,7 +299,7 @@ export class BenefitsSectionComponent implements AfterViewInit, OnDestroy {
       iconPath: 'M12 2l8 4v6c0 5-3.3 8.6-8 10-4.7-1.4-8-5-8-10V6l8-4zM9.2 12.4l2 2 3.6-4',
       iconColor: '#FB923C', glow: 'rgba(251,146,60,0.08)',
       tag: 'AIS140',
-      title: 'Secure Series',
+      title: 'NViQ AIS140',
       desc: 'AIS140-certified devices meeting all government mandates for commercial vehicle compliance, panic alerts, and audit-ready logs.',
       stat: '', statLabel: '', statTarget: 0, statSuffix: ''
     },
