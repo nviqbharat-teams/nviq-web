@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
 export type Page = 'home' | 'products' | 'product-detail' | 'about' | 'team' | 'contact';
-export type ProductKey = 'gps' | 'mf' | 'fastag' | 'drone';
+export type ProductKey = 'gps' | 'mf' | 'fastag' | 'drone' | 'insurance' | 'ai' | 'other';
 
 export interface ActiveFundData {
   title:   string;
