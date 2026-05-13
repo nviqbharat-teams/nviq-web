@@ -23,8 +23,6 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
         <span class="ab-hero-tag">About NViQ</span>
         <h1 class="ab-hero-title">We Are <span class="ab-hero-accent">NViQ</span></h1>
         <div class="ab-hero-divider"></div>
-        <p class="ab-hero-sub">More than a team — we are a family<br>redefining Indian fleet intelligence.</p>
-        <p class="ab-hero-desc">With passion and precision, we deliver cutting-edge GPS, fintech, and AI solutions that empower fleet businesses across India to operate smarter and grow faster.</p>
         <div class="ab-hero-chips">
           <span class="ab-chip">Founded 2026</span>
           <span class="ab-chip">Free Consultation • AMFI Registered</span>
