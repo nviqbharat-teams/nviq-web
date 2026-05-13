@@ -12,6 +12,7 @@ import { CtaSectionComponent } from '../cta/cta-section.component';
 import { MutualFundSliderComponent } from '../mutual-fund-slider/mutual-fund-slider.component';
 import { MutualFundPricingComponent } from '../mutual-fund-pricing/mutual-fund-pricing.component';
 import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.component';
+import { AmcPartnersComponent } from '../amc-partners/amc-partners.component';
 
 @Component({
   selector: 'app-product-detail',
@@ -28,6 +29,7 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
     MutualFundSliderComponent,
     MutualFundPricingComponent,
     ComingSoonSectionComponent,
+    AmcPartnersComponent,
   ],
   template: `
     <!-- Back button -->
@@ -94,8 +96,8 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
       <app-problem-section></app-problem-section>
       <app-live-tracking-section></app-live-tracking-section>
       <app-review-form [productType]="'gps'"></app-review-form>
-      <app-pricing-section (openModal)="nav.openModalFor('gps')"></app-pricing-section>
-      <app-cta-section (openModal)="nav.openModalFor('gps')"></app-cta-section>
+      <app-pricing-section></app-pricing-section>
+      <app-cta-section></app-cta-section>
     </ng-container>
 
     <!-- Mutual Fund product (NavService path — router path uses MutualFundPageComponent) -->
@@ -112,12 +114,35 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
         </div>
         <div class="pd-hero-glow pd-hero-glow-green" aria-hidden="true"></div>
       </div>
-      <app-mutual-fund-slider (openModal)="nav.openModalFor('mf')"></app-mutual-fund-slider>
+      <app-mutual-fund-slider></app-mutual-fund-slider>
+
+      <!-- Investment Details -->
+      <section class="mf-invest-details">
+        <div class="mfid-header">
+          <span class="mfid-eyebrow"><span class="mfid-dot"></span>Personalized Planning</span>
+          <h2 class="mfid-title">Everything You Need to Invest Smart</h2>
+          <p class="mfid-sub">Comprehensive investment planning tools designed for every type of investor.</p>
+        </div>
+        <div class="mfid-grid">
+          <div class="mfid-item" *ngFor="let item of mfInvestItems">
+            <div class="mfid-icon-wrap" [style.background]="item.iconBg">
+              <span class="mfid-icon">{{ item.icon }}</span>
+            </div>
+            <div class="mfid-content">
+              <span class="mfid-item-title">{{ item.title }}</span>
+              <span class="mfid-item-desc">{{ item.desc }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AMC Partners -->
+      <app-amc-partners></app-amc-partners>
+
       <app-features-section [productType]="'mf'"></app-features-section>
-      <app-benefits-section [productType]="'mf'"></app-benefits-section>
       <app-mutual-fund-pricing></app-mutual-fund-pricing>
       <app-review-form [productType]="'mf'"></app-review-form>
-      <app-cta-section [product]="'mf'" (openModal)="nav.openModalFor('mf')"></app-cta-section>
+      <app-cta-section [product]="'mf'"></app-cta-section>
     </ng-container>
 
     <!-- Fastag product -->
@@ -519,10 +544,75 @@ import { ComingSoonSectionComponent } from '../coming-soon/coming-soon-section.c
       .pd-hero { min-height: 50vh; padding: 60px 16px; }
       .pd-gps-img-grid { height: 240px; gap: 8px; }
     }
+
+    /* ── MF Investment Details ──────────────────────────── */
+    .mf-invest-details {
+      padding: 80px 32px 72px;
+      background: linear-gradient(180deg, #060C1A 0%, #040810 100%);
+    }
+    .mfid-header { text-align: center; max-width: 620px; margin: 0 auto 52px; }
+    .mfid-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.16em; color: #60A5FA; margin-bottom: 14px;
+    }
+    .mfid-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #60A5FA; box-shadow: 0 0 8px #60A5FA;
+    }
+    .mfid-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+      font-weight: 900; letter-spacing: -0.03em; color: #fff; margin: 0 0 14px;
+    }
+    .mfid-sub {
+      font-size: clamp(0.88rem, 1.3vw, 1rem);
+      color: rgba(255,255,255,0.48); line-height: 1.7; margin: 0;
+    }
+    .mfid-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px; max-width: 1100px; margin: 0 auto;
+    }
+    .mfid-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 20px 22px; border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+    }
+    .mfid-item:hover {
+      border-color: rgba(96,165,250,0.25);
+      background: rgba(59,130,246,0.05); transform: translateY(-3px);
+    }
+    .mfid-icon-wrap {
+      width: 42px; height: 42px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .mfid-icon { font-size: 18px; }
+    .mfid-content { display: flex; flex-direction: column; gap: 4px; }
+    .mfid-item-title { font-size: 14px; font-weight: 800; color: rgba(255,255,255,0.9); }
+    .mfid-item-desc  { font-size: 12.5px; color: rgba(255,255,255,0.45); line-height: 1.55; }
+    @media (max-width: 768px) {
+      .mf-invest-details { padding: 56px 16px 48px; }
+      .mfid-grid { grid-template-columns: 1fr; }
+    }
   `]
 })
 export class ProductDetailComponent implements OnInit, OnDestroy {
   constructor(public nav: NavService, private route: ActivatedRoute) {}
+
+  mfInvestItems = [
+    { icon: '💰', iconBg: 'rgba(59,130,246,0.15)',  title: 'Monthly Investment Budget',  desc: 'Set and adjust your SIP amount anytime — start from as low as ₹500/month.' },
+    { icon: '🎯', iconBg: 'rgba(99,102,241,0.15)',  title: 'Investment Goal',             desc: 'Plan for retirement, child education, home purchase, or wealth creation.' },
+    { icon: '📈', iconBg: 'rgba(16,185,129,0.15)',  title: 'Investment Experience',       desc: 'Beginner to expert — get fund recommendations matched to your experience level.' },
+    { icon: '⚖️', iconBg: 'rgba(245,158,11,0.15)',  title: 'Risk Profile',                desc: 'Assess your risk tolerance and discover funds aligned with your comfort zone.' },
+    { icon: '📊', iconBg: 'rgba(239,68,68,0.15)',   title: 'Expected Return',             desc: 'Compare historical returns across funds and project your future wealth growth.' },
+    { icon: '🕐', iconBg: 'rgba(167,139,250,0.15)', title: 'Investment Duration',         desc: 'Short-term or long-term — pick funds with the right time horizon for your needs.' },
+    { icon: '📅', iconBg: 'rgba(59,130,246,0.15)',  title: 'SIP Planning',                desc: 'Auto-debit scheduling, pause & resume SIPs, and systematic step-up options.' },
+    { icon: '🧾', iconBg: 'rgba(16,185,129,0.15)',  title: 'Tax Saving Details',          desc: 'ELSS funds for 80C deductions up to ₹1.5L per year — save tax while you grow.' },
+    { icon: '📱', iconBg: 'rgba(99,102,241,0.15)',  title: 'Portfolio Tracking',          desc: 'Real-time NAV, XIRR calculation, and consolidated portfolio view in one place.' },
+  ];
 
   /* ── GPS Slider ─────────────────────────────────────── */
   currentGpsSlide = 0;
@@ -550,8 +640,6 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   ];
 
   ngOnInit(): void {
-    // When loaded via Angular Router (direct URL), nav.product() won't be set.
-    // Derive the product key from the URL path segments.
     if (!this.nav.product()) {
       const path = this.route.snapshot.url.map(s => s.path).join('/');
       const urlMap: Record<string, ProductKey> = {
@@ -561,6 +649,12 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       };
       const key = Object.keys(urlMap).find(k => path.includes(k));
       if (key) this.nav.go('product-detail', urlMap[key]);
+    }
+    if (this.nav.product() === 'mf') {
+      setTimeout(() => {
+        const el = document.getElementById('mutual-funds');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 800);
     }
     this.startGpsAutoplay();
   }

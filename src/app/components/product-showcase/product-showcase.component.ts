@@ -18,9 +18,10 @@ interface ShowcaseProduct {
   subtitle: string;
   features: string[];
   accent: string;
-  gradient: string; // left-to-right
+  gradient: string;
   visual: 'mf' | 'gps' | 'fastag' | 'drone';
-  floats: ShowcaseFloat[]; // Stats, Status, Notifications
+  floats: ShowcaseFloat[];
+  enquiryCta: string;
 }
 
 interface Pt3D {
@@ -61,6 +62,7 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
         { label: 'Status',  value: 'SIP Active' },
         { label: 'Alerts',  value: 'Market' },
       ],
+      enquiryCta: 'Start Investing Today',
     },
     {
       id: 'gps',
@@ -75,6 +77,7 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
         { label: 'Status', value: 'Active' },
         { label: 'Alerts', value: 'Geo-fence' },
       ],
+      enquiryCta: 'Start Free Trial',
     },
     {
       id: 'fastag',
@@ -89,6 +92,7 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
         { label: 'Status',  value: 'Ready' },
         { label: 'Mode',    value: 'Auto-Recharge' },
       ],
+      enquiryCta: 'Request Demo',
     },
     {
       id: 'drone',
@@ -103,6 +107,7 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
         { label: 'Status',  value: 'In Field' },
         { label: 'Alerts',  value: 'Crop Health' },
       ],
+      enquiryCta: 'Request Demo',
     },
   ];
 
@@ -118,6 +123,11 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
 
   openProduct(productId: ProductKey): void {
     this.nav.go('product-detail', productId);
+  }
+
+  openEnquiry(productId: ProductKey, event: Event): void {
+    event.stopPropagation();
+    this.nav.openModalFor(productId);
   }
 
   private initParticles(): void {

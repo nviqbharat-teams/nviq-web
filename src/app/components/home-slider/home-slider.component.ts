@@ -1579,7 +1579,7 @@ export class HomeSliderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onCta(slide: Slide): void {
     if (slide.type === 'product' && slide.id) {
-      this.nav.go('product-detail', slide.id);
+      this.nav.go('product-detail', slide.id as ProductKey);
     } else if (slide.navPage) {
       this.nav.go(slide.navPage);
     }

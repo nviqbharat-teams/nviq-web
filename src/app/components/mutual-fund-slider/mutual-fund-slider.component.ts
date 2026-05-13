@@ -5,10 +5,13 @@
   Component,
   ElementRef,
   EventEmitter,
+  Input,
+  Output,
   NgZone,
   OnDestroy,
   OnInit,
-  Output,
+  OnChanges,
+  SimpleChanges,
   ViewChild,
   inject,
 } from '@angular/core';
@@ -16,6 +19,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { register } from 'swiper/element/bundle';
 import { ApiService, Fund } from '../../services/api.service';
+import { NavService } from '../../services/nav.service';
 
 register();
 
@@ -209,7 +213,7 @@ Invest Smart. Grow Wealth.
                   <p class="sstat-val sstat-big">{{ formatINR(maturityValue) }}</p>
                 </div>
 
-                <button class="sip-invest-btn" type="button" (click)="openModal.emit()">
+                <button class="sip-invest-btn" type="button" (click)="nav.openModalFor('mf')">
                   Start Investing Now
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -233,7 +237,7 @@ Invest Smart. Grow Wealth.
           space-between="24"
           grab-cursor="true"
           loop="true"
-          autoplay-delay="3000"
+          autoplay-delay="2000"
           autoplay-pause-on-mouse-enter="true"
           autoplay-disable-on-interaction="false"
           speed="520"
@@ -245,7 +249,7 @@ Invest Smart. Grow Wealth.
           >
             <div
               class="slide-card"
-              [class.is-active]="selectedSlide.id === slide.id"
+              [class.is-active]="selectedSlide?.id === slide.id"
               (click)="selectSlide(slide)"
               [style.--glow]="slide.glowColor"
             >
@@ -283,7 +287,7 @@ Invest Smart. Grow Wealth.
               </ul>
 
               <!-- Active indicator -->
-              <div class="active-bar" [class.show]="selectedSlide.id === slide.id"></div>
+              <div class="active-bar" [class.show]="selectedSlide?.id === slide.id"></div>
             </div>
           </swiper-slide>
         </swiper-container>
@@ -322,7 +326,7 @@ Invest Smart. Grow Wealth.
             </li>
           </ul>
 
-          <button class="detail-cta" (click)="openModal.emit()" type="button">
+          <button class="detail-cta" (click)="nav.openModalFor('mf')" type="button">
             Get Started
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -915,12 +919,14 @@ Invest Smart. Grow Wealth.
     }
   `],
 })
-export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Output() openModal = new EventEmitter<void>();
+export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
+  @Input() activeSlideIndex = 0;
+  @Output() slideSelected = new EventEmitter<number>();
   @ViewChild('swiperEl') swiperEl!: ElementRef;
 
   private ngZone = inject(NgZone);
   private api    = inject(ApiService);
+  nav            = inject(NavService);
   private cdr    = inject(ChangeDetectorRef);
 
   private readonly SLIDE_STYLES: Array<{ iconGrad: [string, string]; glowColor: string }> = [
@@ -1040,30 +1046,39 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
     },
   ];
 
+  private pushActiveFund(slide: MFSlide): void {
+    this.nav.setActiveFund({ title: slide.title, tag: slide.tag, lines: slide.lines, details: slide.details });
+  }
+
   ngOnInit(): void {
+    this.selectedSlide = this.slides[0];
+    this.pushActiveFund(this.slides[0]);
     this.api.getFunds({ limit: 10 }).subscribe({
       next: (res) => {
         if (res.success && res.data?.length) {
           this.slides = res.data.map((fund, i) => this.fundToSlide(fund, i));
           this.selectedSlide = this.slides[0];
-          
-          // Trigger change detection to render the swiper
+          this.pushActiveFund(this.slides[0]);
           this.cdr.detectChanges();
-          
-          // Refresh swiper after DOM updates
           setTimeout(() => {
-            const swiper = this.swiperEl?.nativeElement?.swiper;
-            if (swiper) {
-              swiper.update();
-              swiper.autoplay?.start?.();
+            const sw = this.swiperEl?.nativeElement?.swiper;
+            if (sw) {
+              sw.loopDestroy?.();
+              sw.update();
+              sw.loopCreate?.();
+              sw.slideToLoop(0, 0);
+              sw.autoplay?.start?.();
             }
-            // Dispatch resize event for responsive calculations
             window.dispatchEvent(new Event('resize'));
           }, 100);
         }
       },
       error: () => { /* fallback: keep hardcoded slides */ }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.iobs.forEach(o => o.disconnect());
   }
 
   private fundToSlide(fund: Fund, index: number): MFSlide {
@@ -1094,22 +1109,23 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngAfterViewInit(): void {
-    this.selectedSlide = this.selectedSlide ?? this.slides[0];
     this.calculateSIP();
 
-    // Show immediately — component is only rendered when already on screen
     setTimeout(() => {
       this.sectionVisible = true;
       this.cdr.detectChanges();
 
-      // Sync swiper auto-play with the detail panel
       const swiper = this.swiperEl?.nativeElement?.swiper;
       if (swiper) {
         swiper.update();
         swiper.on('slideChange', () => {
           this.ngZone.run(() => {
             const idx = swiper.realIndex ?? 0;
-            this.selectedSlide = this.slides[idx % this.slides.length];
+            const slide = this.slides[idx % this.slides.length];
+            if (slide) {
+              this.selectedSlide = slide;
+              this.pushActiveFund(slide);
+            }
           });
         });
       }
@@ -1132,12 +1148,23 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
     }
   }
 
-  ngOnDestroy(): void {
-    this.iobs.forEach((o) => o.disconnect());
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['activeSlideIndex'] && !changes['activeSlideIndex'].isFirstChange() && this.slides.length > 0) {
+      const idx = changes['activeSlideIndex'].currentValue;
+      if (idx >= 0 && idx < this.slides.length) {
+        this.selectedSlide = this.slides[idx];
+        const swiper = this.swiperEl?.nativeElement?.swiper;
+        if (swiper) swiper.slideToLoop(idx);
+      }
+    }
   }
 
   selectSlide(slide: MFSlide): void {
     this.selectedSlide = slide;
+    this.pushActiveFund(slide);
+    // Emit the slide index for synchronization with hero slider
+    const idx = this.slides.findIndex(s => s.id === slide.id);
+    this.slideSelected.emit(idx);
     // Jump swiper to matching slide so auto-play stays in sync
     const swiper = this.swiperEl?.nativeElement?.swiper;
     if (swiper) {

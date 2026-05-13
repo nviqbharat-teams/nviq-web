@@ -107,10 +107,15 @@
               </li>
             </ul>
 
-            <button type="button" class="ps-arrow-btn" (click)="openProduct(p.id); $event.stopPropagation()">
-              <span class="ps-arrow-text">Explore</span>
-              <span class="ps-arrow" aria-hidden="true">→</span>
-            </button>
+            <div class="ps-cta-row">
+              <button type="button" class="ps-enquiry-btn" (click)="openEnquiry(p.id, $event)">
+                {{ p.enquiryCta }}
+              </button>
+              <button type="button" class="ps-arrow-btn" (click)="openProduct(p.id); $event.stopPropagation()">
+                <span class="ps-arrow-text">Explore</span>
+                <span class="ps-arrow" aria-hidden="true">→</span>
+              </button>
+            </div>
           </div>
         </div>
       </article>

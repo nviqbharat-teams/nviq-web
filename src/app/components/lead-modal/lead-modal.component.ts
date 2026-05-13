@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnChanges, inject } from '@angu
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
-import { ProductKey } from '../../services/nav.service';
+import { NavService, ProductKey } from '../../services/nav.service';
 
 // ── Per-product modal copy ────────────────────────────────────────────────────
 
@@ -157,15 +157,10 @@ const PRODUCT_CONFIG: Record<string, ModalConfig> = {
               </div>
 
               <div class="lm-field">
-                <label class="lm-label">Vehicle Type</label>
-                <select [(ngModel)]="form.vehicleType" class="lm-input lm-select">
-                  <option value="" disabled>Select vehicle type</option>
-                  <option value="Trucks">Trucks / Heavy Vehicles</option>
-                  <option value="Buses">Buses / Passenger</option>
-                  <option value="Cars">Cars / Light Vehicles</option>
-                  <option value="Mixed">Mixed Fleet</option>
-                  <option value="Two-wheelers">Two-wheelers</option>
-                </select>
+                <label class="lm-label">Requirement Details</label>
+                <textarea [(ngModel)]="form.requirement"
+                  placeholder="Tell us about your fleet tracking needs..."
+                  class="lm-input lm-textarea" rows="3"></textarea>
               </div>
 
             </ng-container>
@@ -364,6 +359,7 @@ const PRODUCT_CONFIG: Record<string, ModalConfig> = {
       cursor: pointer;
     }
     .lm-select option { background: #0F172A; color: #fff; }
+    .lm-textarea { resize: vertical; min-height: 80px; padding: 11px 14px; line-height: 1.55; }
 
     .lm-radio-group {
       display: flex; gap: 8px; flex-wrap: wrap;
@@ -442,6 +438,7 @@ export class LeadModalComponent implements OnChanges {
   @Output() closeModal = new EventEmitter<void>();
 
   private api = inject(ApiService);
+  private nav = inject(NavService);
 
   submitted = false;
   sending   = false;
@@ -452,13 +449,28 @@ export class LeadModalComponent implements OnChanges {
     email:       '',
     company:     '',  // GPS only
     fleetSize:   '',  // GPS only
-    vehicleType: '',  // GPS only
+    requirement: '',  // GPS only
     budget:      '',  // MF only
     goal:        '',  // MF only
     experience:  '',  // MF only
   };
 
   get cfg(): ModalConfig {
+    if (this.productType === 'mf') {
+      const fund = this.nav.activeFund();
+      if (fund) {
+        const minSIPLine = fund.lines.find(l => l.toLowerCase().includes('sip') || l.includes('₹'));
+        return {
+          badge:      fund.tag + ' • AMFI Registered',
+          badgeColor: '#6EE7B7',
+          title:      `Start Investing in ${fund.title}`,
+          subtitle:   'Get free consultation for',
+          accentText: minSIPLine ?? '₹1,000 per month',
+          buttonText: 'Get Free Consultation',
+          trustItems: ['ARN No: 359231', 'No investment required now', 'Zero hidden charges'],
+        };
+      }
+    }
     return PRODUCT_CONFIG[this.productType ?? 'default'] ?? PRODUCT_CONFIG['default'];
   }
 
@@ -478,19 +490,19 @@ export class LeadModalComponent implements OnChanges {
       this.submitted = false;
       this.errorMsg  = '';
       this.sending   = false;
-      this.form = { name: '', phone: '', email: '', company: '', fleetSize: '', vehicleType: '', budget: '', goal: '', experience: '' };
+      this.form = { name: '', phone: '', email: '', company: '', fleetSize: '', requirement: '', budget: '', goal: '', experience: '' };
     } else {
       document.body.style.overflow = '';
     }
   }
 
   submit(): void {
-    const { name, phone, email, company, fleetSize, vehicleType, budget, goal, experience } = this.form;
+    const { name, phone, email, company, fleetSize, requirement, budget, goal, experience } = this.form;
     if (!name.trim() || !phone.trim() || !email.trim()) {
       this.errorMsg = 'Please fill all fields before submitting.';
       return;
     }
-    if (this.productType === 'gps' && (!company.trim() || !fleetSize || !vehicleType)) {
+    if (this.productType === 'gps' && (!company.trim() || !fleetSize)) {
       this.errorMsg = 'Please fill all fleet details.';
       return;
     }
@@ -507,7 +519,7 @@ export class LeadModalComponent implements OnChanges {
     const obs = (pt === 'gps' || pt === 'mf' || pt === 'fastag' || pt === 'drone')
       ? this.api.submitProductEnquiry(pt, {
           name: name.trim(), email: email.trim(), phone: phone.trim(),
-          ...(pt === 'gps'  && { company: company.trim(), fleetSize, vehicleType }),
+          ...(pt === 'gps'  && { company: company.trim(), fleetSize, requirement: requirement.trim() }),
           ...(pt === 'mf'   && { budget, goal, experience }),
         })
       : this.api.submitContact({

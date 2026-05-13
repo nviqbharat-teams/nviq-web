@@ -60,7 +60,7 @@ import { NavService } from '../../services/nav.service';
               <a routerLink="/about">About</a>
               <a href="#">Careers</a>
               <a href="#">Blog</a>
-              <a routerLink="/contact">Contact</a>
+              <a href="javascript:void(0)" (click)="goContact()">Contact</a>
               <a href="#">Press Kit</a>
             </div>
             <div class="f-col">
@@ -79,7 +79,7 @@ import { NavService } from '../../services/nav.service';
             <h3>{{ isMF ? mfContent.ctaTitle : gpsContent.ctaTitle }}</h3>
             <p>{{ isMF ? mfContent.ctaDesc : gpsContent.ctaDesc }}</p>
           </div>
-          <a routerLink="/contact" class="fcta-btn">{{ isMF ? mfContent.ctaBtn : gpsContent.ctaBtn }} -></a>
+          <button type="button" class="fcta-btn" (click)="goContact()">{{ isMF ? mfContent.ctaBtn : gpsContent.ctaBtn }} -></button>
         </div>
 
         <div class="footer-bottom">
@@ -255,6 +255,9 @@ import { NavService } from '../../services/nav.service';
       color: #fff;
       font-weight: 700;
       font-size: 14px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
       border-radius: 12px;
       text-decoration: none;
       white-space: nowrap;
@@ -317,6 +320,14 @@ export class FooterComponent {
   get showCta(): boolean {
     const url = this.router.url;
     return !url.includes('/contact') && !url.includes('/about');
+  }
+
+  goContact(): void {
+    if (this.router.url !== '/') {
+      this.router.navigate(['/']).then(() => this.nav.go('contact'));
+    } else {
+      this.nav.go('contact');
+    }
   }
 
   gpsContent = {

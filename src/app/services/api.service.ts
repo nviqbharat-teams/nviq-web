@@ -80,7 +80,7 @@ export interface ProductEnquiryPayload {
   // GPS-specific optional fields
   company?:     string;
   fleetSize?:   string;
-  vehicleType?: string;
+  requirement?: string;
   // MF-specific optional fields
   budget?:     string;
   goal?:       string;
@@ -181,8 +181,8 @@ export class ApiService {
 
     const { source } = meta[productType];
     let { message } = meta[productType];
-    if (productType === 'gps' && (payload.company || payload.fleetSize || payload.vehicleType)) {
-      message += ` | Company: ${payload.company ?? '-'} | Fleet Size: ${payload.fleetSize ?? '-'} | Vehicle Type: ${payload.vehicleType ?? '-'}`;
+    if (productType === 'gps' && (payload.company || payload.fleetSize || payload.requirement)) {
+      message += ` | Company: ${payload.company ?? '-'} | Fleet Size: ${payload.fleetSize ?? '-'} | Requirement: ${payload.requirement ?? '-'}`;
     }
     if (productType === 'mf' && (payload.budget || payload.goal || payload.experience)) {
       message += ` | Budget: ${payload.budget ?? '-'} | Goal: ${payload.goal ?? '-'} | Experience: ${payload.experience ?? '-'}`;
