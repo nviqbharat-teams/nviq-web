@@ -63,14 +63,6 @@ import { NavService } from '../../services/nav.service';
           </div>
         </div>
 
-        <div class="footer-cta-banner" *ngIf="showCta">
-          <div class="fcta-left">
-            <h3>{{ isMF ? mfContent.ctaTitle : gpsContent.ctaTitle }}</h3>
-            <p>{{ isMF ? mfContent.ctaDesc : gpsContent.ctaDesc }}</p>
-          </div>
-          <button type="button" class="fcta-btn" (click)="goContact()">{{ isMF ? mfContent.ctaBtn : gpsContent.ctaBtn }} -></button>
-        </div>
-
         <div class="footer-bottom">
           <p class="footer-copy">� 2026 NViQ Technologies Pvt. Ltd. � Built in India</p>
           <div class="footer-bottom-links">
