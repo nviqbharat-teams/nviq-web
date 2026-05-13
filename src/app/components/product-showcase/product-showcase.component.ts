@@ -46,6 +46,21 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
 
   readonly products: ShowcaseProduct[] = [
     {
+      id: 'gps',
+      title: 'GPS Tracking System',
+      subtitle: 'Real-time fleet visibility & smart alerts',
+      features: ['Live vehicle tracking', 'Geo-fencing & alerts', 'Route analytics'],
+      accent: '#2563EB',
+      gradient: '',
+      visual: 'gps',
+      floats: [
+        { label: 'Live',   value: 'Tracking' },
+        { label: 'Status', value: 'Active' },
+        { label: 'Alerts', value: 'Geo-fence' },
+      ],
+      enquiryCta: 'Start Free Trial',
+    },
+    {
       id: 'mf',
       title: 'Mutual Fund Platform',
       subtitle: 'Smart investing for a better tomorrow',
@@ -63,21 +78,6 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
         { label: 'Alerts',  value: 'Market' },
       ],
       enquiryCta: 'Start Investing Today',
-    },
-    {
-      id: 'gps',
-      title: 'GPS Tracking System',
-      subtitle: 'Real-time fleet visibility & smart alerts',
-      features: ['Live vehicle tracking', 'Geo-fencing & alerts', 'Route analytics'],
-      accent: '#2563EB',
-      gradient: '',
-      visual: 'gps',
-      floats: [
-        { label: 'Live',   value: 'Tracking' },
-        { label: 'Status', value: 'Active' },
-        { label: 'Alerts', value: 'Geo-fence' },
-      ],
-      enquiryCta: 'Start Free Trial',
     },
     {
       id: 'fastag',
