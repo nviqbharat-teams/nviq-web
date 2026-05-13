@@ -22,7 +22,7 @@ import { NavService } from '../../services/nav.service';
             GPS Pricing
           </span>
           <h2 class="ps-title">Plans That Scale With Your <span class="ps-accent">Fleet</span></h2>
-          <p class="ps-sub">No hidden fees. Cancel anytime. Start with a 14-day free trial.</p>
+          <p class="ps-sub">No hidden fees. Cancel anytime. Start with a 90-day trial.</p>
         </div>
 
         <!-- Cards -->
@@ -67,7 +67,7 @@ import { NavService } from '../../services/nav.service';
             </div>
             <div class="ps-price-wrap">
               <span class="ps-currency ps-currency-pro">₹</span>
-              <span class="ps-amount ps-amount-pro">2999</span>
+              <span class="ps-amount ps-amount-pro">2599</span>
             </div>
             <div class="ps-divider ps-divider-pro"></div>
             <ul class="ps-features">
@@ -398,7 +398,7 @@ export class PricingSectionComponent {
 
   proFeatures = [
     'Mobile App Access',
-    '90 Days Subscription',
+    '1 Year Subscription',
     'Live GPS Tracking',
     'Alerts',
     'Daily Reports',
