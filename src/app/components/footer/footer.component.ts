@@ -63,14 +63,6 @@ import { NavService } from '../../services/nav.service';
               <a href="javascript:void(0)" (click)="goContact()">Contact</a>
               <a href="#">Press Kit</a>
             </div>
-            <div class="f-col">
-              <h4>Support</h4>
-              <a href="#">Documentation</a>
-              <a href="#">Platform Status</a>
-              <a href="#">Help Center</a>
-              <a href="#">Privacy Policy</a>
-              <a href="#">Terms</a>
-            </div>
           </div>
         </div>
 
@@ -119,7 +111,7 @@ import { NavService } from '../../services/nav.service';
       display: grid;
       grid-template-columns: 320px 1fr;
       gap: 64px;
-      padding: 72px 0 48px;
+      padding: 40px 0 48px;
       border-bottom: 1px solid rgba(255,255,255,0.05);
       margin-bottom: 32px;
     }

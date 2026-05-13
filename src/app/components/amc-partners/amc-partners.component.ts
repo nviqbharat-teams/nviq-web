@@ -118,7 +118,7 @@ interface AmcCard {
 
     .amc-root {
       position: relative; overflow: hidden;
-      padding: 80px 0 60px;
+      padding: 80px 0 24px;
       background: linear-gradient(180deg, #050A14 0%, #030810 100%);
     }
     .amc-bg-orb {
