@@ -25,6 +25,7 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
         <div class="ab-hero-divider"></div>
         <div class="ab-hero-chips">
           <span class="ab-chip">Founded 2026</span>
+          <span class="ab-chip">10+ Years GPS Experience</span>
           <span class="ab-chip">Free Consultation • AMFI Registered</span>
           <span class="ab-chip">ARN No: 359231</span>
           <span class="ab-chip">Pan-India</span>
@@ -62,7 +63,7 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
               — the data tools and investment infrastructure previously only available to the biggest players.
             </p>
             <p>
-              Founded in 2026, we're building at the intersection of GPS technology,
+              Backed by 10+ years of GPS and fleet tracking expertise, we're building at the intersection of GPS technology,
               AI-powered analytics, and Free Consultation • AMFI Registered investment support with ARN No: 359231 — all in one platform
               that works on day one without changing how you operate.
             </p>
@@ -526,16 +527,22 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
   private readonly socketUrl = environment.apiUrl.replace(/\/api$/, '');
 
   stats = [
-    { val: '2026',   label: 'Founded in India',  color: '#60A5FA' },
-    { val: '99.9%',  label: 'Platform Uptime',   color: '#a78bfa' },
-    { val: 'AMFI',   label: 'ARN No: 359231',     color: '#22c55e' },
-    { val: 'India',  label: 'Headquartered',      color: '#3B82F6' },
+    { val: '10+',    label: 'Years GPS Experience', color: '#00D4FF' },
+    { val: '2026',   label: 'Founded in India',     color: '#60A5FA' },
+    { val: '99.9%',  label: 'Platform Uptime',      color: '#a78bfa' },
+    { val: 'AMFI',   label: 'ARN No: 359231',        color: '#22c55e' },
   ];
 
   values = [
     {
-      icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2',
+      icon: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
       color: '#00D4FF', glow: 'rgba(0,212,255,0.1)',
+      title: '10+ Years of GPS Expertise',
+      desc: 'Over a decade of hands-on GPS and fleet tracking experience powering smarter routes, safer drivers, and profitable operations across India.',
+    },
+    {
+      icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2',
+      color: '#3B82F6', glow: 'rgba(59,130,246,0.1)',
       title: 'Data First',
       desc: 'Every product decision is backed by measurable outcomes. No vanity features.',
     },
