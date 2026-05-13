@@ -57,8 +57,7 @@ import { NavService } from '../../services/nav.service';
             </div>
             <div class="f-col">
               <h4>Company</h4>
-              <a routerLink="/about">About</a>
-              <a href="#">Careers</a>
+              <a href="javascript:void(0)" (click)="goAbout()">About</a>
               <a href="javascript:void(0)" (click)="goContact()">Contact</a>
             </div>
           </div>
@@ -317,6 +316,14 @@ export class FooterComponent {
       this.router.navigate(['/']).then(() => this.nav.go('contact'));
     } else {
       this.nav.go('contact');
+    }
+  }
+
+  goAbout(): void {
+    if (this.router.url !== '/') {
+      this.router.navigate(['/']).then(() => this.nav.go('about'));
+    } else {
+      this.nav.go('about');
     }
   }
 
