@@ -29,11 +29,9 @@ import { NavService } from '../../services/nav.service';
             </a>
             <p class="f-tagline">{{ isMF ? mfContent.tagline : gpsContent.tagline }}</p>
             <div class="f-socials">
-              <a href="#" class="f-social" aria-label="LinkedIn">in</a>
-              <a href="#" class="f-social" aria-label="X">x</a>
-              <a href="#" class="f-social" aria-label="WhatsApp">wa</a>
               <a href="https://www.facebook.com/profile.php?fb_profile_edit_entry_point" target="_blank" rel="noopener noreferrer" class="f-social" aria-label="Facebook">fb</a>
               <a href="https://www.instagram.com/nviq_bharat?igsh=MXRjbTlsa29pNzc2eg==" target="_blank" rel="noopener noreferrer" class="f-social" aria-label="Instagram">ig</a>
+              <a href="https://www.youtube.com/@TeamNViQ" target="_blank" rel="noopener noreferrer" class="f-social" aria-label="YouTube">yt</a>
             </div>
           </div>
 
