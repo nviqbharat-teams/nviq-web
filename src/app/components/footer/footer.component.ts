@@ -59,9 +59,7 @@ import { NavService } from '../../services/nav.service';
               <h4>Company</h4>
               <a routerLink="/about">About</a>
               <a href="#">Careers</a>
-              <a href="#">Blog</a>
               <a href="javascript:void(0)" (click)="goContact()">Contact</a>
-              <a href="#">Press Kit</a>
             </div>
           </div>
         </div>
