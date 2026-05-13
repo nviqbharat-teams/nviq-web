@@ -83,8 +83,34 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
         <div class="ab-values-header" appReveal="up" [revealDelay]="60">
           <h3>What We Stand For</h3>
         </div>
-        <div class="ab-values">
-          <div class="ab-value glass-dark" *ngFor="let v of values; let i = index"
+
+        <!-- GPS Values Row -->
+        <div class="ab-values-section-label" appReveal="up" [revealDelay]="40">
+          <span class="ab-vs-dot ab-vs-dot-gps"></span>
+          GPS Platform
+        </div>
+        <div class="ab-values ab-values-gps">
+          <div class="ab-value glass-dark" *ngFor="let v of gpsValues; let i = index"
+            appTilt [tiltMax]="10" [tiltGlow]="v.color + '30'"
+            appReveal="up" [revealDelay]="i * 80">
+            <div class="ab-value-icon" [style.background]="v.glow" [style.border-color]="v.color + '33'">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                [attr.stroke]="v.color" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path [attr.d]="v.icon"/>
+              </svg>
+            </div>
+            <h4>{{ v.title }}</h4>
+            <p>{{ v.desc }}</p>
+          </div>
+        </div>
+
+        <!-- MF Values Row -->
+        <div class="ab-values-section-label" appReveal="up" [revealDelay]="40">
+          <span class="ab-vs-dot ab-vs-dot-mf"></span>
+          Mutual Fund Platform
+        </div>
+        <div class="ab-values ab-values-mf">
+          <div class="ab-value glass-dark" *ngFor="let v of mfValues; let i = index"
             appTilt [tiltMax]="10" [tiltGlow]="v.color + '30'"
             appReveal="up" [revealDelay]="i * 80">
             <div class="ab-value-icon" [style.background]="v.glow" [style.border-color]="v.color + '33'">
@@ -384,15 +410,31 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
 
     /* Values */
     .ab-values-header {
-      text-align: center; margin-bottom: 36px;
+      text-align: center; margin-bottom: 28px;
     }
     .ab-values-header h3 {
       font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.02em;
     }
-    .ab-values {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
-      margin-bottom: 80px;
+    .ab-values-section-label {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 11px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 14px;
+      padding-left: 2px;
     }
+    .ab-vs-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .ab-vs-dot-gps { background: #00D4FF; box-shadow: 0 0 8px #00D4FF; }
+    .ab-vs-dot-mf  { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+
+    .ab-values {
+      display: grid; gap: 18px;
+      margin-bottom: 28px;
+    }
+    .ab-values-gps { grid-template-columns: repeat(4, 1fr); }
+    .ab-values-mf  { grid-template-columns: repeat(3, 1fr); margin-bottom: 80px; }
     .ab-value {
       padding: 28px 22px; border-radius: 18px;
       display: flex; flex-direction: column; gap: 12px;
@@ -498,7 +540,8 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
 
     /* Responsive */
     @media (max-width: 1024px) {
-      .ab-values { grid-template-columns: repeat(2,1fr); }
+      .ab-values-gps { grid-template-columns: repeat(2,1fr); }
+      .ab-values-mf  { grid-template-columns: repeat(2,1fr); }
       .ab-visual-grid { grid-template-columns: 1fr 1fr; height: auto; }
       .ab-vc-tall { grid-row: auto; height: 220px; }
       .ab-visual-card { height: 200px; }
@@ -506,7 +549,7 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
     @media (max-width: 768px) {
       .ab-slide-content { padding: 0 24px; }
       .ab-mission { grid-template-columns: 1fr; }
-      .ab-values { grid-template-columns: 1fr; }
+      .ab-values-gps, .ab-values-mf { grid-template-columns: 1fr; }
       .ab-visual-grid { grid-template-columns: 1fr; height: auto; }
       .ab-visual-card { height: 200px; }
       .ab-timeline::before { left: 20px; }
@@ -533,7 +576,7 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
     { val: 'AMFI',   label: 'ARN No: 359231',        color: '#22c55e' },
   ];
 
-  values = [
+  gpsValues = [
     {
       icon: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
       color: '#00D4FF', glow: 'rgba(0,212,255,0.1)',
@@ -558,6 +601,9 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
       title: 'Built for India',
       desc: 'Designed for the real-world conditions of Indian fleet businesses.',
     },
+  ];
+
+  mfValues = [
     {
       icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4',
       color: '#22c55e', glow: 'rgba(34,197,94,0.1)',

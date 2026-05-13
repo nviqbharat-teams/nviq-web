@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavService } from '../../services/nav.service';
 
@@ -23,6 +23,18 @@ import { NavService } from '../../services/nav.service';
           </span>
           <h2 class="ps-title">Plans That Scale With Your <span class="ps-accent">Fleet</span></h2>
           <p class="ps-sub">No hidden fees. Cancel anytime. Start with a 90-day trial.</p>
+
+          <!-- Billing Toggle -->
+          <div class="ps-toggle-wrap">
+            <span class="ps-toggle-label" [class.ps-toggle-active]="!isAnnual()">90 Days</span>
+            <button type="button" class="ps-toggle" [class.ps-toggle-on]="isAnnual()" (click)="isAnnual.set(!isAnnual())" aria-label="Toggle billing period">
+              <span class="ps-toggle-thumb"></span>
+            </button>
+            <span class="ps-toggle-label" [class.ps-toggle-active]="isAnnual()">
+              Annual
+              <span class="ps-save-badge" *ngIf="isAnnual()">Save 10%</span>
+            </span>
+          </div>
         </div>
 
         <!-- Cards -->
@@ -36,7 +48,7 @@ import { NavService } from '../../services/nav.service';
             </div>
             <div class="ps-price-wrap">
               <span class="ps-currency">₹</span>
-              <span class="ps-amount">1599</span>
+              <span class="ps-amount">{{ isAnnual() ? 1999 : 1599 }}</span>
             </div>
             <div class="ps-divider"></div>
             <ul class="ps-features">
@@ -67,7 +79,7 @@ import { NavService } from '../../services/nav.service';
             </div>
             <div class="ps-price-wrap">
               <span class="ps-currency ps-currency-pro">₹</span>
-              <span class="ps-amount ps-amount-pro">2599</span>
+              <span class="ps-amount ps-amount-pro">{{ isAnnual() ? 2999 : 2599 }}</span>
             </div>
             <div class="ps-divider ps-divider-pro"></div>
             <ul class="ps-features">
@@ -373,6 +385,52 @@ import { NavService } from '../../services/nav.service';
       transform: translateY(-2px);
     }
 
+    /* ── Billing Toggle ─────────────────── */
+    .ps-toggle-wrap {
+      display: flex; align-items: center; justify-content: center;
+      gap: 14px; margin-top: 28px;
+    }
+    .ps-toggle-label {
+      font-size: 14px; font-weight: 600;
+      color: rgba(255,255,255,0.35);
+      transition: color 0.25s ease;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .ps-toggle-label.ps-toggle-active { color: #F0F6FF; }
+    .ps-toggle {
+      width: 52px; height: 28px; border-radius: 999px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      cursor: pointer; position: relative;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    .ps-toggle.ps-toggle-on {
+      background: linear-gradient(135deg, #00D4FF, #0EA5E9);
+      border-color: rgba(0,212,255,0.4);
+    }
+    .ps-toggle-thumb {
+      position: absolute; top: 3px; left: 3px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #fff;
+      transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .ps-toggle.ps-toggle-on .ps-toggle-thumb { transform: translateX(24px); }
+    .ps-save-badge {
+      background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(99,102,241,0.2));
+      border: 1px solid rgba(0,212,255,0.3);
+      color: #00D4FF; font-size: 10px; font-weight: 800;
+      padding: 2px 8px; border-radius: 999px;
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .ps-per {
+      font-size: 1rem; font-weight: 600;
+      color: rgba(255,255,255,0.4);
+      margin-left: 2px; margin-bottom: 4px;
+      align-self: flex-end;
+    }
+    .ps-per-pro { color: rgba(0,212,255,0.6); }
+
     /* ── Mobile ─────────────────────────── */
     @media (max-width: 900px) {
       .ps-grid-cards { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
@@ -385,6 +443,7 @@ import { NavService } from '../../services/nav.service';
 })
 export class PricingSectionComponent {
   nav = inject(NavService);
+  isAnnual = signal(false);
 
   starterFeatures = [
     'Mobile App Access',

@@ -97,20 +97,101 @@ import { AmcPartnersComponent } from '../amc-partners/amc-partners.component';
 
     <!-- Mutual Fund product (NavService path — router path uses MutualFundPageComponent) -->
     <ng-container *ngIf="nav.product() === 'mf'">
-      <div class="pd-hero pd-hero-mf">
-        <div class="pd-hero-inner">
+      <div class="pd-hero pd-hero-mf pd-mf-split">
+        <!-- Left: existing MF content -->
+        <div class="pd-mf-left">
           <span class="pd-tag" style="color:#3B82F6;border-color:rgba(59,130,246,0.3);background:rgba(59,130,246,0.07)">Wealth Management</span>
-          <h1 class="pd-heading pd-heading-green">Grow Your Wealth</h1>
-          <p class="pd-sub">Free Consultation • AMFI Registered • ARN No: 359231. Smart mutual fund investment solutions with SIP plans starting at ₹1,000/month.</p>
+          <h1 class="pd-heading pd-heading-green">Grow Your<br>Wealth</h1>
+          <p class="pd-sub">Free Consultation • AMFI Registered • ARN No: 359231.<br>Smart mutual fund investment solutions with SIP plans starting at ₹1,000/month.</p>
+          <div class="pd-mf-trust-row">
+            <span class="pd-trust-chip">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              AMFI Registered
+            </span>
+            <span class="pd-trust-chip">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              ARN No: 359231
+            </span>
+            <span class="pd-trust-chip">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              Zero Commission
+            </span>
+          </div>
           <button class="pd-cta-btn pd-cta-green" (click)="nav.openModalFor('mf')" type="button">
             Start Investing Today
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div>
+
+        <!-- Right: SIP Calculator -->
+        <div class="pd-mf-right">
+          <div class="pd-sip-card">
+            <div class="pd-sip-header">
+              <div class="pd-sip-title-row">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="18" rx="3"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>
+                <span>SIP Calculator</span>
+              </div>
+              <span class="pd-sip-live-badge">
+                <span class="pd-sip-live-dot"></span>Live
+              </span>
+            </div>
+
+            <div class="pd-sip-field">
+              <div class="pd-sip-row">
+                <span class="pd-sip-label">Monthly Investment</span>
+                <span class="pd-sip-val">₹{{ mfSipAmount | number }}</span>
+              </div>
+              <input type="range" class="pd-sip-range" min="1000" max="500000" step="1000"
+                [value]="mfSipAmount" (input)="mfSipAmount = +$any($event.target).value">
+              <div class="pd-sip-bounds"><span>₹1,000</span><span>₹5,00,000</span></div>
+            </div>
+
+            <div class="pd-sip-field">
+              <div class="pd-sip-row">
+                <span class="pd-sip-label">Duration</span>
+                <span class="pd-sip-val">{{ mfSipYears }} years</span>
+              </div>
+              <input type="range" class="pd-sip-range" min="1" max="30" step="1"
+                [value]="mfSipYears" (input)="mfSipYears = +$any($event.target).value">
+              <div class="pd-sip-bounds"><span>1 yr</span><span>30 yrs</span></div>
+            </div>
+
+            <div class="pd-sip-field">
+              <div class="pd-sip-row">
+                <span class="pd-sip-label">Expected Return (p.a.)</span>
+                <span class="pd-sip-val pd-sip-rate">{{ mfSipRate }}%</span>
+              </div>
+              <input type="range" class="pd-sip-range" min="0" max="30" step="0.5"
+                [value]="mfSipRate" (input)="mfSipRate = +$any($event.target).value">
+              <div class="pd-sip-bounds"><span>0%</span><span>30%</span></div>
+            </div>
+
+            <div class="pd-sip-divider"></div>
+
+            <div class="pd-sip-result-grid">
+              <div class="pd-sip-res-item">
+                <div class="pd-sip-res-label">Amount Invested</div>
+                <div class="pd-sip-res-val">₹{{ mfSipResult.invested | number }}</div>
+              </div>
+              <div class="pd-sip-res-item">
+                <div class="pd-sip-res-label">Est. Returns</div>
+                <div class="pd-sip-res-val pd-sip-gain">₹{{ mfSipResult.gains | number }}</div>
+              </div>
+              <div class="pd-sip-res-item pd-sip-total">
+                <div class="pd-sip-res-label">Total Value</div>
+                <div class="pd-sip-res-val pd-sip-total-val">₹{{ mfSipResult.maturity | number }}</div>
+              </div>
+            </div>
+
+            <button class="pd-sip-cta" type="button" (click)="nav.openModalFor('mf')">
+              Get Free Consultation
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+
         <div class="pd-hero-glow pd-hero-glow-green" aria-hidden="true"></div>
       </div>
-      <app-mutual-fund-slider></app-mutual-fund-slider>
-
       <!-- Investment Details -->
       <section class="mf-invest-details">
         <div class="mfid-header">
@@ -278,6 +359,175 @@ import { AmcPartnersComponent } from '../amc-partners/amc-partners.component';
     .pd-hero-glow-green  { background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 65%); }
     .pd-hero-glow-purple { background: radial-gradient(circle, rgba(167,139,250,0.1) 0%, transparent 65%); }
     .pd-hero-glow-amber  { background: radial-gradient(circle, rgba(245,158,11,0.1) 0%, transparent 65%); }
+
+    /* ── MF Split Hero ──────────────────────────────────── */
+    .pd-mf-split {
+      min-height: calc(100vh - 124px);
+      padding: 60px 6% 60px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 56px;
+    }
+    .pd-mf-left {
+      flex: 1;
+      max-width: 520px;
+      display: flex; flex-direction: column;
+      align-items: flex-start;
+      position: relative; z-index: 2;
+    }
+    .pd-mf-left .pd-tag { margin-bottom: 20px; }
+    .pd-mf-left .pd-heading { font-size: clamp(2.6rem, 5vw, 4.8rem); margin-bottom: 16px; line-height: 1.0; }
+    .pd-mf-left .pd-sub { text-align: left; font-size: 0.95rem; line-height: 1.7; margin-bottom: 20px; max-width: 100%; }
+
+    .pd-mf-trust-row {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-bottom: 28px;
+    }
+    .pd-trust-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 13px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.6);
+      font-size: 11px; font-weight: 600;
+    }
+
+    .pd-mf-right {
+      flex: 0 0 380px;
+      position: relative; z-index: 2;
+    }
+
+    /* ── SIP Calculator Card ─────────────────────────────── */
+    .pd-sip-card {
+      background: rgba(6,12,28,0.85);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 24px;
+      padding: 28px 26px 24px;
+      backdrop-filter: blur(24px);
+      box-shadow:
+        0 0 0 1px rgba(59,130,246,0.08),
+        0 24px 64px rgba(0,0,0,0.6),
+        0 0 80px rgba(59,130,246,0.08);
+    }
+    .pd-sip-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 22px;
+    }
+    .pd-sip-title-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: #93C5FD;
+    }
+    .pd-sip-live-badge {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 800;
+      color: #22c55e; letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .pd-sip-live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #22c55e;
+      animation: sipDotPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes sipDotPulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    .pd-sip-field { margin-bottom: 16px; }
+    .pd-sip-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 7px;
+    }
+    .pd-sip-label { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 500; }
+    .pd-sip-val   { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.9); }
+    .pd-sip-rate  { color: #60A5FA; }
+
+    .pd-sip-range {
+      -webkit-appearance: none;
+      width: 100%; height: 4px; border-radius: 99px;
+      background: linear-gradient(to right, #3B82F6 var(--pct, 50%), rgba(255,255,255,0.1) var(--pct, 50%));
+      outline: none; cursor: pointer;
+    }
+    .pd-sip-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #fff;
+      border: 3px solid #3B82F6;
+      box-shadow: 0 0 12px rgba(59,130,246,0.6);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .pd-sip-range::-webkit-slider-thumb:hover { transform: scale(1.2); }
+    .pd-sip-bounds {
+      display: flex; justify-content: space-between;
+      font-size: 9px; color: rgba(255,255,255,0.22);
+      margin-top: 4px;
+    }
+
+    .pd-sip-divider { height: 1px; background: rgba(59,130,246,0.15); margin: 18px 0; }
+
+    .pd-sip-result-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin-bottom: 20px;
+    }
+    .pd-sip-res-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; padding: 12px 14px;
+    }
+    .pd-sip-total {
+      grid-column: 1 / -1;
+      background: rgba(59,130,246,0.06);
+      border-color: rgba(59,130,246,0.2);
+    }
+    .pd-sip-res-label {
+      font-size: 9px; text-transform: uppercase; letter-spacing: 0.07em;
+      color: rgba(255,255,255,0.3); margin-bottom: 5px;
+    }
+    .pd-sip-res-val {
+      font-size: 18px; font-weight: 800;
+      color: rgba(255,255,255,0.85);
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: -0.02em;
+    }
+    .pd-sip-gain { color: #34D399; }
+    .pd-sip-total-val {
+      font-size: 22px;
+      background: linear-gradient(120deg, #3B82F6, #93C5FD);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .pd-sip-cta {
+      width: 100%; height: 46px; border-radius: 12px; border: none;
+      background: linear-gradient(135deg, #3B82F6, #2563EB);
+      color: #fff; font-family: 'Outfit', sans-serif;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 6px 24px rgba(59,130,246,0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .pd-sip-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(59,130,246,0.45);
+    }
+
+    @media (max-width: 1024px) {
+      .pd-mf-split {
+        flex-direction: column;
+        padding: 60px 24px;
+        gap: 40px;
+        min-height: auto;
+      }
+      .pd-mf-left { max-width: 100%; align-items: center; text-align: center; }
+      .pd-mf-left .pd-sub { text-align: center; }
+      .pd-mf-trust-row { justify-content: center; }
+      .pd-mf-right { flex: none; width: 100%; max-width: 460px; }
+    }
 
     /* ── GPS full background grid ─────────────────────── */
     .pd-gps-bg-grid {
@@ -604,6 +854,24 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     { icon: '🧾', iconBg: 'rgba(16,185,129,0.15)',  title: 'Tax Saving Details',          desc: 'ELSS funds for 80C deductions up to ₹1.5L per year — save tax while you grow.' },
     { icon: '📱', iconBg: 'rgba(99,102,241,0.15)',  title: 'Portfolio Tracking',          desc: 'Real-time NAV, XIRR calculation, and consolidated portfolio view in one place.' },
   ];
+
+  /* ── MF SIP Calculator ──────────────────────────────── */
+  mfSipAmount = 5000;
+  mfSipYears  = 10;
+  mfSipRate   = 12;
+
+  get mfSipResult() {
+    const P = this.mfSipAmount;
+    const r = this.mfSipRate / 12 / 100;
+    const n = this.mfSipYears * 12;
+    const M = P * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+    const invested = P * n;
+    return {
+      invested: Math.round(invested),
+      maturity: Math.round(M),
+      gains:    Math.round(M - invested),
+    };
+  }
 
   /* ── GPS Slider ─────────────────────────────────────── */
   currentGpsSlide = 0;
