@@ -49,21 +49,27 @@ export interface MFSlide {
       <div class="bg-orb bg-orb-2" aria-hidden="true"></div>
       <div class="bg-grid"        aria-hidden="true"></div>
 
-      <!-- Header -->
-      <div class="mfs-header" [class.visible]="sectionVisible">
-        <div class="mfs-eyebrow">
-          <span class="eyebrow-dot"></span>
-          Fintech × Fleet
-        </div>
-        <h2 class="mfs-title">
-Invest Smart. Grow Wealth.
-          <span class="title-accent">Mutual Fund Platform</span>
-        </h2>
-        <p class="mfs-subtitle">Invest Smartly, Track Easily, Grow Securely</p>
-      </div>
+      <!-- ── Combined: Hero + SIP Calculator ── -->
+      <div class="mf-combined-section">
 
-      <!-- ── SIP Calculator ── -->
-      <div class="sip-section" [class.visible]="sectionVisible">
+        <div class="mf-left-panel">
+          <!-- Header -->
+          <div class="mfs-header" [class.visible]="sectionVisible">
+            <div class="mfs-eyebrow">
+              <span class="eyebrow-dot"></span>
+              Fintech × Fleet
+            </div>
+            <h2 class="mfs-title">
+Invest Smart. Grow Wealth.
+              <span class="title-accent">Mutual Fund Platform</span>
+            </h2>
+            <p class="mfs-subtitle">Invest Smartly, Track Easily, Grow Securely</p>
+          </div>
+        </div>
+
+        <div class="mf-right-panel">
+          <!-- ── SIP Calculator ── -->
+          <div class="sip-section" [class.visible]="sectionVisible">
         <div class="sip-container">
 
           <div class="sip-heading">
@@ -226,6 +232,9 @@ Invest Smart. Grow Wealth.
           </div>
         </div>
       </div>
+
+        </div><!-- /mf-right-panel -->
+      </div><!-- /mf-combined-section -->
 
       <!-- ── Swiper Carousel ── -->
       <div class="swiper-shell" [class.visible]="sectionVisible" *ngIf="slides.length > 0">
@@ -916,6 +925,43 @@ Invest Smart. Grow Wealth.
       .sip-results { padding: 24px 20px; }
       .sip-field-top { flex-direction: column; align-items: flex-start; gap: 8px; }
       .sip-input-wrap { width: 100%; }
+    }
+
+    /* ─── Combined layout: Hero + SIP side by side ─── */
+    .mf-combined-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+      padding: 0 4rem 2rem;
+      position: relative;
+      z-index: 2;
+    }
+    .mf-left-panel, .mf-right-panel {
+      position: relative; z-index: 2;
+    }
+    .mf-left-panel .mfs-header {
+      margin: 0;
+      max-width: none;
+      text-align: left;
+      padding: 0;
+    }
+    .mf-left-panel .mfs-title {
+      align-items: flex-start;
+    }
+    .mf-right-panel .sip-section {
+      margin: 0;
+      max-width: none;
+      padding: 0;
+    }
+    @media (max-width: 768px) {
+      .mf-combined-section {
+        grid-template-columns: 1fr;
+        padding: 2rem 1rem;
+        min-height: auto;
+      }
+      .mf-right-panel { order: 2; }
+      .mf-left-panel  { order: 1; }
     }
   `],
 })
