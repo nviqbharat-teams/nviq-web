@@ -1,27 +1,14 @@
 ﻿import {
-  AfterViewInit,
-  CUSTOM_ELEMENTS_SCHEMA,
   ChangeDetectorRef,
   Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  NgZone,
   OnDestroy,
   OnInit,
-  OnChanges,
-  SimpleChanges,
-  ViewChild,
   inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { register } from 'swiper/element/bundle';
 import { ApiService, Fund } from '../../services/api.service';
 import { NavService } from '../../services/nav.service';
-
-register();
 
 export interface MFSlide {
   id: number;
@@ -40,7 +27,6 @@ export interface MFSlide {
   selector: 'app-mutual-fund-slider',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `
     <section class="mfs-root" id="mutual-funds">
 
@@ -235,129 +221,6 @@ Invest Smart. Grow Wealth.
 
         </div><!-- /mf-right-panel -->
       </div><!-- /mf-combined-section -->
-
-      <!-- ── Swiper Carousel ── -->
-      <div class="swiper-shell" [class.visible]="sectionVisible" *ngIf="slides.length > 0">
-        <swiper-container
-          #swiperEl
-          class="mf-swiper"
-          slides-per-view="auto"
-          centered-slides="true"
-          space-between="24"
-          grab-cursor="true"
-          loop="true"
-          autoplay-delay="2000"
-          autoplay-pause-on-mouse-enter="true"
-          autoplay-disable-on-interaction="false"
-          speed="520"
-          effect="slide"
-        >
-          <swiper-slide
-            *ngFor="let slide of slides; let i = index"
-            class="mf-slide"
-          >
-            <div
-              class="slide-card"
-              [class.is-active]="selectedSlide?.id === slide.id"
-              (click)="selectSlide(slide)"
-              [style.--glow]="slide.glowColor"
-            >
-              <!-- Badge -->
-              <span *ngIf="slide.badge" class="slide-badge">
-                <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-                {{ slide.badge }}
-              </span>
-
-              <!-- Icon -->
-              <div class="slide-icon"
-                [style.background]="'linear-gradient(135deg,' + slide.iconGrad[0] + ',' + slide.iconGrad[1] + ')'">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                  stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path [attr.d]="slide.iconPath"/>
-                </svg>
-              </div>
-
-              <!-- Tag -->
-              <span class="slide-tag" [ngClass]="'tag-color-' + ((i % 6))">
-                {{ slide.tag }}
-              </span>
-
-              <!-- Title -->
-              <h3 class="slide-title">{{ slide.title }}</h3>
-
-              <!-- Lines -->
-              <ul class="slide-lines">
-                <li *ngFor="let line of slide.lines">
-                  <span class="line-dot" aria-hidden="true"></span>
-                  {{ line }}
-                </li>
-              </ul>
-
-              <!-- Active indicator -->
-              <div class="active-bar" [class.show]="selectedSlide?.id === slide.id"></div>
-            </div>
-          </swiper-slide>
-        </swiper-container>
-
-        <!-- Custom nav arrows -->
-        <button class="nav-btn nav-prev" (click)="slidePrev()" aria-label="Previous">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <path d="M15 18l-6-6 6-6"/>
-          </svg>
-        </button>
-        <button class="nav-btn nav-next" (click)="slideNext()" aria-label="Next">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <path d="M9 18l6-6-6-6"/>
-          </svg>
-        </button>
-      </div>
-
-      <!-- ── Detail Panel ── -->
-      <div class="detail-panel" [class.visible]="sectionVisible" *ngIf="selectedSlide">
-        <div class="detail-card" [style.--accent]="selectedSlide.iconGrad[0]">
-
-          <h2 class="detail-title">{{ selectedSlide.title }}</h2>
-          <p class="detail-desc">{{ selectedSlide.details }}</p>
-
-          <ul class="detail-lines">
-            <li *ngFor="let line of selectedSlide.lines">
-              <span class="detail-check">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-              </span>
-              {{ line }}
-            </li>
-          </ul>
-
-          <button class="detail-cta" (click)="nav.openModalFor('mf')" type="button">
-            Get Started
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </button>
-
-        </div>
-      </div>
-
-      <!-- Dot nav -->
-      <div class="dot-nav" [class.visible]="sectionVisible">
-        <button
-          *ngFor="let slide of slides; let i = index"
-          class="dot"
-          [class.dot-active]="selectedSlide.id === slide.id"
-          (click)="selectSlide(slide)"
-          [attr.aria-label]="'Select ' + slide.title"
-        >
-          <span class="dot-inner"></span>
-        </button>
-      </div>
 
       <!-- Disclaimer -->
       <p class="mf-disclaimer">
@@ -965,15 +828,10 @@ Invest Smart. Grow Wealth.
     }
   `],
 })
-export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
-  @Input() activeSlideIndex = 0;
-  @Output() slideSelected = new EventEmitter<number>();
-  @ViewChild('swiperEl') swiperEl!: ElementRef;
-
-  private ngZone = inject(NgZone);
-  private api    = inject(ApiService);
-  nav            = inject(NavService);
-  private cdr    = inject(ChangeDetectorRef);
+export class MutualFundSliderComponent implements OnInit, OnDestroy {
+  private api = inject(ApiService);
+  nav         = inject(NavService);
+  private cdr = inject(ChangeDetectorRef);
 
   private readonly SLIDE_STYLES: Array<{ iconGrad: [string, string]; glowColor: string }> = [
     { iconGrad: ['#3B82F6', '#2563EB'], glowColor: 'rgba(59,130,246,0.18)' },
@@ -986,7 +844,6 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
   ];
 
   sectionVisible = true;
-  selectedSlide!: MFSlide;
 
   /* SIP Calculator state */
   sipAmount = 10000;
@@ -1001,8 +858,6 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
 
   donutInvested = 0;
   donutReturns  = 0;
-
-  private iobs: IntersectionObserver[] = [];
 
   slides: MFSlide[] = [
     {
@@ -1097,35 +952,21 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngOnInit(): void {
-    this.selectedSlide = this.slides[0];
     this.pushActiveFund(this.slides[0]);
+    this.calculateSIP();
     this.api.getFunds({ limit: 10 }).subscribe({
       next: (res) => {
         if (res.success && res.data?.length) {
           this.slides = res.data.map((fund, i) => this.fundToSlide(fund, i));
-          this.selectedSlide = this.slides[0];
           this.pushActiveFund(this.slides[0]);
           this.cdr.detectChanges();
-          setTimeout(() => {
-            const sw = this.swiperEl?.nativeElement?.swiper;
-            if (sw) {
-              sw.loopDestroy?.();
-              sw.update();
-              sw.loopCreate?.();
-              sw.slideToLoop(0, 0);
-              sw.autoplay?.start?.();
-            }
-            window.dispatchEvent(new Event('resize'));
-          }, 100);
         }
       },
-      error: () => { /* fallback: keep hardcoded slides */ }
+      error: () => {}
     });
   }
 
-  ngOnDestroy(): void {
-    this.iobs.forEach(o => o.disconnect());
-  }
+  ngOnDestroy(): void {}
 
   private fundToSlide(fund: Fund, index: number): MFSlide {
     const style = this.SLIDE_STYLES[index % this.SLIDE_STYLES.length];
@@ -1152,79 +993,6 @@ export class MutualFundSliderComponent implements OnInit, AfterViewInit, OnDestr
       ],
       details: fund.description,
     };
-  }
-
-  ngAfterViewInit(): void {
-    this.calculateSIP();
-
-    setTimeout(() => {
-      this.sectionVisible = true;
-      this.cdr.detectChanges();
-
-      const swiper = this.swiperEl?.nativeElement?.swiper;
-      if (swiper) {
-        swiper.update();
-        swiper.on('slideChange', () => {
-          this.ngZone.run(() => {
-            const idx = swiper.realIndex ?? 0;
-            const slide = this.slides[idx % this.slides.length];
-            if (slide) {
-              this.selectedSlide = slide;
-              this.pushActiveFund(slide);
-            }
-          });
-        });
-      }
-    }, 80);
-
-    const sectionEl = document.getElementById('mutual-funds');
-    if (sectionEl) {
-      const obs = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting) {
-            this.sectionVisible = true;
-            this.cdr.detectChanges();
-            obs.disconnect();
-          }
-        },
-        { threshold: 0.08 }
-      );
-      obs.observe(sectionEl);
-      this.iobs.push(obs);
-    }
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['activeSlideIndex'] && !changes['activeSlideIndex'].isFirstChange() && this.slides.length > 0) {
-      const idx = changes['activeSlideIndex'].currentValue;
-      if (idx >= 0 && idx < this.slides.length) {
-        this.selectedSlide = this.slides[idx];
-        const swiper = this.swiperEl?.nativeElement?.swiper;
-        if (swiper) swiper.slideToLoop(idx);
-      }
-    }
-  }
-
-  selectSlide(slide: MFSlide): void {
-    this.selectedSlide = slide;
-    this.pushActiveFund(slide);
-    // Emit the slide index for synchronization with hero slider
-    const idx = this.slides.findIndex(s => s.id === slide.id);
-    this.slideSelected.emit(idx);
-    // Jump swiper to matching slide so auto-play stays in sync
-    const swiper = this.swiperEl?.nativeElement?.swiper;
-    if (swiper) {
-      const idx = this.slides.findIndex(s => s.id === slide.id);
-      if (idx !== -1) swiper.slideToLoop(idx);
-    }
-  }
-
-  slidePrev(): void {
-    this.swiperEl?.nativeElement?.swiper?.slidePrev();
-  }
-
-  slideNext(): void {
-    this.swiperEl?.nativeElement?.swiper?.slideNext();
   }
 
   calculateSIP(): void {

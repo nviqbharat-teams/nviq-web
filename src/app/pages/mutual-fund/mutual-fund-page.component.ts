@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { NavService } from '../../services/nav.service';
 import { MutualFundSliderComponent } from '../../components/mutual-fund-slider/mutual-fund-slider.component';
-import { MutualFundPricingComponent } from '../../components/mutual-fund-pricing/mutual-fund-pricing.component';
 import { CtaSectionComponent } from '../../components/cta/cta-section.component';
 import { TiltDirective } from '../../directives/tilt.directive';
 import { RevealDirective } from '../../directives/reveal.directive';
@@ -17,7 +16,6 @@ import { AmcPartnersComponent } from '../../components/amc-partners/amc-partners
   imports: [
     CommonModule,
     MutualFundSliderComponent,
-    MutualFundPricingComponent,
     CtaSectionComponent,
     TiltDirective,
     RevealDirective,
@@ -130,10 +128,7 @@ import { AmcPartnersComponent } from '../../components/amc-partners/amc-partners
 
     <!-- MF Slider (SIP Calculator + Fund Cards) -->
     <div appReveal="up" [revealDelay]="100">
-      <app-mutual-fund-slider
-        (slideSelected)="onSlideSelected($event)"
-        [activeSlideIndex]="currentSlide">
-      </app-mutual-fund-slider>
+      <app-mutual-fund-slider></app-mutual-fund-slider>
     </div>
 
     <!-- Investment Details -->
@@ -162,11 +157,6 @@ import { AmcPartnersComponent } from '../../components/amc-partners/amc-partners
     <!-- AMC Partners -->
     <div appReveal="up" [revealDelay]="80">
       <app-amc-partners></app-amc-partners>
-    </div>
-
-    <!-- Pricing -->
-    <div appReveal="up" [revealDelay]="100">
-      <app-mutual-fund-pricing (planSelected)="onPlanSelected($event)"></app-mutual-fund-pricing>
     </div>
 
     <!-- User Reviews -->
@@ -656,26 +646,6 @@ export class MutualFundPageComponent implements OnInit, OnDestroy {
   resumeAutoplay(): void {
     this.startAutoplay();
   }
-
-  onSlideSelected(slideIndex: number): void {
-    clearInterval(this.timer);
-    this.currentSlide = slideIndex;
-    this.startAutoplay();
-  }
-
-  onPlanSelected(event: { plan: any; planIndex: number; tabKey: string }): void {
-    clearInterval(this.timer);
-    const slideIndex = event.planIndex % this.mfSlides.length;
-    this.currentSlide = slideIndex;
-    this.startAutoplay();
-    setTimeout(() => {
-      const heroEl = document.querySelector('.mf-slider');
-      if (heroEl) {
-        heroEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
-  }
-
 
   goBack(): void {
     this.nav.go('products');
