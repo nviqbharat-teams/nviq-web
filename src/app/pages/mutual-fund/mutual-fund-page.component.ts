@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { NavService } from '../../services/nav.service';
 import { MutualFundSliderComponent } from '../../components/mutual-fund-slider/mutual-fund-slider.component';
-import { CtaSectionComponent } from '../../components/cta/cta-section.component';
 import { TiltDirective } from '../../directives/tilt.directive';
 import { RevealDirective } from '../../directives/reveal.directive';
 import { ParticleCanvasComponent } from '../../components/particle-canvas/particle-canvas.component';
@@ -15,7 +14,6 @@ import { AmcPartnersComponent } from '../../components/amc-partners/amc-partners
   imports: [
     CommonModule,
     MutualFundSliderComponent,
-    CtaSectionComponent,
     TiltDirective,
     RevealDirective,
     ParticleCanvasComponent,
@@ -157,10 +155,6 @@ import { AmcPartnersComponent } from '../../components/amc-partners/amc-partners
       <app-amc-partners></app-amc-partners>
     </div>
 
-    <!-- CTA -->
-    <div appReveal="up" [revealDelay]="80">
-      <app-cta-section [product]="'mf'"></app-cta-section>
-    </div>
   `,
   styles: [`
     /* ── MF Image Slider ──────────────────────────────── */

@@ -137,8 +137,6 @@ import { AmcPartnersComponent } from '../amc-partners/amc-partners.component';
       <!-- AMC Partners -->
       <app-amc-partners></app-amc-partners>
 
-      <app-features-section [productType]="'mf'"></app-features-section>
-      <app-cta-section [product]="'mf'"></app-cta-section>
     </ng-container>
 
     <!-- Fastag product -->
