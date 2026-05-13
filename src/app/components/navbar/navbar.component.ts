@@ -12,17 +12,17 @@ import { NavService } from '../../services/nav.service';
     <nav class="nav-root" [class.scrolled]="scrolled">
       <div class="nav-shell">
 
-        <!-- LEFT: Home + Products -->
+        <!-- LEFT: Products + About Us -->
         <div class="nav-left">
-          <button class="nav-link" type="button"
-            [class.active]="nav.page() === 'home'"
-            (click)="navigate('home')">
-            Home
-          </button>
           <button class="nav-link" type="button"
             [class.active]="nav.page() === 'products' || nav.page() === 'product-detail'"
             (click)="navigate('products')">
             Products
+          </button>
+          <button class="nav-link" type="button"
+            [class.active]="nav.page() === 'about'"
+            (click)="navigate('about')">
+            About Us
           </button>
         </div>
 
@@ -43,44 +43,17 @@ import { NavService } from '../../services/nav.service';
           <span class="logo-text">NV<span class="logo-i">i</span>Q</span>
         </button>
 
-        <!-- RIGHT: Company + Contact -->
+        <!-- RIGHT: Contact + Our Team -->
         <div class="nav-right">
-
-          <!-- Company dropdown -->
-          <div class="nav-dropdown" #companyDd>
-            <button class="nav-link" type="button"
-              [class.active]="isCompanyPage"
-              (click)="toggleDropdown()">
-              Company
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2.5" stroke-linecap="round"
-                [style.transform]="ddOpen ? 'rotate(180deg)' : 'none'"
-                style="transition:transform 0.2s ease">
-                <path d="M6 9l6 6 6-6"/>
-              </svg>
-            </button>
-
-            <!-- Dropdown menu -->
-            <div class="dd-menu" [class.dd-open]="ddOpen">
-              <button class="dd-item" type="button"
-                [class.active]="nav.page() === 'about'"
-                (click)="navigate('about')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                About Us
-              </button>
-              <button class="dd-item" type="button"
-                [class.active]="nav.page() === 'team'"
-                (click)="navigate('team')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                Our Team
-              </button>
-            </div>
-          </div>
-
           <button class="nav-link" type="button"
             [class.active]="nav.page() === 'contact'"
             (click)="navigate('contact')">
-            Contact Us
+            Contact
+          </button>
+          <button class="nav-link" type="button"
+            [class.active]="nav.page() === 'team'"
+            (click)="navigate('team')">
+            Our Team
           </button>
         </div>
 
@@ -97,11 +70,10 @@ import { NavService } from '../../services/nav.service';
 
       <!-- Mobile panel -->
       <div class="mob-panel" [class.mob-open]="mobileOpen">
-        <button class="mob-link" type="button" (click)="navigate('home')">Home</button>
         <button class="mob-link" type="button" (click)="navigate('products')">Products</button>
-        <button class="mob-link" type="button" (click)="navigate('about')">About</button>
-        <button class="mob-link" type="button" (click)="navigate('team')">Team</button>
-        <button class="mob-link" type="button" (click)="navigate('contact')">Contact Us</button>
+        <button class="mob-link" type="button" (click)="navigate('about')">About Us</button>
+        <button class="mob-link" type="button" (click)="navigate('contact')">Contact</button>
+        <button class="mob-link" type="button" (click)="navigate('team')">Our Team</button>
       </div>
     </nav>
   `,
