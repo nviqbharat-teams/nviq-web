@@ -7,7 +7,6 @@ import { CtaSectionComponent } from '../../components/cta/cta-section.component'
 import { TiltDirective } from '../../directives/tilt.directive';
 import { RevealDirective } from '../../directives/reveal.directive';
 import { ParticleCanvasComponent } from '../../components/particle-canvas/particle-canvas.component';
-import { ReviewFormComponent } from '../../components/review-form/review-form.component';
 import { AmcPartnersComponent } from '../../components/amc-partners/amc-partners.component';
 
 @Component({
@@ -20,7 +19,6 @@ import { AmcPartnersComponent } from '../../components/amc-partners/amc-partners
     TiltDirective,
     RevealDirective,
     ParticleCanvasComponent,
-    ReviewFormComponent,
     AmcPartnersComponent,
   ],
   template: `
@@ -158,9 +156,6 @@ import { AmcPartnersComponent } from '../../components/amc-partners/amc-partners
     <div appReveal="up" [revealDelay]="80">
       <app-amc-partners></app-amc-partners>
     </div>
-
-    <!-- User Reviews -->
-    <app-review-form [productType]="'mf'"></app-review-form>
 
     <!-- CTA -->
     <div appReveal="up" [revealDelay]="80">

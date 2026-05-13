@@ -138,7 +138,6 @@ import { AmcPartnersComponent } from '../amc-partners/amc-partners.component';
       <app-amc-partners></app-amc-partners>
 
       <app-features-section [productType]="'mf'"></app-features-section>
-      <app-review-form [productType]="'mf'"></app-review-form>
       <app-cta-section [product]="'mf'"></app-cta-section>
     </ng-container>
 
