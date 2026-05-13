@@ -32,6 +32,7 @@ import { NavService } from '../../services/nav.service';
               <a href="#" class="f-social" aria-label="LinkedIn">in</a>
               <a href="#" class="f-social" aria-label="X">x</a>
               <a href="#" class="f-social" aria-label="WhatsApp">wa</a>
+              <a href="https://www.facebook.com/profile.php?fb_profile_edit_entry_point" target="_blank" rel="noopener noreferrer" class="f-social" aria-label="Facebook">fb</a>
             </div>
           </div>
 
