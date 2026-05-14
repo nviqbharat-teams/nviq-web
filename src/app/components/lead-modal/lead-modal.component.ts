@@ -16,9 +16,9 @@ interface ModalConfig {
 
 const PRODUCT_CONFIG: Record<string, ModalConfig> = {
   gps: {
-    badge: 'Limited onboarding slots', badgeColor: '#93C5FD',
+    badge: '', badgeColor: '#93C5FD',
     title: 'Start Your Data-Driven Fleet Setup',
-    subtitle: 'Launch live GPS tracking from', accentText: 'Rs 499 per vehicle/month',
+    subtitle: '', accentText: '',
     buttonText: 'Activate Starter Plan',
     trustItems: ['No payment required now', 'Setup in 10 minutes', 'Built for fleet owners'],
   },
@@ -91,49 +91,54 @@ const PRODUCT_PILLS: { key: ProductCategory; label: string; icon: string }[] = [
         </button>
 
         <!-- ── Form ── -->
-        <div *ngIf="!submitted" class="lm-body">
+        <div *ngIf="!submitted" class="lm-body-flex">
 
-          <!-- Badge -->
-          <div class="lm-badge-wrap">
-            <span class="lm-badge"
-              [style.color]="cfg.badgeColor"
-              [style.border-color]="cfg.badgeColor + '44'"
-              [style.background]="cfg.badgeColor + '1A'">
-              {{ cfg.badge }}
-            </span>
-          </div>
-
-          <!-- Heading -->
-          <h3 class="lm-title">{{ cfg.title }}</h3>
-          <p class="lm-sub">
-            {{ cfg.subtitle }}
-            <span class="lm-accent" [style.color]="cfg.badgeColor">{{ cfg.accentText }}</span>
-          </p>
-
-          <!-- ── Product Picker ── -->
-          <div class="lm-picker-label">Select Product / Service</div>
-          <div class="lm-picker">
-            <button *ngFor="let p of pills" type="button"
-              class="lm-pill"
-              [class.lm-pill-active]="form.selectedProduct === p.key"
-              [style.--pill-color]="pillColor(p.key)"
-              (click)="selectProduct(p.key)">
-              <span class="lm-pill-icon">{{ p.icon }}</span>
-              <span class="lm-pill-label">{{ p.label }}</span>
-            </button>
-          </div>
-
-          <!-- Error -->
-          <p *ngIf="errorMsg" class="lm-error">{{ errorMsg }}</p>
-
-          <!-- Fields -->
-          <div class="lm-fields">
-            <div class="lm-field">
-              <label class="lm-label">Full Name</label>
-              <input type="text" [(ngModel)]="form.name"
-                placeholder="Enter your full name"
-                class="lm-input" autocomplete="name"/>
+          <div class="lm-header-fixed">
+            <!-- Badge -->
+            <div class="lm-badge-wrap" *ngIf="cfg.badge">
+              <span class="lm-badge"
+                [style.color]="cfg.badgeColor"
+                [style.border-color]="cfg.badgeColor + '44'"
+                [style.background]="cfg.badgeColor + '1A'">
+                {{ cfg.badge }}
+              </span>
             </div>
+
+            <!-- Heading -->
+            <h3 class="lm-title">{{ cfg.title }}</h3>
+            <p class="lm-sub" *ngIf="cfg.subtitle">
+              {{ cfg.subtitle }}
+              <span class="lm-accent" [style.color]="cfg.badgeColor">{{ cfg.accentText }}</span>
+            </p>
+          </div>
+
+          <div class="lm-content-scroll">
+            <!-- ── Product Picker ── -->
+            <ng-container *ngIf="productType !== 'gps'">
+              <div class="lm-picker-label">Select Product / Service</div>
+              <div class="lm-picker">
+                <button *ngFor="let p of pills" type="button"
+                  class="lm-pill"
+                  [class.lm-pill-active]="form.selectedProduct === p.key"
+                  [style.--pill-color]="pillColor(p.key)"
+                  (click)="selectProduct(p.key)">
+                  <span class="lm-pill-icon">{{ p.icon }}</span>
+                  <span class="lm-pill-label">{{ p.label }}</span>
+                </button>
+              </div>
+            </ng-container>
+
+            <!-- Error -->
+            <p *ngIf="errorMsg" class="lm-error">{{ errorMsg }}</p>
+
+            <!-- Fields -->
+            <div class="lm-fields">
+              <div class="lm-field">
+                <label class="lm-label">Full Name</label>
+                <input type="text" [(ngModel)]="form.name"
+                  placeholder="Enter your full name"
+                  class="lm-input" autocomplete="name"/>
+              </div>
             <div class="lm-field">
               <label class="lm-label">Phone Number
                 <span *ngIf="form.selectedProduct === 'mf'" class="lm-label-hint">(callback ke liye)</span>
@@ -159,18 +164,7 @@ const PRODUCT_PILLS: { key: ProductCategory; label: string; icon: string }[] = [
                   placeholder="e.g. RoadLink Logistics Pvt. Ltd."
                   class="lm-input"/>
               </div>
-              <div class="lm-field">
-                <label class="lm-label">Business Type</label>
-                <select [(ngModel)]="form.businessType" class="lm-input lm-select">
-                  <option value="" disabled>Select business type</option>
-                  <option value="Logistics">Logistics / Transport</option>
-                  <option value="Construction">Construction</option>
-                  <option value="Cab/Taxi">Cab / Taxi Operator</option>
-                  <option value="School Bus">School Bus</option>
-                  <option value="E-commerce">E-commerce Delivery</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
+
               <div class="lm-field">
                 <label class="lm-label">Number of Vehicles</label>
                 <select [(ngModel)]="form.fleetSize" class="lm-input lm-select">
@@ -311,28 +305,32 @@ const PRODUCT_PILLS: { key: ProductCategory; label: string; icon: string }[] = [
             </ng-container>
           </div>
 
-          <!-- Submit -->
-          <button class="lm-submit" (click)="submit()" [disabled]="sending"
-            [style.background]="submitGradient">
-            <span *ngIf="!sending">{{ cfg.buttonText }} →</span>
-            <span *ngIf="sending" class="lm-spinner">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                class="lm-spin">
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-              </svg>
-              Submitting...
-            </span>
-          </button>
+          </div> <!-- End lm-content-scroll -->
 
-          <div class="lm-trust">
-            <span *ngFor="let t of cfg.trustItems" class="lm-trust-item">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                stroke="#22C55E" stroke-width="3" stroke-linecap="round">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-              {{ t }}
-            </span>
+          <div class="lm-footer-fixed">
+            <!-- Submit -->
+            <button class="lm-submit" (click)="submit()" [disabled]="sending"
+              [style.background]="pillColor(form.selectedProduct)">
+              <span *ngIf="!sending">{{ cfg.buttonText }} →</span>
+              <span *ngIf="sending" class="lm-spinner">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                  class="lm-spin">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                Submitting...
+              </span>
+            </button>
+
+            <div class="lm-trust">
+              <span *ngFor="let t of cfg.trustItems" class="lm-trust-item">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="#22C55E" stroke-width="3" stroke-linecap="round">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+                {{ t }}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -369,14 +367,15 @@ const PRODUCT_PILLS: { key: ProductCategory; label: string; icon: string }[] = [
 
     .lm-card {
       position: relative; width: 100%;
-      max-width: 480px;
+      max-width: 550px; /* Wider popup */
       border-radius: 20px 20px 0 0;
-      background: linear-gradient(180deg, rgba(15,23,42,0.97) 0%, rgba(8,10,18,0.99) 100%);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: #0f172a; /* Solid premium dark slate */
+      border: 1px solid rgba(255, 255, 255, 0.05);
       box-shadow: 0 0 80px rgba(59,130,246,0.12), 0 25px 50px rgba(0,0,0,0.5);
-      overflow-y: auto; max-height: 95svh;
+      display: flex; flex-direction: column;
+      max-height: 85vh;
+      overflow: hidden;
       animation: lmIn 0.38s cubic-bezier(0.22,1,0.36,1) both;
-      scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;
     }
     @media (min-width: 640px) { .lm-card { border-radius: 20px; max-height: 92vh; } }
     @keyframes lmIn {
@@ -393,7 +392,29 @@ const PRODUCT_PILLS: { key: ProductCategory; label: string; icon: string }[] = [
     }
     .lm-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
-    .lm-body { padding: 28px 24px 24px; }
+    .lm-body-flex {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+    .lm-header-fixed {
+      padding: 28px 24px 14px;
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .lm-content-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 24px;
+      scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+    .lm-footer-fixed {
+      padding: 16px 24px 24px;
+      flex-shrink: 0;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      background: #0f172a;
+    }
     @media (min-width: 640px) { .lm-body { padding: 32px; } }
 
     .lm-badge-wrap { display: flex; justify-content: center; margin-bottom: 14px; }
@@ -568,7 +589,7 @@ export class LeadModalComponent implements OnChanges {
     selectedProduct: 'gps' as ProductCategory,
     name: '', phone: '', email: '',
     // GPS / FASTag
-    company: '', businessType: '', fleetSize: '', requirement: '',
+    company: '', fleetSize: '', requirement: '',
     // MF
     budget: '', goal: '', experience: '', riskPreference: '',
     // Insurance / AI / Other
@@ -579,7 +600,7 @@ export class LeadModalComponent implements OnChanges {
     this.form = {
       selectedProduct: product,
       name: '', phone: '', email: '',
-      company: '', businessType: '', fleetSize: '', requirement: '',
+      company: '', fleetSize: '', requirement: '',
       budget: '', goal: '', experience: '', riskPreference: '',
       message: '',
     };
@@ -590,7 +611,7 @@ export class LeadModalComponent implements OnChanges {
     this.form.selectedProduct = key;
     // Only reset product-specific fields, not name/phone/email
     if (prev !== key) {
-      this.form.company = ''; this.form.businessType = ''; this.form.fleetSize = '';
+      this.form.company = ''; this.form.fleetSize = '';
       this.form.requirement = ''; this.form.budget = ''; this.form.goal = '';
       this.form.experience = ''; this.form.riskPreference = ''; this.form.message = '';
       this.errorMsg = '';
@@ -624,17 +645,7 @@ export class LeadModalComponent implements OnChanges {
     return PRODUCT_CONFIG[p] ?? PRODUCT_CONFIG['default'];
   }
 
-  get submitGradient(): string {
-    const map: Record<ProductCategory, string> = {
-      gps:       'linear-gradient(135deg, #3B82F6, #7C3AED)',
-      mf:        'linear-gradient(135deg, #10B981, #3B82F6)',
-      insurance: 'linear-gradient(135deg, #FB923C, #EF4444)',
-      ai:        'linear-gradient(135deg, #8B5CF6, #6366F1)',
-      fastag:    'linear-gradient(135deg, #8B5CF6, #6366F1)',
-      other:     'linear-gradient(135deg, #3B82F6, #7C3AED)',
-    };
-    return map[this.form.selectedProduct] ?? 'linear-gradient(135deg, #3B82F6, #7C3AED)';
-  }
+
 
   ngOnChanges(): void {
     if (this.open) {
@@ -650,20 +661,20 @@ export class LeadModalComponent implements OnChanges {
   }
 
   submit(): void {
-    const { name, phone, email, selectedProduct, company, fleetSize, businessType,
+    const { name, phone, email, selectedProduct, company, fleetSize,
             requirement, budget, goal, experience, riskPreference, message } = this.form;
 
-    if (!name.trim() || !phone.trim() || !email.trim()) {
+    if (!name.trim() || !phone.trim()) {
       this.errorMsg = 'Please fill all required fields.';
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
+    if (email.trim() && !emailRegex.test(email.trim())) {
       this.errorMsg = 'Please enter a valid email address (e.g. you@gmail.com).';
       return;
     }
-    if ((selectedProduct === 'gps' || selectedProduct === 'fastag') && (!company.trim() || !fleetSize)) {
-      this.errorMsg = 'Please fill company name and fleet size.';
+    if ((selectedProduct === 'gps' || selectedProduct === 'fastag') && !fleetSize) {
+      this.errorMsg = 'Please fill fleet size.';
       return;
     }
     if (selectedProduct === 'mf' && (!budget || !goal || !riskPreference)) {
@@ -678,10 +689,10 @@ export class LeadModalComponent implements OnChanges {
     this.sending = true; this.errorMsg = '';
 
     this.api.submitProductEnquiry({
-      name: name.trim(), email: email.trim(), phone: phone.trim(),
+      name: name.trim(), email: email.trim() || undefined, phone: phone.trim(),
       productCategory: selectedProduct,
       company: company.trim() || undefined,
-      businessType: businessType || undefined,
+
       fleetSize: fleetSize || undefined,
       requirement: requirement.trim() || undefined,
       budget: budget || undefined,

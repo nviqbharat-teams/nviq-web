@@ -13,7 +13,7 @@ import { ContactSectionComponent } from './components/contact/contact-section.co
 import { FooterComponent } from './components/footer/footer.component';
 import { LeadModalComponent } from './components/lead-modal/lead-modal.component';
 import { RabbitLoaderComponent } from './components/rabbit-loader/rabbit-loader.component';
-import { CursorFollowerComponent } from './components/cursor-follower/cursor-follower.component';
+
 import { NavService } from './services/nav.service';
 
 @Component({
@@ -32,7 +32,7 @@ import { NavService } from './services/nav.service';
     FooterComponent,
     LeadModalComponent,
     RabbitLoaderComponent,
-    CursorFollowerComponent,
+
   ],
   template: `
     <!-- Loading screen -->
@@ -42,7 +42,7 @@ import { NavService } from './services/nav.service';
 
     <!-- App shell -->
     <ng-container *ngIf="!loading">
-      <app-cursor-follower></app-cursor-follower>
+
       <app-navbar></app-navbar>
 
       <!-- NavService SPA pages (URL = "/") -->
@@ -72,7 +72,7 @@ import { NavService } from './services/nav.service';
   `,
   styles: [`
     .app-main {
-      padding-top: 88px;
+      padding-top: 65px;
       min-height: calc(100vh - 88px);
       background: #0A0A0A;
       perspective: 1200px;

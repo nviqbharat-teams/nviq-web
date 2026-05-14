@@ -68,25 +68,11 @@ interface Benefit {
               </svg>
             </div>
 
-            <!-- Series tag badge (product series cards) -->
-            <div *ngIf="b.tag" class="card-tag"
-              [style.color]="b.iconColor"
-              [style.border-color]="b.iconColor + '33'"
-              [style.background]="b.glow">
-              {{ b.tag }}
-            </div>
-
-            <!-- Animated counter (metric cards) -->
-            <div *ngIf="!b.tag" class="card-stat">
-              <span class="stat-num" [style.color]="b.iconColor">{{ displayNums[i] }}{{ b.statSuffix }}</span>
-              <span class="stat-lbl">{{ b.statLabel }}</span>
-            </div>
-
             <h3 class="card-title">{{ b.title }}</h3>
             <p class="card-desc">{{ b.desc }}</p>
 
             <!-- Bottom glow line -->
-            <div class="card-bottom-bar" [style.background]="'linear-gradient(90deg,' + b.iconColor + ',transparent)'"></div>
+
           </article>
         </div>
 
@@ -98,14 +84,11 @@ interface Benefit {
     .ben-root {
       position: relative;
       padding: 100px 24px 112px;
-      background: #050A14;
+      background: #0f172a; /* Solid premium dark slate */
       overflow: hidden;
     }
     .ben-bg {
       position: absolute; inset: 0; pointer-events: none;
-      background:
-        radial-gradient(ellipse 60% 40% at 15% 50%, rgba(0,212,255,0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 35% at 85% 50%, rgba(99,102,241,0.06) 0%, transparent 60%);
     }
 
     /* ── Container ──────────────────────────────────────── */
@@ -115,10 +98,7 @@ interface Benefit {
     .ben-header { text-align: center; max-width: 680px; margin: 0 auto 64px; }
     .ben-eyebrow {
       display: inline-flex; align-items: center; gap: 7px;
-      padding: 5px 16px; border-radius: 999px;
-      border: 1px solid rgba(0,212,255,0.2);
-      background: rgba(0,212,255,0.06);
-      color: #00D4FF; font-size: 11px; font-weight: 700;
+      color: #38bdf8; font-size: 11px; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.12em;
       margin-bottom: 20px;
     }
@@ -126,14 +106,12 @@ interface Benefit {
       font-family: 'Outfit', sans-serif;
       font-size: clamp(2rem, 4vw, 3.2rem);
       font-weight: 900; letter-spacing: -0.03em;
-      color: #F0F6FF; line-height: 1.1; margin-bottom: 16px;
+      color: #ffffff; line-height: 1.1; margin-bottom: 16px;
     }
     .ben-accent {
-      background: linear-gradient(120deg, #00D4FF, #6366F1);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #60a5fa; /* Solid accent color */
     }
-    .ben-sub { color: #64748B; font-size: 1rem; line-height: 1.7; }
+    .ben-sub { color: #94a3b8; font-size: 1rem; line-height: 1.7; }
 
     /* ── Grid ───────────────────────────────────────────── */
     .ben-grid {
@@ -146,19 +124,23 @@ interface Benefit {
     .ben-card {
       position: relative;
       padding: 32px 24px 28px;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.07);
-      background: linear-gradient(160deg, rgba(12,18,32,0.95) 0%, rgba(6,10,20,0.98) 100%);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: #1e293b; /* Solid background */
       overflow: hidden;
       display: flex; flex-direction: column; gap: 14px;
       opacity: 0; transform: translateY(36px);
-      transition: opacity 0.65s ease, transform 0.65s ease;
-      transform-style: preserve-3d;
+      transition: opacity 0.65s ease, transform 0.65s ease,
+                  border-color 0.3s ease, box-shadow 0.3s ease;
       will-change: transform;
       cursor: default;
     }
     .ben-card.visible { opacity: 1; transform: translateY(0) perspective(800px) rotateX(0) rotateY(0); }
-    .ben-card:hover { border-color: rgba(255,255,255,0.12); }
+    .ben-card:hover {
+      border-color: rgba(96, 165, 250, 0.2);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
 
     /* Glare */
     .card-glare {
@@ -177,18 +159,6 @@ interface Benefit {
       transition: transform 0.3s ease;
     }
     .ben-card:hover .card-icon-ring { transform: rotate(-6deg) scale(1.08); }
-
-    /* Series tag badge */
-    .card-tag {
-      display: inline-flex; align-items: center;
-      padding: 5px 14px; border-radius: 999px;
-      border: 1px solid;
-      font-size: 11px; font-weight: 800;
-      text-transform: uppercase; letter-spacing: 0.14em;
-      width: fit-content;
-      transition: transform 0.3s ease;
-    }
-    .ben-card:hover .card-tag { transform: scale(1.06); }
 
     /* Stat counter */
     .card-stat {
@@ -209,10 +179,10 @@ interface Benefit {
     /* Text */
     .card-title {
       font-size: 1.05rem; font-weight: 800;
-      color: #F0F6FF; letter-spacing: -0.01em; line-height: 1.2;
+      color: #ffffff; letter-spacing: -0.01em; line-height: 1.2;
     }
     .card-desc {
-      font-size: 0.86rem; color: #64748B; line-height: 1.65;
+      font-size: 0.86rem; color: #94a3b8; line-height: 1.65;
     }
 
     /* Bottom bar */
@@ -274,39 +244,34 @@ export class BenefitsSectionComponent implements AfterViewInit, OnDestroy {
     {
       iconPath: 'M12 21s6-5.2 6-10a6 6 0 1 0-12 0c0 4.8 6 10 6 10zM12 11m-2 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0',
       iconColor: '#00D4FF', glow: 'rgba(0,212,255,0.08)',
-      tag: 'Basic',
-      title: 'NViQ Lite',
+      title: 'Core Series',
       desc: 'Entry-level GPS tracking for small fleets. Real-time location, trip history, and driver behavior monitoring out of the box.',
       stat: '', statLabel: '', statTarget: 0, statSuffix: ''
     },
     {
       iconPath: 'M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01',
       iconColor: '#34D399', glow: 'rgba(52,211,153,0.08)',
-      tag: '4G',
-      title: 'NViQ Smart',
+      title: 'Smart Series',
       desc: 'High-speed 4G connectivity with live alerts, geo-fencing, and route analytics for growing mid-size fleets.',
       stat: '', statLabel: '', statTarget: 0, statSuffix: ''
     },
     {
       iconPath: 'M23 6l-9.5 9.5-5-5L1 18M17 6h6v6',
       iconColor: '#A78BFA', glow: 'rgba(167,139,250,0.08)',
-      tag: 'Pro',
-      title: 'NViQ Pro',
+      title: 'Intelli Series',
       desc: 'AI-powered fleet intelligence with predictive maintenance, fuel cost analytics, and advanced multi-branch reporting.',
       stat: '', statLabel: '', statTarget: 0, statSuffix: ''
     },
     {
       iconPath: 'M12 2l8 4v6c0 5-3.3 8.6-8 10-4.7-1.4-8-5-8-10V6l8-4zM9.2 12.4l2 2 3.6-4',
       iconColor: '#FB923C', glow: 'rgba(251,146,60,0.08)',
-      tag: 'AIS140',
-      title: 'NViQ AIS140',
+      title: 'Secure Series',
       desc: 'AIS140-certified devices meeting all government mandates for commercial vehicle compliance, panic alerts, and audit-ready logs.',
       stat: '', statLabel: '', statTarget: 0, statSuffix: ''
     },
     {
       iconPath: 'M23 7l-7 5 7 5V7zM1 5h15a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H1a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z',
       iconColor: '#F43F5E', glow: 'rgba(244,63,94,0.08)',
-      tag: 'Dashcam',
       title: 'Vision Series',
       desc: 'Dual-channel AI dashcam with event-based recording, cloud backup, and real-time driver coaching to reduce accidents.',
       stat: '', statLabel: '', statTarget: 0, statSuffix: ''

@@ -2,6 +2,7 @@ import {
   Component, HostListener, OnInit, ElementRef, ViewChild
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { NavService } from '../../services/nav.service';
 
 @Component({
@@ -28,19 +29,9 @@ import { NavService } from '../../services/nav.service';
 
         <!-- CENTER: Logo (absolute centered) -->
         <button class="nav-logo" type="button" (click)="navigate('home')">
-          <span class="logo-rabbit" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 80 80" fill="none"
-              stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M28 36 C26 28 24 18 26 10 C27 6 30 4 33 6 C36 8 36 14 35 22 L34 30"/>
-              <path d="M38 32 C38 24 40 16 44 12 C46 10 49 10 50 13 C51 16 49 22 46 27 L42 32"/>
-              <path d="M24 36 C22 40 22 46 26 50 C30 54 36 55 42 54 C48 53 52 49 52 44 C52 38 48 33 42 32 L35 30 C30 29 25 32 24 36Z"/>
-              <circle cx="35" cy="42" r="2" fill="white" stroke="none"/>
-              <path d="M26 50 C24 56 24 62 28 66 C32 70 40 71 46 69 C52 67 54 61 52 55"/>
-              <circle cx="54" cy="62" r="3"/>
-              <path d="M30 66 L28 74 M36 68 L36 76 M44 68 L46 76 M50 64 L54 72"/>
-            </svg>
-          </span>
+         <img src="/images/logo.png.jpeg" alt="NViQ Logo" class="logo-img">
           <span class="logo-text">NV<span class="logo-i">i</span>Q</span>
+
         </button>
 
         <!-- RIGHT: Contact + Our Team -->
@@ -185,21 +176,12 @@ import { NavService } from '../../services/nav.service';
     }
     .nav-logo:hover { background: rgba(37,99,235,0.05); }
 
-    .logo-rabbit {
-      width: 36px; height: 36px;
-      background: rgba(37,99,235,0.08);
-      border: 1px solid rgba(37,99,235,0.2);
-      border-radius: 10px;
-      display: inline-flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      transition: background 0.2s, border-color 0.2s;
+    .logo-img {
+      height: 32px;
+      width: auto;
+      display: block;
     }
-    .logo-rabbit svg { stroke: #2563EB; }
-    .nav-logo:hover .logo-rabbit {
-      background: rgba(37,99,235,0.14);
-      border-color: rgba(37,99,235,0.35);
-    }
-    .logo-text {
+       .logo-text {
       font-family: 'Outfit', sans-serif;
       font-size: 19px; font-weight: 900;
       color: #0F172A; letter-spacing: -0.02em;
@@ -261,7 +243,7 @@ export class NavbarComponent implements OnInit {
 
   @ViewChild('companyDd') companyDdRef!: ElementRef<HTMLElement>;
 
-  constructor(public nav: NavService) {}
+  constructor(public nav: NavService, private router: Router) {}
 
   get isCompanyPage(): boolean {
     const p = this.nav.page();
@@ -290,6 +272,10 @@ export class NavbarComponent implements OnInit {
   navigate(page: string): void {
     this.ddOpen    = false;
     this.mobileOpen = false;
-    this.nav.go(page as any);
+    if (this.router.url !== '/') {
+      this.router.navigate(['/']).then(() => this.nav.go(page as any));
+    } else {
+      this.nav.go(page as any);
+    }
   }
 }

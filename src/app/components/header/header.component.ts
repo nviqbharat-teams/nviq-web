@@ -12,14 +12,7 @@ import { CommonModule } from '@angular/common';
 
         <!-- Logo -->
         <a routerLink="/" class="logo" (click)="closeMobile()">
-          <div class="logo-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#00D4FF"/>
-              <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#00D4FF" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            <span class="logo-live-dot"></span>
-          </div>
-          <span class="logo-text">NV<span class="logo-accent">i</span>Q</span>
+          <img src="/images/logo.png.jpeg" alt="NViQ Logo" class="logo-img">
         </a>
 
         <!-- Desktop Nav -->
@@ -99,48 +92,11 @@ import { CommonModule } from '@angular/common';
       flex-shrink: 0;
     }
 
-    .logo-icon {
-      position: relative;
-      width: 38px; height: 38px;
-      background: rgba(0,212,255,0.08);
-      border: 1px solid rgba(0,212,255,0.2);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
+    .logo-img {
+      height: 32px;
+      width: auto;
+      display: block;
     }
-
-    .logo:hover .logo-icon {
-      background: rgba(0,212,255,0.14);
-      border-color: rgba(0,212,255,0.35);
-      box-shadow: 0 0 20px rgba(0,212,255,0.15);
-    }
-
-    .logo-live-dot {
-      position: absolute;
-      top: -3px; right: -3px;
-      width: 9px; height: 9px;
-      background: #10B981;
-      border-radius: 50%;
-      border: 2px solid #04070F;
-      animation: pulse-dot 2s ease infinite;
-    }
-
-    @keyframes pulse-dot {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
-      50% { box-shadow: 0 0 0 4px rgba(16,185,129,0); }
-    }
-
-    .logo-text {
-      font-family: 'Outfit', sans-serif;
-      font-size: 20px;
-      font-weight: 800;
-      color: #F0F6FF;
-      letter-spacing: -0.02em;
-    }
-
-    .logo-accent { color: #00D4FF; }
 
     /* Nav */
     .nav-links {

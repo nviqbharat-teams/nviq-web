@@ -15,6 +15,11 @@ export const routes: Routes = [
   },
   // GPS / FASTag / Drone — shared ProductDetailComponent, reads URL on init
   {
+    path: 'product/gps-fleet-tracking',
+    loadComponent: () =>
+      import('./components/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
+  },
+  {
     path: 'products/gps-tracking',
     loadComponent: () =>
       import('./components/product-detail/product-detail.component').then(m => m.ProductDetailComponent)

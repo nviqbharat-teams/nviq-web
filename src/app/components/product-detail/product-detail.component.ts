@@ -1,6 +1,6 @@
-﻿import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NavService, ProductKey } from '../../services/nav.service';
 import { FeaturesSectionComponent } from '../features/features-section.component';
 import { BenefitsSectionComponent } from '../benefits/benefits-section.component';
@@ -29,8 +29,8 @@ import { AmcPartnersComponent } from '../amc-partners/amc-partners.component';
   ],
   template: `
     <!-- Back button -->
-    <div class="pd-back-bar">
-      <button class="pd-back" (click)="nav.go('products')" type="button">
+    <div class="pd-back-bar" *ngIf="nav.product() !== 'gps'">
+      <button class="pd-back" (click)="goBack()" type="button">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
         All Products
       </button>
@@ -89,9 +89,6 @@ import { AmcPartnersComponent } from '../amc-partners/amc-partners.component';
       </div>
       <app-features-section [productType]="'gps'"></app-features-section>
       <app-benefits-section [productType]="'gps'"></app-benefits-section>
-      <app-problem-section></app-problem-section>
-      <app-live-tracking-section></app-live-tracking-section>
-      <app-review-form [productType]="'gps'"></app-review-form>
       <app-pricing-section></app-pricing-section>
     </ng-container>
 
@@ -632,7 +629,7 @@ import { AmcPartnersComponent } from '../amc-partners/amc-partners.component';
     }
 
     /* ── GPS Slide Backgrounds ───────────────────────── */
-    .gps-bg-0 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('/images/gps%20slide-1.jpg.jpeg') center/cover no-repeat; }
+    .gps-bg-0 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('/images/gps_slide_1.png') center/cover no-repeat; }
     .gps-bg-1 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('/images/gps%20slide-2.jpg.jpeg') center/cover no-repeat; }
     .gps-bg-2 { background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6)), url('/images/gps%20slide-3.jpg.jpeg') center/cover no-repeat; }
 
@@ -841,7 +838,15 @@ import { AmcPartnersComponent } from '../amc-partners/amc-partners.component';
   `]
 })
 export class ProductDetailComponent implements OnInit, OnDestroy {
-  constructor(public nav: NavService, private route: ActivatedRoute) {}
+  constructor(public nav: NavService, private route: ActivatedRoute, private router: Router) {}
+
+  goBack(): void {
+    if (this.router.url !== '/') {
+      this.router.navigate(['/']).then(() => this.nav.go('products'));
+    } else {
+      this.nav.go('products');
+    }
+  }
 
   mfInvestItems = [
     { icon: '💰', iconBg: 'rgba(59,130,246,0.15)',  title: 'Monthly Investment Budget',  desc: 'Set and adjust your SIP amount anytime — start from as low as ₹500/month.' },
@@ -882,7 +887,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       tag: 'Live Tracking',
       title: 'Real-Time GPS Tracking',
       desc: 'Monitor every vehicle on a live map. Know exact location, speed, and route — updated every 5 seconds.',
-      image: 'images/gps%20slide-1.jpg.jpeg',
+      image: 'images/gps_slide_1.png',
     },
     {
       tag: 'Fleet Management',
@@ -903,6 +908,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       const path = this.route.snapshot.url.map(s => s.path).join('/');
       const urlMap: Record<string, ProductKey> = {
         'gps-tracking': 'gps',
+        'gps-fleet-tracking': 'gps',
         'fastag':       'fastag',
         'drone':        'drone',
       };

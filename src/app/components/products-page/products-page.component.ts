@@ -19,4 +19,4 @@ import { ProductShowcaseComponent } from '../product-showcase/product-showcase.c
     `,
   ],
 })
-export class ProductsPageComponent {}
+export class ProductsPageComponent { }

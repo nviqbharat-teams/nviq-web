@@ -79,7 +79,7 @@ export interface ContactPayload {
 
 export interface ProductEnquiryPayload {
   name: string;
-  email: string;
+  email?: string;
   phone: string;
   productCategory: ProductCategory;
   // GPS / FASTag fields

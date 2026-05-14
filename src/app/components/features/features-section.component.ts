@@ -69,10 +69,7 @@ interface FeatureCard {
               </li>
             </ul>
 
-            <!-- Bottom glow bar -->
-            <div class="card-bar"
-                 [style.background]="'linear-gradient(90deg,' + card.iconColor + ',' + card.iconColor + '44,transparent)'">
-            </div>
+
           </article>
         </div>
 
@@ -82,10 +79,7 @@ interface FeatureCard {
   styles: [`
     .fs-root {
       padding: 96px 24px 108px;
-      background:
-        radial-gradient(ellipse 50% 40% at 10% 50%, rgba(14,165,233,0.08) 0%, transparent 55%),
-        radial-gradient(ellipse 50% 40% at 90% 50%, rgba(34,197,94,0.06) 0%, transparent 55%),
-        #030810;
+      background: #0f172a; /* Solid premium dark slate */
     }
     .fs-container { max-width: 1180px; margin: 0 auto; }
 
@@ -93,7 +87,7 @@ interface FeatureCard {
     .fs-header { text-align: center; max-width: 760px; margin: 0 auto 56px; }
     .fs-eyebrow {
       display: inline-block;
-      color: #7dd3fc; font-size: 11.5px; font-weight: 700;
+      color: #38bdf8; font-size: 11.5px; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.18em;
       margin-bottom: 14px;
     }
@@ -101,15 +95,13 @@ interface FeatureCard {
       font-family: 'Outfit', sans-serif;
       font-size: clamp(2rem, 4.2vw, 3.1rem);
       font-weight: 900; letter-spacing: -0.03em;
-      color: #f8fafc; line-height: 1.08; margin-bottom: 16px;
+      color: #ffffff; line-height: 1.08; margin-bottom: 16px;
     }
     .fs-accent {
-      background: linear-gradient(120deg, #00D4FF, #6366F1);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #60a5fa; /* Solid accent color */
     }
     .fs-sub {
-      color: rgba(203,213,225,0.82);
+      color: #94a3b8; /* Solid soft gray */
       font-size: clamp(0.97rem, 1.4vw, 1.1rem); line-height: 1.65;
     }
 
@@ -120,55 +112,41 @@ interface FeatureCard {
     .fs-card {
       position: relative;
       padding: 34px 30px 30px;
-      border-radius: 22px;
-      border: 1px solid rgba(148,163,184,0.14);
-      background: rgba(8,13,24,0.85);
-      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: #1e293b; /* Solid background */
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
       overflow: hidden;
       display: flex; flex-direction: column; gap: 14px;
       opacity: 0; transform: translateY(24px) scale(0.98);
       transition: opacity 0.6s ease, transform 0.6s ease,
                   border-color 0.3s ease, box-shadow 0.3s ease;
-      transform-style: preserve-3d;
       will-change: transform;
     }
     .fs-card.visible { opacity: 1; transform: translateY(0) scale(1); }
-    .fs-card:hover { border-color: rgba(148,163,184,0.28); }
-
-    /* Corner accent triangle */
-    .fs-corner {
-      position: absolute; top: 0; right: 0;
-      width: 80px; height: 80px;
-      clip-path: polygon(100% 0, 0 0, 100% 100%);
-      opacity: 0.5; transition: opacity 0.3s;
+    .fs-card:hover {
+      border-color: rgba(96, 165, 250, 0.2);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
-    .fs-card:hover .fs-corner { opacity: 0.8; }
-
-    /* Glare */
-    .fs-glare {
-      position: absolute; inset: 0; border-radius: 22px;
-      pointer-events: none; opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    .fs-card:hover .fs-glare { opacity: 1; }
 
     /* Icon */
     .card-icon-wrap {
       width: 50px; height: 50px;
-      border-radius: 14px; border: 1px solid;
+      border-radius: 12px; border: 1px solid;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; transition: transform 0.3s ease;
     }
-    .fs-card:hover .card-icon-wrap { transform: rotate(-8deg) scale(1.1); }
+    .fs-card:hover .card-icon-wrap { transform: rotate(-4deg) scale(1.05); }
 
     /* Title */
     .card-title {
       font-size: 1.25rem; font-weight: 800;
-      color: #f8fafc; letter-spacing: -0.02em; line-height: 1.2;
+      color: #ffffff; letter-spacing: -0.02em; line-height: 1.2;
     }
 
     /* Description */
-    .card-desc { color: rgba(203,213,225,0.75); font-size: 0.93rem; line-height: 1.65; }
+    .card-desc { color: #94a3b8; font-size: 0.93rem; line-height: 1.65; }
 
     /* Bullets */
     .card-bullets {
@@ -177,17 +155,9 @@ interface FeatureCard {
     }
     .card-bullets li {
       display: flex; align-items: flex-start; gap: 8px;
-      color: rgba(226,232,240,0.8); font-size: 0.86rem; line-height: 1.5;
+      color: #cbd5e1; font-size: 0.86rem; line-height: 1.5;
     }
     .card-bullets li svg { flex-shrink: 0; margin-top: 2px; }
-
-    /* Bottom bar */
-    .card-bar {
-      position: absolute; bottom: 0; left: 0;
-      height: 2px; width: 0;
-      transition: width 0.6s cubic-bezier(0.22,1,0.36,1) 0.3s;
-    }
-    .fs-card.visible .card-bar { width: 100%; }
 
     @media (max-width: 768px) {
       .fs-root { padding: 72px 16px 80px; }
@@ -244,28 +214,28 @@ export class FeaturesSectionComponent implements AfterViewInit, OnDestroy {
       iconColor: '#38bdf8', glow: 'rgba(56,189,248,0.1)',
       title: 'Smart Tracking',
       description: 'Always-on location visibility with clean route history to keep operations grounded.',
-      bullets: ['Live GPS position every 10 seconds','Full route history with timestamps','Geofence alerts for boundary violations'],
+      bullets: ['Live GPS position every 10 seconds', 'Full route history with timestamps', 'Geofence alerts for boundary violations'],
     },
     {
       icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4',
-      iconColor: '#34d399', glow: 'rgba(52,211,153,0.1)',
+      iconColor: '#38bdf8', glow: 'rgba(56,189,248,0.1)',
       title: 'Business Summary',
       description: 'Complete business overview with trip, fuel, and fleet performance reports in one place.',
       bullets: ['Fuel consumption & cost summary', 'Trip distance & stoppage reports', 'Fleet utilization analytics'],
     },
     {
       icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z',
-      iconColor: '#a78bfa', glow: 'rgba(167,139,250,0.1)',
+      iconColor: '#38bdf8', glow: 'rgba(56,189,248,0.1)',
       title: 'Drive Behaviour',
       description: 'Real-time driver monitoring with instant alerts for unsafe driving patterns.',
       bullets: ['Overspeed & harsh braking alerts', 'Geo-fence entry/exit alerts', 'Fuel theft & drain alerts'],
     },
     {
       icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
-      iconColor: '#fb923c', glow: 'rgba(251,146,60,0.1)',
+      iconColor: '#38bdf8', glow: 'rgba(56,189,248,0.1)',
       title: 'Certified Safety Solutions',
       description: 'Compliance-friendly controls that strengthen driver safety and audit confidence.',
-      bullets: ['Driver fatigue & overspeed alerts','Panic button & emergency SOS relay','Compliance audit trail & reports'],
+      bullets: ['Driver fatigue & overspeed alerts', 'Panic button & emergency SOS relay', 'Compliance audit trail & reports'],
     },
   ];
 
@@ -297,7 +267,7 @@ export class FeaturesSectionComponent implements AfterViewInit, OnDestroy {
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
     const rx = ((event.clientY - cy) / (rect.height / 2)) * -7;
-    const ry = ((event.clientX - cx) / (rect.width  / 2)) *  7;
+    const ry = ((event.clientX - cx) / (rect.width / 2)) * 7;
     el.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(10px)`;
     el.style.boxShadow = `0 28px 64px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.07)`;
     const glare = el.querySelector('.fs-glare') as HTMLElement | null;

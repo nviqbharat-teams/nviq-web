@@ -1,8 +1,9 @@
-﻿import {
+import {
   AfterViewInit, Component, ElementRef,
   NgZone, OnDestroy, ViewChild
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { NavService, ProductKey } from '../../services/nav.service';
 
 type ProductId = ProductKey;
@@ -54,7 +55,7 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
       gradient: '',
       visual: 'gps',
       floats: [
-        { label: 'Live',   value: 'Tracking' },
+        { label: 'Live', value: 'Tracking' },
         { label: 'Status', value: 'Active' },
         { label: 'Alerts', value: 'Geo-fence' },
       ],
@@ -74,8 +75,8 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
       visual: 'mf',
       floats: [
         { label: 'Returns', value: '+18.6%' },
-        { label: 'Status',  value: 'SIP Active' },
-        { label: 'Alerts',  value: 'Market' },
+        { label: 'Status', value: 'SIP Active' },
+        { label: 'Alerts', value: 'Market' },
       ],
       enquiryCta: 'Start Investing Today',
     },
@@ -89,8 +90,8 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
       visual: 'fastag',
       floats: [
         { label: 'Balance', value: '₹1,250' },
-        { label: 'Status',  value: 'Ready' },
-        { label: 'Mode',    value: 'Auto-Recharge' },
+        { label: 'Status', value: 'Ready' },
+        { label: 'Mode', value: 'Auto-Recharge' },
       ],
       enquiryCta: 'Request Demo',
     },
@@ -104,14 +105,18 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
       visual: 'drone',
       floats: [
         { label: 'Battery', value: '92%' },
-        { label: 'Status',  value: 'In Field' },
-        { label: 'Alerts',  value: 'Crop Health' },
+        { label: 'Status', value: 'In Field' },
+        { label: 'Alerts', value: 'Crop Health' },
       ],
       enquiryCta: 'Request Demo',
     },
   ];
 
-  constructor(private nav: NavService, private ngZone: NgZone) {}
+  constructor(
+    private nav: NavService,
+    private ngZone: NgZone,
+    private router: Router
+  ) { }
 
   ngAfterViewInit(): void {
     this.ngZone.runOutsideAngular(() => this.initParticles());
@@ -122,12 +127,22 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
   }
 
   openProduct(productId: ProductKey): void {
-    this.nav.go('product-detail', productId);
+    if (productId === 'gps') {
+      this.router.navigate(['/product/gps-fleet-tracking']);
+    } else {
+      this.nav.go('product-detail', productId);
+    }
   }
 
   openEnquiry(productId: ProductKey, event: Event): void {
     event.stopPropagation();
-    this.nav.openModalFor(productId);
+    if (productId === 'gps') {
+      this.router.navigate(['/product/gps-fleet-tracking']).then(() => {
+        this.nav.openModalFor(productId);
+      });
+    } else {
+      this.nav.openModalFor(productId);
+    }
   }
 
   private initParticles(): void {
@@ -135,13 +150,13 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const COUNT  = 110;
-    const DEPTH  = 700;
-    const FOV    = 420;
-    const LINK   = 130;   // max px distance for connections
+    const COUNT = 110;
+    const DEPTH = 700;
+    const FOV = 420;
+    const LINK = 130;   // max px distance for connections
 
     const resize = () => {
-      canvas.width  = canvas.offsetWidth  || window.innerWidth;
+      canvas.width = canvas.offsetWidth || window.innerWidth;
       canvas.height = canvas.offsetHeight || 800;
     };
     window.addEventListener('resize', resize);
@@ -191,7 +206,7 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
 
       // particles
       for (const { sx, sy, scale, p } of proj) {
-        const radius  = p.r * scale * 2.2;
+        const radius = p.r * scale * 2.2;
         const opacity = p.baseOpacity * Math.min(scale * 2.2, 1);
 
         // core dot
@@ -202,9 +217,9 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
 
         // glow halo
         const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, radius * 4);
-        g.addColorStop(0,   `rgba(0,212,255,${opacity * 0.55})`);
+        g.addColorStop(0, `rgba(0,212,255,${opacity * 0.55})`);
         g.addColorStop(0.4, `rgba(37,99,235,${opacity * 0.25})`);
-        g.addColorStop(1,   'rgba(0,0,0,0)');
+        g.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.beginPath();
         ctx.arc(sx, sy, radius * 4, 0, Math.PI * 2);
         ctx.fillStyle = g;
@@ -213,12 +228,12 @@ export class ProductShowcaseComponent implements AfterViewInit, OnDestroy {
         // move
         p.x += p.vx; p.y += p.vy; p.z += p.vz;
         const half = DEPTH / 2;
-        if (p.z >  half) p.z = -half;
-        if (p.z < -half) p.z =  half;
-        if (p.x >  1300) p.x = -1300;
-        if (p.x < -1300) p.x =  1300;
-        if (p.y >  900)  p.y = -900;
-        if (p.y < -900)  p.y =  900;
+        if (p.z > half) p.z = -half;
+        if (p.z < -half) p.z = half;
+        if (p.x > 1300) p.x = -1300;
+        if (p.x < -1300) p.x = 1300;
+        if (p.y > 900) p.y = -900;
+        if (p.y < -900) p.y = 900;
       }
     };
 

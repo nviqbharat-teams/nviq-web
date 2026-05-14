@@ -32,7 +32,6 @@ import { NavService } from '../../services/nav.service';
             </button>
             <span class="ps-toggle-label" [class.ps-toggle-active]="isAnnual()">
               Annual
-              <span class="ps-save-badge" *ngIf="isAnnual()">Save 10%</span>
             </span>
           </div>
         </div>
@@ -133,7 +132,7 @@ import { NavService } from '../../services/nav.service';
     .ps-root {
       position: relative;
       padding: 96px 24px 104px;
-      background: linear-gradient(180deg, #050C18 0%, #060E1C 50%, #040A14 100%);
+      background: #0f172a; /* Solid premium dark slate */
       overflow: hidden;
       isolation: isolate;
     }
@@ -179,7 +178,7 @@ import { NavService } from '../../services/nav.service';
       display: inline-flex; align-items: center; gap: 8px;
       font-size: 11px; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.18em;
-      color: #00D4FF; margin-bottom: 16px;
+      color: #38bdf8; margin-bottom: 16px;
     }
     .ps-eyebrow-dot {
       width: 6px; height: 6px; border-radius: 50%;
@@ -195,13 +194,11 @@ import { NavService } from '../../services/nav.service';
       color: #F0F6FF; margin: 0 0 14px; line-height: 1.1;
     }
     .ps-accent {
-      background: linear-gradient(120deg, #00D4FF, #6366F1);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #60a5fa; /* Solid accent color */
     }
     .ps-sub {
       font-size: clamp(0.9rem, 1.3vw, 1rem);
-      color: rgba(255,255,255,0.45); margin: 0;
+      color: #94a3b8; margin: 0;
     }
 
     /* ── Cards grid ─────────────────────── */
@@ -215,8 +212,8 @@ import { NavService } from '../../services/nav.service';
     /* ── Card base ──────────────────────── */
     .ps-card {
       position: relative;
-      background: rgba(255,255,255,0.035);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: #1e293b; /* Solid background */
+      border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 24px;
       padding: 36px 32px 32px;
       display: flex; flex-direction: column;
@@ -241,7 +238,7 @@ import { NavService } from '../../services/nav.service';
 
     /* ── Popular card ───────────────────── */
     .ps-card-popular {
-      background: linear-gradient(160deg, rgba(0,212,255,0.07) 0%, rgba(10,20,40,0.95) 100%);
+      background: #1e293b; /* Solid background */
       border-color: rgba(0,212,255,0.35);
       box-shadow: 0 0 40px rgba(0,212,255,0.08), inset 0 0 32px rgba(0,212,255,0.04);
     }
@@ -306,21 +303,15 @@ import { NavService } from '../../services/nav.service';
       font-family: 'Outfit', sans-serif;
       font-size: 3.8rem; font-weight: 900;
       line-height: 1;
-      background: linear-gradient(135deg, #FFFFFF 0%, rgba(255,255,255,0.7) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #ffffff;
       letter-spacing: -0.04em;
     }
     .ps-amount-pro {
-      background: linear-gradient(135deg, #00D4FF 0%, #38BDF8 50%, #818CF8 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #00D4FF;
     }
     .ps-amount-custom {
       font-size: 2.6rem;
-      background: linear-gradient(135deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.3) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #94a3b8;
     }
 
     /* ── Divider ────────────────────────── */

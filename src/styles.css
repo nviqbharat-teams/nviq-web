@@ -74,9 +74,7 @@ body {
   overflow-x: hidden;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  * { cursor: none !important; }
-}
+
 
 /* ============================================================
    CUSTOM SCROLLBAR

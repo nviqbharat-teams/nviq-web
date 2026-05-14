@@ -1,8 +1,9 @@
-﻿import {
+import {
   AfterViewInit, Component, ElementRef, OnDestroy,
   OnInit, NgZone, ChangeDetectorRef, ViewChild
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { NavService, ProductKey, Page } from '../../services/nav.service';
 
 interface Slide {
@@ -408,7 +409,30 @@ interface Particle {
               </div>
 
               <!-- CTA button (product / company / contact) -->
-              <button *ngIf="slide.cta" class="slide-cta" type="button"
+              <ng-container *ngIf="slide.id === 'gps'">
+                <div class="slide-cta-group" style="display: flex; gap: 12px;">
+                  <button class="slide-cta" type="button"
+                    (click)="onCta(slide)"
+                    style="background:linear-gradient(135deg,#3B82F6,#2563EB)">
+                    Explore More
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                  <button class="slide-cta" type="button"
+                    (click)="onStartTrial()"
+                    style="background:transparent; border: 2px solid #3B82F6; color: #fff;">
+                    Start Free Trial
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                </div>
+              </ng-container>
+
+              <button *ngIf="slide.id !== 'gps' && slide.cta" class="slide-cta" type="button"
                 (click)="onCta(slide)"
                 style="background:linear-gradient(135deg,#3B82F6,#2563EB)">
                 {{ slide.cta }}
@@ -506,6 +530,21 @@ interface Particle {
         </div>
       </div>
 
+      <!-- Side Nav Buttons -->
+      <button class="side-nav-btn side-prev" type="button" (click)="prev()" aria-label="Previous slide">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+
+      <button class="side-nav-btn side-next" type="button" (click)="next()" aria-label="Next slide">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+
     </div>
   `,
   styles: [`
@@ -521,6 +560,51 @@ interface Particle {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       z-index: 5; pointer-events: none;
+    }
+
+    /* ── Side Nav Buttons ──────────────────────────────── */
+    .side-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 40;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+      outline: none;
+    }
+    .side-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-50%) scale(1.05);
+    }
+    .side-nav-btn:focus {
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+    .side-nav-btn:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+    .side-prev { left: 24px; }
+    .side-next { right: 24px; }
+
+    /* ── Responsive Button Styles (Mobile) ──────────────── */
+    @media (max-width: 768px) {
+      .side-nav-btn {
+        width: 36px;
+        height: 36px;
+      }
+      .side-prev { left: 10px; }
+      .side-next { right: 10px; }
     }
 
     /* ── Slides ─────────────────────────────────────────── */
@@ -1387,6 +1471,7 @@ interface Particle {
       .sa-ft-card { width: 160px; height: 100px; }
       .sa-drone-svg { width: 200px; }
       .sa-drone-float { margin-left: -100px; }
+      .mf-right-col { display: none; }
     }
   `]
 })
@@ -1398,8 +1483,8 @@ export class HomeSliderComponent implements OnInit, AfterViewInit, OnDestroy {
   private paused = false;
 
   sipAmount = 5000;
-  sipYears  = 10;
-  sipRate   = 12;
+  sipYears = 10;
+  sipRate = 12;
 
   get sipResult() {
     const P = this.sipAmount;
@@ -1410,7 +1495,7 @@ export class HomeSliderComponent implements OnInit, AfterViewInit, OnDestroy {
     return {
       invested: Math.round(invested),
       maturity: Math.round(M),
-      gains:    Math.round(M - invested),
+      gains: Math.round(M - invested),
     };
   }
 
@@ -1479,8 +1564,9 @@ export class HomeSliderComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private nav: NavService,
     private ngZone: NgZone,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.startProgress();
@@ -1494,7 +1580,7 @@ export class HomeSliderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ngZone.runOutsideAngular(() => {
       this.intervalId = setInterval(() => {
         if (!this.paused) this.ngZone.run(() => this.next());
-      }, 5000);
+      }, 3000);
     });
   }
 
@@ -1511,15 +1597,15 @@ export class HomeSliderComponent implements OnInit, AfterViewInit, OnDestroy {
     const root = canvas.parentElement as HTMLElement;
 
     const syncSize = () => {
-      canvas.width  = canvas.offsetWidth  || window.innerWidth;
+      canvas.width = canvas.offsetWidth || window.innerWidth;
       canvas.height = canvas.offsetHeight || window.innerHeight;
     };
     syncSize();
 
-    const COUNT     = 75;
+    const COUNT = 75;
     const LINK_DIST = 130;    // particle-to-particle link distance
     const MOUSE_DIST = 140;   // cursor-to-particle connection distance
-    const REPEL_R   = 120;    // click repulsion radius
+    const REPEL_R = 120;    // click repulsion radius
 
     let mouse = { x: -9999, y: -9999 };
 
@@ -1540,7 +1626,7 @@ export class HomeSliderComponent implements OnInit, AfterViewInit, OnDestroy {
       mouse.x = e.clientX - rect.left;
       mouse.y = e.clientY - rect.top;
       // Normalised -1→+1 for CSS parallax vars
-      root.style.setProperty('--pmx', ((mouse.x / rect.width  - 0.5) * 2).toFixed(3));
+      root.style.setProperty('--pmx', ((mouse.x / rect.width - 0.5) * 2).toFixed(3));
       root.style.setProperty('--pmy', ((mouse.y / rect.height - 0.5) * 2).toFixed(3));
     };
     const onMouseLeave = () => {
@@ -1555,7 +1641,7 @@ export class HomeSliderComponent implements OnInit, AfterViewInit, OnDestroy {
       for (const p of pts) {
         const dx = p.x - cx;
         const dy = p.y - cy;
-        const d  = Math.sqrt(dx * dx + dy * dy);
+        const d = Math.sqrt(dx * dx + dy * dy);
         if (d < REPEL_R && d > 0) {
           const force = (1 - d / REPEL_R) * 5.5;
           p.rx += (dx / d) * force;
@@ -1564,16 +1650,16 @@ export class HomeSliderComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     };
 
-    root.addEventListener('mousemove',  onMouseMove);
+    root.addEventListener('mousemove', onMouseMove);
     root.addEventListener('mouseleave', onMouseLeave);
-    root.addEventListener('click',      onClick);
-    window.addEventListener('resize',   syncSize);
+    root.addEventListener('click', onClick);
+    window.addEventListener('resize', syncSize);
 
     this.cleanupAll = () => {
-      root.removeEventListener('mousemove',  onMouseMove);
+      root.removeEventListener('mousemove', onMouseMove);
       root.removeEventListener('mouseleave', onMouseLeave);
-      root.removeEventListener('click',      onClick);
-      window.removeEventListener('resize',   syncSize);
+      root.removeEventListener('click', onClick);
+      window.removeEventListener('resize', syncSize);
     };
 
     const tick = () => {
@@ -1594,7 +1680,7 @@ export class HomeSliderComponent implements OnInit, AfterViewInit, OnDestroy {
         const opacity = p.baseOpacity * (0.55 + 0.45 * Math.sin(t * 0.5 + p.phase));
 
         ctx.save();
-        ctx.shadowBlur  = 10;
+        ctx.shadowBlur = 10;
         ctx.shadowColor = `rgba(96,165,250,${opacity * 0.8})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -1608,34 +1694,19 @@ export class HomeSliderComponent implements OnInit, AfterViewInit, OnDestroy {
         for (let j = i + 1; j < pts.length; j++) {
           const dx = pts[i].x - pts[j].x;
           const dy = pts[i].y - pts[j].y;
-          const d  = Math.sqrt(dx * dx + dy * dy);
+          const d = Math.sqrt(dx * dx + dy * dy);
           if (d < LINK_DIST) {
             ctx.beginPath();
             ctx.moveTo(pts[i].x, pts[i].y);
             ctx.lineTo(pts[j].x, pts[j].y);
-            ctx.lineWidth   = 0.6;
+            ctx.lineWidth = 0.6;
             ctx.strokeStyle = `rgba(96,165,250,${(1 - d / LINK_DIST) * 0.18})`;
             ctx.stroke();
           }
         }
       }
 
-      /* ─ Mouse cursor connections ─ */
-      if (mouse.x > -1000) {
-        for (const p of pts) {
-          const dx = p.x - mouse.x;
-          const dy = p.y - mouse.y;
-          const d  = Math.sqrt(dx * dx + dy * dy);
-          if (d < MOUSE_DIST) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(mouse.x, mouse.y);
-            ctx.lineWidth   = 0.8;
-            ctx.strokeStyle = `rgba(96,165,250,${(1 - d / MOUSE_DIST) * 0.45})`;
-            ctx.stroke();
-          }
-        }
-      }
+
     };
 
     tick();
@@ -1658,11 +1729,19 @@ export class HomeSliderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onCta(slide: Slide): void {
-    if (slide.type === 'product' && slide.id) {
+    if (slide.id === 'gps') {
+      this.router.navigate(['/product/gps-fleet-tracking']);
+    } else if (slide.type === 'product' && slide.id) {
       this.nav.go('product-detail', slide.id as ProductKey);
     } else if (slide.navPage) {
       this.nav.go(slide.navPage);
     }
+  }
+
+  onStartTrial(): void {
+    this.router.navigate(['/product/gps-fleet-tracking']).then(() => {
+      this.nav.openModalFor('gps');
+    });
   }
 
   private startProgress(): void {
