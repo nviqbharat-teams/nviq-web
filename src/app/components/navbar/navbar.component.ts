@@ -16,13 +16,13 @@ import { NavService } from '../../services/nav.service';
         <!-- LEFT: Products + About Us -->
         <div class="nav-left">
           <button class="nav-link" type="button"
-            [class.active]="nav.page() === 'products' || nav.page() === 'product-detail'"
-            (click)="navigate('products')">
+            [class.active]="router.url === '/product'"
+            (click)="goToProduct()">
             Products
           </button>
           <button class="nav-link" type="button"
-            [class.active]="nav.page() === 'about'"
-            (click)="navigate('about')">
+            [class.active]="router.url === '/about'"
+            (click)="goToAbout()">
             About Us
           </button>
         </div>
@@ -38,7 +38,7 @@ import { NavService } from '../../services/nav.service';
         <div class="nav-right">
           <button class="nav-link" type="button"
             [class.active]="nav.page() === 'contact'"
-            (click)="navigate('contact')">
+            (click)="goToContact()">
             Contact
           </button>
           <button class="nav-link" type="button"
@@ -61,9 +61,9 @@ import { NavService } from '../../services/nav.service';
 
       <!-- Mobile panel -->
       <div class="mob-panel" [class.mob-open]="mobileOpen">
-        <button class="mob-link" type="button" (click)="navigate('products')">Products</button>
-        <button class="mob-link" type="button" (click)="navigate('about')">About Us</button>
-        <button class="mob-link" type="button" (click)="navigate('contact')">Contact</button>
+        <button class="mob-link" type="button" (click)="goToProduct()">Products</button>
+        <button class="mob-link" type="button" (click)="goToAbout()">About Us</button>
+        <button class="mob-link" type="button" (click)="goToContact()">Contact</button>
         <button class="mob-link" type="button" (click)="navigate('team')">Our Team</button>
       </div>
     </nav>
@@ -243,7 +243,7 @@ export class NavbarComponent implements OnInit {
 
   @ViewChild('companyDd') companyDdRef!: ElementRef<HTMLElement>;
 
-  constructor(public nav: NavService, private router: Router) {}
+  constructor(public nav: NavService, public router: Router) {}
 
   get isCompanyPage(): boolean {
     const p = this.nav.page();
@@ -268,6 +268,24 @@ export class NavbarComponent implements OnInit {
   }
 
   toggleDropdown(): void { this.ddOpen = !this.ddOpen; }
+
+  goToProduct(): void {
+    this.ddOpen = false;
+    this.mobileOpen = false;
+    this.router.navigate(['/product']);
+  }
+
+  goToAbout(): void {
+    this.ddOpen = false;
+    this.mobileOpen = false;
+    this.router.navigate(['/about']);
+  }
+
+  goToContact(): void {
+    this.ddOpen = false;
+    this.mobileOpen = false;
+    this.router.navigate(['/contact']);
+  }
 
   navigate(page: string): void {
     this.ddOpen    = false;

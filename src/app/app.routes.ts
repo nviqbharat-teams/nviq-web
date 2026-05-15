@@ -1,6 +1,21 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+  {
+    path: 'product',
+    loadComponent: () =>
+      import('./pages/product-list/product-list.component').then(m => m.ProductListComponent)
+  },
+  {
+    path: 'about',
+    loadComponent: () =>
+      import('./pages/about/about-page.component').then(m => m.AboutPageComponent)
+  },
+  {
+    path: 'contact',
+    loadComponent: () =>
+      import('./pages/contact/contact-page.component').then(m => m.ContactPageComponent)
+  },
   // Dedicated Mutual Fund page — no GPS data, no route-param guessing
   {
     path: 'mutual-fund',
