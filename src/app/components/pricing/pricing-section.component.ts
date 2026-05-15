@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavService } from '../../services/nav.service';
 
@@ -31,11 +31,12 @@ import { NavService } from '../../services/nav.service';
               <span class="ps-toggle-thumb"></span>
             </button>
             <span class="ps-toggle-label" [class.ps-toggle-active]="isAnnual()">
-              Annual
+             Annual
             </span>
           </div>
         </div>
 
+        
         <!-- Cards -->
         <div class="ps-grid-cards">
 
@@ -47,11 +48,11 @@ import { NavService } from '../../services/nav.service';
             </div>
             <div class="ps-price-wrap">
               <span class="ps-currency">₹</span>
-              <span class="ps-amount">{{ isAnnual() ? 1999 : 1599 }}</span>
+              <span class="ps-amount">{{ isAnnual() ? 2599 : 1599 }}</span>
             </div>
             <div class="ps-divider"></div>
             <ul class="ps-features">
-              <li *ngFor="let f of starterFeatures">
+              <li *ngFor="let f of starterFeatures()">
                 <span class="ps-check">
                   <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
                     <path d="M2 6l3 3 5-5" stroke="#00D4FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -78,11 +79,11 @@ import { NavService } from '../../services/nav.service';
             </div>
             <div class="ps-price-wrap">
               <span class="ps-currency ps-currency-pro">₹</span>
-              <span class="ps-amount ps-amount-pro">{{ isAnnual() ? 2999 : 2599 }}</span>
+              <span class="ps-amount ps-amount-pro">{{ isAnnual() ? 2999 : 1999 }}</span>
             </div>
             <div class="ps-divider ps-divider-pro"></div>
             <ul class="ps-features">
-              <li *ngFor="let f of proFeatures">
+              <li *ngFor="let f of proFeatures()">
                 <span class="ps-check ps-check-pro">
                   <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
                     <path d="M2 6l3 3 5-5" stroke="#00D4FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -436,29 +437,29 @@ export class PricingSectionComponent {
   nav = inject(NavService);
   isAnnual = signal(false);
 
-  starterFeatures = [
-    'Mobile App Access',
-    '90 Days Subscription',
-    'Live GPS Tracking',
-    'Alerts',
-    'Daily Reports',
-    'Geo Fence',
-    'Playback Route',
-  ];
+  private readonly subDays = computed(() => this.isAnnual() ? '365' : '90');
 
-  proFeatures = [
+  starterFeatures = computed(() => [
     'Mobile App Access',
-    '1 Year Subscription',
+    `Subscription ${this.subDays()} days`,
     'Live GPS Tracking',
     'Alerts',
-    'Daily Reports',
     'Geo Fence',
     'Playback Route',
-    'Remote Engine Control',
-    'Business Summary',
-    'Driver Behaviour Analytics',
-    'Expense & Profit Summary',
-  ];
+    'Business Visibility',
+  ]);
+
+  proFeatures = computed(() => [
+    'Mobile App Access',
+    `Subscription ${this.subDays()} days`,
+    'Live GPS Tracking',
+    'Alerts',
+    'Geo Fence',
+    'Playback Route',
+    'Business Visibility',
+    'Engine Control',
+    'Trip Management',
+  ]);
 
   enterpriseFeatures = [
     'Unlimited Vehicles',

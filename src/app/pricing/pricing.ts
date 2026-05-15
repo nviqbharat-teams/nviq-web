@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -16,83 +16,93 @@ import { NavService } from '../services/nav.service';
           <span class="badge-dot"></span>
           Simple Pricing
         </span>
-        <h2 class="section-title">One plan. Everything included.</h2>
+        <h2 class="section-title">Choose your plan</h2>
         <p class="section-sub">No hidden charges. No contracts. Cancel anytime.</p>
+
+        <!-- Billing toggle -->
+        <div class="billing-toggle">
+          <button class="toggle-btn" [class.active]="billingCycle() === 'monthly'" (click)="billingCycle.set('monthly')">90 Days</button>
+          <button class="toggle-btn" [class.active]="billingCycle() === 'yearly'" (click)="billingCycle.set('yearly')">
+            365 Days
+            <span class="save-chip">Save more</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Pricing Card -->
+      <!-- Plan Cards -->
       <div class="card-wrapper">
-        <div class="pricing-card">
-          <!-- Glow effect -->
-          <div class="card-glow"></div>
+        <div class="plans-grid">
 
-          <!-- Top Badge -->
-          <div class="card-top-badge">Most Popular</div>
-
-          <!-- Plan Header -->
-          <div class="plan-header">
-            <div class="plan-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#38bdf8"/>
-                <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" fill="none"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="plan-name">Per Vehicle Plan</h3>
-              <p class="plan-tagline">Full fleet intelligence, per vehicle</p>
-            </div>
-          </div>
-
-          <!-- Price -->
-          <div class="price-block">
-            <div class="price-row">
-              <span class="currency">₹</span>
-              <span class="amount">499</span>
-              <div class="price-meta">
-                <span class="per-month">/ month</span>
-                <span class="per-vehicle">per vehicle</span>
+          <!-- Basic Plan -->
+          <div class="pricing-card">
+            <div class="card-glow"></div>
+            <div class="plan-header">
+              <div class="plan-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+              <div>
+                <h3 class="plan-name">Basic</h3>
+                <p class="plan-tagline">Essential fleet visibility</p>
               </div>
             </div>
-            <div class="price-savings">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-              Save ₹600/year on annual billing
+
+            <div class="price-block">
+              <div class="price-row">
+                <span class="currency">₹</span>
+                <span class="amount">{{ billingCycle() === 'monthly' ? '1,599' : '2,599' }}</span>
+                <div class="price-meta">
+                  <span class="per-month">/ {{ billingCycle() === 'monthly' ? '90 days' : '365 days' }}</span>
+                  <span class="per-vehicle">per vehicle</span>
+                </div>
+              </div>
             </div>
+
+            <div class="card-divider"></div>
+            <div class="features-label">What's included</div>
+            <ul class="features-list">
+              <li class="feature-item" *ngFor="let f of basicFeatures()"><span class="feature-check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span><span class="feature-name">{{ f }}</span></li>
+            </ul>
+            <div class="card-divider"></div>
+            <button class="cta-btn" (click)="openModal()"><span>Get Started</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
           </div>
 
-          <!-- Divider -->
-          <div class="card-divider"></div>
-
-          <!-- Features List -->
-          <div class="features-label">What's included</div>
-          <ul class="features-list">
-            <li *ngFor="let feature of features" class="feature-item">
-              <span class="feature-check">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
-              </span>
-              <div class="feature-text">
-                <span class="feature-name">{{ feature.name }}</span>
-                <span class="feature-desc">{{ feature.desc }}</span>
+          <!-- Pro Plan -->
+          <div class="pricing-card pricing-card-pro">
+            <div class="card-glow"></div>
+            <div class="card-top-badge">Most Popular</div>
+            <div class="plan-header">
+              <div class="plan-icon plan-icon-pro">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
               </div>
-            </li>
-          </ul>
+              <div>
+                <h3 class="plan-name">Pro</h3>
+                <p class="plan-tagline">Full fleet intelligence</p>
+              </div>
+            </div>
 
-          <!-- Divider -->
-          <div class="card-divider"></div>
+            <div class="price-block">
+              <div class="price-row">
+                <span class="currency">₹</span>
+                <span class="amount">{{ billingCycle() === 'monthly' ? '1,999' : '2,999' }}</span>
+                <div class="price-meta">
+                  <span class="per-month">/ {{ billingCycle() === 'monthly' ? '90 days' : '365 days' }}</span>
+                  <span class="per-vehicle">per vehicle</span>
+                </div>
+              </div>
+            </div>
 
-          <!-- CTA Button -->
-          <button class="cta-btn" (click)="openModal()">
-            <span>Get Started</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
+            <div class="card-divider"></div>
+            <div class="features-label">Everything in Basic, plus</div>
+            <ul class="features-list">
+              <li class="feature-item" *ngFor="let f of proFeatures()"><span class="feature-check pro-check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span><span class="feature-name">{{ f }}</span></li>
+            </ul>
+            <div class="card-divider"></div>
+            <button class="cta-btn cta-btn-pro" (click)="openModal()"><span>Get Started</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
 
-          <!-- Trial note -->
-          <p class="trial-note">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
-            14-day free trial · No credit card required
-          </p>
         </div>
 
-        <!-- Trust indicators beside/below card -->
+        <!-- Trust indicators -->
         <div class="trust-items">
           <div class="trust-item" *ngFor="let t of trustItems">
             <span class="trust-icon">{{ t.icon }}</span>
@@ -325,6 +335,36 @@ import { NavService } from '../services/nav.service';
     }
     .section-sub { font-size: 16px; color: #64748b; }
 
+    /* Billing toggle */
+    .billing-toggle {
+      display: inline-flex; gap: 4px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 4px; margin-top: 24px;
+    }
+    .toggle-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 22px; border-radius: 9px; border: none;
+      background: transparent; color: #64748b;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s ease;
+    }
+    .toggle-btn.active {
+      background: #111929; color: #e2e8f0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .save-chip {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+      background: rgba(34,197,94,0.15); color: #22c55e;
+      border: 1px solid rgba(34,197,94,0.25);
+      padding: 2px 8px; border-radius: 999px;
+    }
+
+    /* Plans grid */
+    .plans-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
     /* Card wrapper */
     .card-wrapper {
       display: flex;
@@ -338,16 +378,16 @@ import { NavService } from '../services/nav.service';
     /* ===== PRICING CARD ===== */
     .pricing-card {
       background: linear-gradient(145deg, #111929, #0f1e33);
-      border: 1px solid rgba(56,189,248,0.25);
+      border: 1px solid rgba(56,189,248,0.18);
       border-radius: 24px;
-      padding: 40px 36px;
-      width: 100%; max-width: 400px;
+      padding: 36px 30px;
       position: relative;
-      box-shadow:
-        0 0 0 1px rgba(56,189,248,0.06),
-        0 24px 64px rgba(0,0,0,0.4),
-        0 0 80px rgba(56,189,248,0.06);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
       animation: cardIn 0.6s ease forwards;
+    }
+    .pricing-card-pro {
+      border-color: rgba(167,139,250,0.35);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4), 0 0 40px rgba(167,139,250,0.08);
     }
     @keyframes cardIn {
       from { opacity: 0; transform: translateY(24px); }
@@ -362,10 +402,26 @@ import { NavService } from '../services/nav.service';
 
     .card-top-badge {
       position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
-      background: #38bdf8; color: #070c14;
+      background: #a78bfa; color: #fff;
       font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
       padding: 5px 18px; border-radius: 100px;
       white-space: nowrap;
+    }
+    .plan-icon-pro {
+      background: rgba(167,139,250,0.1) !important;
+      border-color: rgba(167,139,250,0.25) !important;
+    }
+    .pro-check {
+      background: rgba(167,139,250,0.1) !important;
+      border-color: rgba(167,139,250,0.2) !important;
+    }
+    .cta-btn-pro {
+      background: #a78bfa !important;
+      color: #fff !important;
+    }
+    .cta-btn-pro:hover {
+      background: #c4b5fd !important;
+      box-shadow: 0 0 32px rgba(167,139,250,0.4) !important;
     }
 
     /* Plan header */
@@ -417,17 +473,15 @@ import { NavService } from '../services/nav.service';
       font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
       color: #475569; margin-bottom: 14px;
     }
-    .features-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+    .features-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 
-    .feature-item { display: flex; gap: 12px; align-items: flex-start; }
+    .feature-item { display: flex; gap: 10px; align-items: center; }
     .feature-check {
-      width: 22px; height: 22px; border-radius: 6px;
+      width: 20px; height: 20px; border-radius: 6px;
       background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .feature-text { display: flex; flex-direction: column; gap: 1px; }
-    .feature-name { font-size: 14px; font-weight: 600; color: #e2e8f0; }
-    .feature-desc { font-size: 12px; color: #64748b; }
+    .feature-name { font-size: 13px; font-weight: 500; color: #cbd5e1; }
 
     /* CTA */
     .cta-btn {
@@ -692,8 +746,11 @@ import { NavService } from '../services/nav.service';
     }
 
     /* ===== RESPONSIVE ===== */
+    @media (max-width: 700px) {
+      .plans-grid { grid-template-columns: 1fr; }
+    }
     @media (max-width: 600px) {
-      .pricing-card { padding: 32px 24px; }
+      .pricing-card { padding: 28px 20px; }
       .modal-box { padding: 28px 20px; }
       .amount { font-size: 3rem; }
       .trust-items { max-width: 100%; flex-direction: row; flex-wrap: wrap; }
@@ -704,24 +761,66 @@ export class PricingComponent {
   private nav = inject(NavService);
 
   /* ===== SIGNALS ===== */
-  modalOpen   = signal(false);
-  isLoading   = signal(false);
+  modalOpen     = signal(false);
+  isLoading     = signal(false);
   submitSuccess = signal(false);
-  apiError    = signal('');
+  apiError      = signal('');
+  billingCycle  = signal<'monthly' | 'yearly'>('monthly');
 
-  /* ===== STATIC DATA ===== */
-  features = [
-    { name: 'Live Tracking',  desc: 'Real-time location with 5-sec refresh' },
-    { name: 'Trip Analysis',  desc: 'Route history, distance & duration logs' },
-    { name: 'Alerts',         desc: 'Overspeed, idle & geofence notifications' },
-    { name: 'Reports',        desc: 'Daily/weekly PDF delivered to your inbox' }
+  /* ===== PLAN FEATURES ===== */
+  private basicFeaturesMonthly = [
+    'Mobile App Access',
+    'Subscription 90 days',
+    'Live GPS Tracking',
+    'Alerts',
+    'Geo Fence',
+    'Playback Route',
+    'Business Visibility',
+  ];
+  private basicFeaturesYearly = [
+    'Mobile App Access',
+    'Subscription 365 days',
+    'Live GPS Tracking',
+    'Alerts',
+    'Geo Fence',
+    'Playback Route',
+    'Business Visibility',
+  ];
+  private proFeaturesMonthly = [
+    'Mobile App Access',
+    'Subscription 90 days',
+    'Live GPS Tracking',
+    'Alerts',
+    'Geo Fence',
+    'Playback Route',
+    'Business Visibility',
+    'Engine Control',
+    'Trip Management',
+  ];
+  private proFeaturesYearly = [
+    'Mobile App Access',
+    'Subscription 365 days',
+    'Live GPS Tracking',
+    'Alerts',
+    'Geo Fence',
+    'Playback Route',
+    'Business Visibility',
+    'Engine Control',
+    'Trip Management',
   ];
 
+  basicFeatures = computed(() =>
+    this.billingCycle() === 'monthly' ? this.basicFeaturesMonthly : this.basicFeaturesYearly
+  );
+  proFeatures = computed(() =>
+    this.billingCycle() === 'monthly' ? this.proFeaturesMonthly : this.proFeaturesYearly
+  );
+
   trustItems = [
-    { icon: '⚡', title: '2-Hour Response',    sub: 'Our team calls you back fast.' },
-    { icon: '🛠️', title: 'Free Installation',  sub: 'Our tech team handles device setup.' },
-    { icon: '🔄', title: 'Cancel Anytime',     sub: 'No lock-in, no penalty, ever.' },
-    { icon: '🇮🇳', title: 'Indian Support',    sub: 'Hindi & English, 9 AM – 9 PM.' }
+    { icon: '⚡', title: '2-Hour Response',   sub: 'Our team calls you back fast.' },
+    { icon: '🛠️', title: 'Free Installation', sub: 'Our tech team handles device setup.' },
+    { icon: '🔄', title: 'Cancel Anytime',    sub: 'No lock-in, no penalty, ever.' },
+    { icon: '🇮🇳', title: 'Indian Support',   sub: 'Hindi & English, 9 AM – 9 PM.' }
   ];
 
   /* ===== REACTIVE FORM ===== */

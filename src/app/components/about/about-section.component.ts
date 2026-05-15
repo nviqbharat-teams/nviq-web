@@ -15,23 +15,55 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
   standalone: true,
   imports: [CommonModule, TiltDirective, RevealDirective, ParticleCanvasComponent],
   template: `
-    <!-- ══ ABOUT HERO ════════════════════════════════════ -->
-    <section class="ab-hero" aria-label="About NViQ">
-      <div class="ab-hero-overlay"></div>
-      <div class="ab-hero-glow"></div>
-      <div class="ab-hero-content">
-        <span class="ab-hero-tag">About NViQ</span>
-        <h1 class="ab-hero-title">We Are <span class="ab-hero-accent">NViQ</span></h1>
-        <div class="ab-hero-divider"></div>
-        <div class="ab-hero-chips">
-          <span class="ab-chip">Founded 2026</span>
-          <span class="ab-chip">10+ Years GPS Experience</span>
-          <span class="ab-chip">Free Consultation • AMFI Registered</span>
-          <span class="ab-chip">ARN No: 359231</span>
-          <span class="ab-chip">Pan-India</span>
+    <!-- ══ ABOUT HERO SLIDER ═════════════════════════════ -->
+    <div class="ab-slider">
+      <!-- Slides -->
+      <div class="ab-slides-track">
+        <div
+          *ngFor="let slide of aboutSlides; let i = index"
+          class="ab-slide"
+          [class.ab-slide-active]="i === currentAboutSlide"
+          [style.backgroundImage]="'url(' + slide.image + ')'"
+        >
+          <div class="ab-hero-overlay"></div>
+          <div class="ab-hero-glow"></div>
+          <div class="ab-hero-content">
+            <span class="ab-hero-tag">{{ slide.tag }}</span>
+            <h1 class="ab-hero-title">{{ slide.title }}</h1>
+            <div class="ab-hero-divider"></div>
+            <p class="ab-hero-desc" style="color: rgba(255,255,255,0.7); font-size: 1.1rem; line-height: 1.6; margin-bottom: 24px; max-width: 520px;">{{ slide.desc }}</p>
+            <div class="ab-hero-chips" *ngIf="i === 0">
+              <span class="ab-chip">Founded 2026</span>
+              <span class="ab-chip">10+ Years GPS Experience</span>
+              <span class="ab-chip">Free Consultation</span>
+              <span class="ab-chip">AMFI Registered</span>
+            </div>
+          </div>
         </div>
       </div>
-    </section>
+
+      <!-- Prev / Next arrows -->
+      <button *ngIf="aboutSlides.length > 1" class="ab-arrow ab-arrow-prev" (click)="prevAboutSlide()" aria-label="Previous">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button *ngIf="aboutSlides.length > 1" class="ab-arrow ab-arrow-next" (click)="nextAboutSlide()" aria-label="Next">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+
+      <!-- Dot nav -->
+      <div *ngIf="aboutSlides.length > 1" class="ab-dots">
+        <button
+          *ngFor="let slide of aboutSlides; let i = index"
+          class="ab-dot"
+          [class.ab-dot-active]="i === currentAboutSlide"
+          (click)="goToAboutSlide(i)"
+          [attr.aria-label]="'Slide ' + (i+1)"
+        ></button>
+      </div>
+
+      <!-- Slide counter -->
+      <div *ngIf="aboutSlides.length > 1" class="ab-counter">{{ currentAboutSlide + 1 }} / {{ aboutSlides.length }}</div>
+    </div>
 
     <!-- ══ ABOUT CONTENT ══════════════════════════════════ -->
     <section class="ab-root">
@@ -162,14 +194,41 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
     </section>
   `,
   styles: [`
-    /* ── About Hero ───────────────────────────────────── */
-    .ab-hero {
+    /* ── About Hero Slider ─────────────────────────────── */
+    .ab-slider {
       position: relative;
       width: 100%;
-      min-height: 92vh;
-      display: flex; align-items: center; justify-content: flex-end;
-      background: url('/images/about%20slide.jpg.png') center center / cover no-repeat;
+      height: 92vh;
+      min-height: 600px;
       overflow: hidden;
+    }
+
+    .ab-slides-track {
+      width: 100%; height: 100%;
+      position: relative;
+    }
+
+    .ab-slide {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 80px;
+      opacity: 0;
+      transform: scale(1.04);
+      transition: opacity 0.75s cubic-bezier(0.4,0,0.2,1),
+                  transform 0.75s cubic-bezier(0.4,0,0.2,1);
+      pointer-events: none;
+    }
+
+    .ab-slide-active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
     }
 
     .ab-hero-overlay {
@@ -197,7 +256,7 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
       position: relative; z-index: 3;
       max-width: 620px;
       padding: 0 80px;
-      animation: abHeroIn 0.8s cubic-bezier(0.22,1,0.36,1) both;
+      animation: abHeroIn 0.65s cubic-bezier(0.22,1,0.36,1) both;
     }
     @keyframes abHeroIn {
       from { opacity: 0; transform: translateY(28px); }
@@ -217,16 +276,10 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
 
     .ab-hero-title {
       font-family: 'Outfit', sans-serif;
-      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
       font-weight: 900; letter-spacing: -0.03em;
-      color: #F0F6FF; margin: 0 0 18px; line-height: 1.0;
+      color: #F0F6FF; margin: 0 0 18px; line-height: 1.1;
       text-shadow: 0 4px 40px rgba(0,0,0,0.5);
-    }
-    .ab-hero-accent {
-      background: linear-gradient(120deg, #3B82F6, #818CF8);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(0 0 24px rgba(59,130,246,0.5));
     }
 
     .ab-hero-divider {
@@ -234,16 +287,6 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
       background: linear-gradient(90deg, #3B82F6, #6366F1);
       border-radius: 999px; margin-bottom: 24px;
       box-shadow: 0 0 16px rgba(59,130,246,0.5);
-    }
-
-    .ab-hero-sub {
-      font-size: clamp(1.05rem, 2vw, 1.25rem); font-weight: 700;
-      color: rgba(255,255,255,0.9); line-height: 1.5; margin: 0 0 14px;
-    }
-
-    .ab-hero-desc {
-      font-size: 0.97rem; color: rgba(255,255,255,0.55);
-      line-height: 1.78; margin: 0 0 32px; max-width: 520px;
     }
 
     .ab-hero-chips {
@@ -258,14 +301,56 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
       box-shadow: 0 0 12px rgba(59,130,246,0.1);
     }
 
+    /* Arrows */
+    .ab-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      z-index: 10;
+      width: 50px; height: 50px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(0,0,0,0.35);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+    }
+    .ab-arrow:hover {
+      background: rgba(59,130,246,0.25);
+      border-color: rgba(59,130,246,0.5);
+      box-shadow: 0 0 20px rgba(59,130,246,0.2);
+    }
+    .ab-arrow-prev { left: 20px; }
+    .ab-arrow-next { right: 20px; }
+
+    /* Dots */
+    .ab-dots {
+      position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 10px; z-index: 10;
+    }
+    .ab-dot {
+      width: 8px; height: 8px; border-radius: 999px;
+      border: none; background: rgba(255,255,255,0.35);
+      cursor: pointer; padding: 0;
+      transition: width 0.35s ease, background 0.35s ease;
+    }
+    .ab-dot-active {
+      width: 28px; background: #3B82F6;
+      box-shadow: 0 0 10px rgba(59,130,246,0.6);
+    }
+
+    /* Counter */
+    .ab-counter {
+      position: absolute; bottom: 28px; right: 24px;
+      font-size: 12px; font-weight: 700;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.08em; z-index: 10;
+    }
+
     @media (max-width: 1024px) {
-      .ab-hero { min-height: 75vh; justify-content: center; }
-      .ab-hero-overlay { background: linear-gradient(to top, rgba(2,6,16,0.9) 0%, rgba(2,6,16,0.65) 100%); }
-      .ab-hero-content { padding: 60px 40px; text-align: center; max-width: 100%; }
-      .ab-hero-tag { margin-left: auto; margin-right: auto; }
-      .ab-hero-divider { margin-left: auto; margin-right: auto; }
+      .ab-slider { height: 75vh; }
+      .ab-slide { justify-content: center; padding: 0 20px; }
+      .ab-hero-content { padding: 0; text-align: center; }
+      .ab-hero-tag, .ab-hero-divider, .ab-hero-chips { margin-left: auto; margin-right: auto; }
       .ab-hero-chips { justify-content: center; }
-      .ab-hero-desc { max-width: 100%; }
     }
     @media (max-width: 600px) {
       .ab-hero { min-height: 65vh; }
@@ -274,7 +359,8 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
     }
     /* ── About Content Section ────────────────────────── */
     .ab-root {
-      min-height: 100vh; background: #0A0A0A;
+      min-height: 100vh;
+      background: #0f172a; /* Solid premium dark slate from GPS page */
       padding: 100px 32px 80px;
       position: relative; overflow: hidden;
     }
@@ -310,7 +396,7 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
       font-size: 11px; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.16em;
       border: 1px solid rgba(59,130,246,0.25);
-      background: rgba(59,130,246,0.07);
+      background: rgba(101, 139, 201, 0.07);
       padding: 5px 16px; border-radius: 999px; margin-bottom: 16px;
     }
     .ab-title {
@@ -320,9 +406,7 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
       color: #fff; line-height: 1.05;
     }
     .ab-accent {
-      background: linear-gradient(120deg, #3B82F6, #818cf8);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #60A5FA;
     }
 
     /* Mission */
@@ -438,6 +522,14 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
     .ab-value {
       padding: 28px 22px; border-radius: 18px;
       display: flex; flex-direction: column; gap: 12px;
+      background: #1e293b; /* Same as GPS cards */
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+    .ab-value:hover {
+      border-color: rgba(96, 165, 250, 0.3);
+      transform: translateY(-4px);
     }
     .ab-value-icon {
       width: 48px; height: 48px; border-radius: 12px; border: 1px solid;
@@ -483,6 +575,14 @@ import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.comp
     }
     .ab-tl-card {
       max-width: 340px; padding: 24px 28px; border-radius: 16px;
+      background: #1e293b; /* Same as GPS cards */
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+    .ab-tl-card:hover {
+      border-color: rgba(96, 165, 250, 0.3);
+      transform: translateY(-4px);
     }
     .ab-tl-year {
       font-family: 'JetBrains Mono', monospace;
@@ -568,6 +668,16 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
   private socket?: Socket;
   private animationHandles = new Map<string, number>();
   private readonly socketUrl = environment.apiUrl.replace(/\/api$/, '');
+
+  currentAboutSlide = 0;
+  aboutSlides = [
+    {
+      tag: 'About NViQ',
+      title: 'We Are NViQ',
+      desc: 'Fleet Intelligence + Fintech. We believe fleet operators shouldn\'t have to choose between operational excellence and financial growth.',
+      image: '/images/about%20slide.jpg.png',
+    },
+  ];
 
   stats = [
     { val: '10+',    label: 'Years GPS Experience', color: '#00D4FF' },
@@ -661,6 +771,18 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
     private ngZone: NgZone,
     private apiService: ApiService,
   ) {}
+
+  nextAboutSlide(): void {
+    this.currentAboutSlide = (this.currentAboutSlide + 1) % this.aboutSlides.length;
+  }
+
+  prevAboutSlide(): void {
+    this.currentAboutSlide = (this.currentAboutSlide - 1 + this.aboutSlides.length) % this.aboutSlides.length;
+  }
+
+  goToAboutSlide(index: number): void {
+    this.currentAboutSlide = index;
+  }
 
   ngOnInit(): void {
     this.startGpsStatsFeed();
