@@ -1,887 +1,861 @@
-import {
-  Component, OnInit, OnDestroy, NgZone
-} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subscription, interval } from 'rxjs';
-import { io, Socket } from 'socket.io-client';
-import { ApiService, LiveGpsStats } from '../../services/api.service';
-import { environment } from '../../../environments/environment';
-import { TiltDirective }         from '../../directives/tilt.directive';
-import { RevealDirective }       from '../../directives/reveal.directive';
-import { ParticleCanvasComponent } from '../particle-canvas/particle-canvas.component';
+import { NavService } from '../../services/nav.service';
+import { Router } from '@angular/router';
+
+interface CategoryPreview {
+  icon: string;
+  color: string;
+  tag: string;
+  title: string;
+  desc: string;
+}
 
 @Component({
   selector: 'app-about-section',
   standalone: true,
-  imports: [CommonModule, TiltDirective, RevealDirective, ParticleCanvasComponent],
+  imports: [CommonModule],
   template: `
-    <!-- ══ ABOUT HERO SLIDER ═════════════════════════════ -->
-    <div class="ab-slider">
-      <!-- Slides -->
-      <div class="ab-slides-track">
-        <div
-          *ngFor="let slide of aboutSlides; let i = index"
-          class="ab-slide"
-          [class.ab-slide-active]="i === currentAboutSlide"
-          [style.backgroundImage]="'url(' + slide.image + ')'"
-        >
-          <div class="ab-hero-overlay"></div>
-          <div class="ab-hero-glow"></div>
-          <div class="ab-hero-content">
-            <span class="ab-hero-tag">{{ slide.tag }}</span>
-            <h1 class="ab-hero-title">{{ slide.title }}</h1>
-            <div class="ab-hero-divider"></div>
-            <p class="ab-hero-desc" style="color: rgba(255,255,255,0.7); font-size: 1.1rem; line-height: 1.6; margin-bottom: 24px; max-width: 520px;">{{ slide.desc }}</p>
-            <div class="ab-hero-chips" *ngIf="i === 0">
-              <span class="ab-chip">Founded 2026</span>
-              <span class="ab-chip">10+ Years GPS Experience</span>
-              <span class="ab-chip">Free Consultation</span>
-              <span class="ab-chip">AMFI Registered</span>
-            </div>
-          </div>
-        </div>
+    <!-- ══ HERO SECTION ═════════════════════════════════════ -->
+    <section class="ab-hero">
+      <div class="ab-hero-bg">
+        <div class="hero-glow-1"></div>
+        <div class="hero-glow-2"></div>
       </div>
 
-      <!-- Prev / Next arrows -->
-      <button *ngIf="aboutSlides.length > 1" class="ab-arrow ab-arrow-prev" (click)="prevAboutSlide()" aria-label="Previous">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-      <button *ngIf="aboutSlides.length > 1" class="ab-arrow ab-arrow-next" (click)="nextAboutSlide()" aria-label="Next">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
-      </button>
-
-      <!-- Dot nav -->
-      <div *ngIf="aboutSlides.length > 1" class="ab-dots">
-        <button
-          *ngFor="let slide of aboutSlides; let i = index"
-          class="ab-dot"
-          [class.ab-dot-active]="i === currentAboutSlide"
-          (click)="goToAboutSlide(i)"
-          [attr.aria-label]="'Slide ' + (i+1)"
-        ></button>
-      </div>
-
-      <!-- Slide counter -->
-      <div *ngIf="aboutSlides.length > 1" class="ab-counter">{{ currentAboutSlide + 1 }} / {{ aboutSlides.length }}</div>
-    </div>
-
-    <!-- ══ ABOUT CONTENT ══════════════════════════════════ -->
-    <section class="ab-root">
-      <div class="ab-bg" aria-hidden="true">
-        <div class="ab-orb ab-orb-1 float-y"></div>
-        <div class="ab-orb ab-orb-2 float-y delay-300"></div>
-        <div class="ab-grid-bg"></div>
-      </div>
-
-      <div class="ab-container">
-
-        <!-- Header -->
-        <header class="ab-header" appReveal="up">
-          <p class="ab-eyebrow">About NViQ</p>
-          <h2 class="ab-title">
-            Redefining How India's<br>
-            <span class="ab-accent">Fleets Operate & Invest</span>
-          </h2>
-        </header>
-
-        <!-- Mission block -->
-        <div class="ab-mission">
-          <div class="ab-mission-text" appReveal="left" [revealDelay]="80">
-            <h3>Our Mission</h3>
-            <p>
-              NViQ is India's first unified Fleet Intelligence + Fintech platform. We believe
-              fleet operators shouldn't have to choose between operational excellence and financial growth.
-              Our mission is to give every Indian fleet business — from single vehicles to large enterprises
-              — the data tools and investment infrastructure previously only available to the biggest players.
-            </p>
-            <p>
-              Backed by 10+ years of GPS and fleet tracking expertise, we're building at the intersection of GPS technology,
-              AI-powered analytics, and Free Consultation • AMFI Registered investment support with ARN No: 359231 — all in one platform
-              that works on day one without changing how you operate.
-            </p>
-          </div>
-
-          <!-- Stats card with 3D tilt -->
-          <div class="ab-mission-stats glass-dark" appTilt [tiltMax]="8" [tiltGlow]="'rgba(59,130,246,0.2)'"
-            appReveal="right" [revealDelay]="160">
-            <div class="ab-stat" *ngFor="let s of stats">
-              <strong [style.color]="s.color">{{ s.val }}</strong>
-              <span>{{ s.label }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Values -->
-        <div class="ab-values-header" appReveal="up" [revealDelay]="60">
-          <h3>What We Stand For</h3>
-        </div>
-
-        <!-- GPS Values Row -->
-        <div class="ab-values-section-label" appReveal="up" [revealDelay]="40">
-          <span class="ab-vs-dot ab-vs-dot-gps"></span>
-          GPS Platform
-        </div>
-        <div class="ab-values ab-values-gps">
-          <div class="ab-value glass-dark" *ngFor="let v of gpsValues; let i = index"
-            appTilt [tiltMax]="10" [tiltGlow]="v.color + '30'"
-            appReveal="up" [revealDelay]="i * 80">
-            <div class="ab-value-icon" [style.background]="v.glow" [style.border-color]="v.color + '33'">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                [attr.stroke]="v.color" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path [attr.d]="v.icon"/>
-              </svg>
-            </div>
-            <h4>{{ v.title }}</h4>
-            <p>{{ v.desc }}</p>
-          </div>
-        </div>
-
-        <!-- MF Values Row -->
-        <div class="ab-values-section-label" appReveal="up" [revealDelay]="40">
-          <span class="ab-vs-dot ab-vs-dot-mf"></span>
-          Mutual Fund Platform
-        </div>
-        <div class="ab-values ab-values-mf">
-          <div class="ab-value glass-dark" *ngFor="let v of mfValues; let i = index"
-            appTilt [tiltMax]="10" [tiltGlow]="v.color + '30'"
-            appReveal="up" [revealDelay]="i * 80">
-            <div class="ab-value-icon" [style.background]="v.glow" [style.border-color]="v.color + '33'">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                [attr.stroke]="v.color" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path [attr.d]="v.icon"/>
-              </svg>
-            </div>
-            <h4>{{ v.title }}</h4>
-            <p>{{ v.desc }}</p>
-          </div>
-        </div>
-
-        <!-- Timeline / Milestones -->
-        <div class="ab-timeline-wrap" appReveal="up" [revealDelay]="80">
-          <div class="ab-timeline-header">
-            <h3>Our Journey</h3>
-          </div>
-          <div class="ab-timeline">
-            <div class="ab-tl-item" *ngFor="let m of milestones; let i = index"
-              appReveal="up" [revealDelay]="i * 120"
-              [class.ab-tl-right]="i % 2 === 1">
-              <div class="ab-tl-dot" [style.background]="m.color"></div>
-              <div class="ab-tl-card glass-dark" appTilt [tiltMax]="6" [tiltGlow]="m.color + '22'">
-                <span class="ab-tl-year" [style.color]="m.color">{{ m.year }}</span>
-                <h4>{{ m.title }}</h4>
-                <p>{{ m.desc }}</p>
-                <ng-container *ngIf="m.liveStats">
-                  <div class="ab-live-row">
-                    <span class="ab-live-pill">Live Stats</span>
-                    <span class="ab-live-status">
-                      <span class="ab-live-pulse"></span>
-                      Updated {{ lastGpsStatsUpdateLabel }}
-                    </span>
-                  </div>
-                  <div class="ab-live-grid">
-                    <div class="ab-live-stat" *ngFor="let stat of gpsLiveStatCards">
-                      <strong>{{ formatLiveValue(stat.value, stat.suffix) }}</strong>
-                      <span>{{ stat.label }}</span>
-                    </div>
-                  </div>
-                </ng-container>
-              </div>
-            </div>
+      <div class="ab-hero-container">
+        <!-- Hero Text -->
+        <div class="ab-hero-text">
+          <span class="ab-eyebrow">ABOUT NVIQ BHARAT</span>
+          <h1 class="ab-hero-title">Engineering the Autonomous Pulse of India</h1>
+          <p class="ab-hero-desc">
+            Building India's premier integrated intelligence ecosystem—from AI-driven fleet telematics on the highway to precision autonomous drone automation in the agricultural fields.
+          </p>
+          <div class="ab-hero-ctas">
+            <button class="btn-primary" (click)="redirectToContact()">Explore Our Solutions</button>
+            <button class="btn-secondary" (click)="redirectToContact()">Connect with an Expert</button>
           </div>
         </div>
 
       </div>
     </section>
+
+    <!-- ══ WHO WE ARE (THE CORE PHILOSOPHY) ══════════════════ -->
+    <section class="ab-philosophy">
+      <div class="ab-container">
+        <div class="philosophy-grid">
+          
+          <div class="phil-text">
+            <div class="section-badge">CORE MANDATE</div>
+            <h3>Who We Are & How We Think</h3>
+            <p class="lead-p">
+              At NVIQ BHARAT Technology Private Limited, we are a high-performance tech team dedicated to developing, operating, and scaling technology-driven physical automation and intelligence platforms.
+            </p>
+            <p>
+              Established with a core mandate to bridge advanced data software with hard-wearing IoT infrastructure, we focus relentlessly on two critical pillars driving economic growth: <strong>Mobility Infrastructure</strong> and <strong>Agricultural Automation</strong>.
+            </p>
+            <p>
+              We don't just build standalone software; we construct robust end-to-end ecosystems where AI-driven analytics, customized hardware integrations, and cloud architectures run seamlessly to optimize heavy operations on the road and in the air.
+            </p>
+          </div>
+
+          <!-- Stunning Showcase Cards illustrating How We Think -->
+          <div class="philosophy-cards">
+            <div class="phil-card c-purple">
+              <div class="phil-card-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                  <line x1="4" y1="22" x2="4" y2="15"/>
+                </svg>
+              </div>
+              <h4>Hardware-to-Cloud Integration</h4>
+              <p>Bridging hard-wearing rugged physical IoT sensors with lightning-fast cloud streaming and unified spatial tracking algorithms.</p>
+            </div>
+
+            <div class="phil-card c-blue">
+              <div class="phil-card-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="3" width="15" height="13" rx="2" ry="2"/>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                  <circle cx="5.5" cy="18.5" r="2.5"/>
+                  <circle cx="18.5" cy="18.5" r="2.5"/>
+                </svg>
+              </div>
+              <h4>Mobility Infrastructure</h4>
+              <p>Scaling high-compliance real-time telematics and predictive fleet intelligence pipelines across India's highways.</p>
+            </div>
+
+            <div class="phil-card c-green">
+              <div class="phil-card-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+              </div>
+              <h4>Agricultural Automation</h4>
+              <p>Pioneering autonomous UAV drone flight automation and precision agricultural spraying tools to optimize crop yield.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ DUAL CORE ECOSYSTEMS ══════════════════════════════ -->
+    <section class="ab-ecosystems">
+      <div class="ab-container">
+        <div class="section-header">
+          <div class="section-badge">Dual Core Ecosystems</div>
+          <h2>Optimizing Roads & Agri Fields</h2>
+        </div>
+
+        <div class="ecosystems-grid">
+          <!-- Ecosystem 1: Fleet Intelligence -->
+          <div class="eco-card glass-dark eco-blue">
+            <div class="eco-card-header">
+              <div class="eco-icon-container">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="3" width="15" height="13" rx="2" ry="2"/>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                  <circle cx="5.5" cy="18.5" r="2.5"/>
+                  <circle cx="18.5" cy="18.5" r="2.5"/>
+                </svg>
+              </div>
+              <h3>Fleet Intelligence & Mobility Analytics</h3>
+            </div>
+            <p class="eco-intro">
+              We provide high-compliance, real-time Telematics and Fleet Intelligence Operations designed to transform raw vehicular movement into highly predictable optimization pipelines.
+            </p>
+            <div class="eco-points">
+              <div class="eco-point">
+                <h5>Real-Time Visibility</h5>
+                <p>High-frequency tracking dashboards backed by robust cloud infrastructures, enabling instantaneous route updates, asset protection, and remote diagnostic metrics.</p>
+              </div>
+              <div class="eco-point">
+                <h5>Predictive Performance Analytics</h5>
+                <p>Custom algorithms that analyze detailed driver behavior profiles, maximize fuel economy performance, and deliver operational transparency for corporate logistics networks and transporters.</p>
+              </div>
+              <div class="eco-point">
+                <h5>Regulatory Compliance Systems</h5>
+                <p>Full-scale integration of regulatory-mandated safety systems (such as AIS-140 compliant hardware configurations) built to integrate smoothly with national transit systems, corporate environments, and educational transport platforms.</p>
+              </div>
+              <div class="eco-point">
+                <h5>SaaS Delivery Model</h5>
+                <p>Available as highly flexible, cloud-native recurring subscription setups that match individual vehicle scale or multi-tiered corporate fleet sizes.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ecosystem 2: Precision Ag & Drones -->
+          <div class="eco-card glass-dark eco-green">
+            <div class="eco-card-header">
+              <div class="eco-icon-container">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/>
+                  <path d="M12 2v20"/>
+                  <path d="M17 5v5"/>
+                  <path d="M22 5v10"/>
+                </svg>
+              </div>
+              <h3>Precision Agricultural Tech & Autonomous UAVs</h3>
+            </div>
+            <p class="eco-intro">
+              We actively build, design, and configure autonomous Unmanned Aerial Vehicles (UAVs / Drones) custom-engineered for precision industrial farming.
+            </p>
+            <div class="eco-points">
+              <div class="eco-point">
+                <h5>Precision Smart Agriculture</h5>
+                <p>Fully integrated AI data engines and payload sensors configured to systematically manage precision seeding processes, variable-rate field irrigation, target crop condition diagnostics, and ultra-accurate micro-spraying operations.</p>
+              </div>
+              <div class="eco-point">
+                <h5>End-to-End Automation</h5>
+                <p>Complete hardware and software pairing where specialized drone mechanisms communicate continuously with proprietary field management software, providing farmers and agronomists with deep analytics and automated field workflows.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ THE NVIQ BHARAT EDGE: HOW WE BUILD ════════════════ -->
+    <section class="ab-edge">
+      <div class="ab-container">
+        <div class="section-header center">
+          <div class="section-badge">Engineering Layers</div>
+          <h2>The NVIQ BHARAT Edge</h2>
+          <p class="section-subtitle">
+            What sets NVIQ BHARAT apart is our comprehensive approach to tech engineering. We operate tightly across every layer of the modern technological system:
+          </p>
+        </div>
+
+        <div class="edge-grid">
+          <!-- Item 1: Proprietary Software -->
+          <div class="edge-card glass-dark">
+            <div class="edge-header">
+              <span class="edge-num">01</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <h4>Proprietary Software Systems</h4>
+            <p>Building rich web platforms, responsive multi-platform mobile apps, and robust backend microservices handling high-throughput spatial data streams.</p>
+          </div>
+
+          <!-- Item 2: Deep IoT Sourcing -->
+          <div class="edge-card glass-dark">
+            <div class="edge-header">
+              <span class="edge-num">02</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            </div>
+            <h4>Deep IoT & Sensor Sourcing</h4>
+            <p>Selecting, configuring, and installing specialized IoT telemetry hubs, advanced dashcams, and automated agricultural sensors to achieve stable physical tracking data.</p>
+          </div>
+
+          <!-- Item 3: Smart Integration Frameworks -->
+          <div class="edge-card glass-dark">
+            <div class="edge-header">
+              <span class="edge-num">03</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"/><path d="M18 8h4a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-4"/></svg>
+            </div>
+            <h4>Smart Integration Frameworks</h4>
+            <p>Expanding capabilities through strategic pipeline integrations, allowing operational numbers to link directly into vital auxiliary services like FASTag pipelines, insurance telematics systems, and commercial financial portals.</p>
+          </div>
+
+          <!-- Item 4: Digital Services Marketplace -->
+          <div class="edge-card glass-dark">
+            <div class="edge-header">
+              <span class="edge-num">04</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            </div>
+            <h4>Digital Services Marketplace</h4>
+            <p>Unifying vehicle services, equipment sourcing, component maintenance, and technical updates into a single digital hub for the entire transportation, logistics, and drone community.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ OUR CORPORATE VISION & ROADMAP ════════════════════ -->
+    <section class="ab-roadmap">
+      <div class="ab-container">
+        <div class="roadmap-grid">
+          
+          <!-- Vision -->
+          <div class="roadmap-card glass-dark vision-card">
+            <div class="roadmap-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="1"/>
+              </svg>
+            </div>
+            <h3>Our Corporate Vision</h3>
+            <p>To position NVIQ BHARAT as the central operating infrastructure for physical logistics and smart field management, setting new national benchmarks for operational safety, automation performance, and structural scalability.</p>
+          </div>
+
+          <!-- Mission -->
+          <div class="roadmap-card glass-dark mission-card">
+            <div class="roadmap-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </div>
+            <h3>Our Corporate Mission</h3>
+            <p>To democratize access to advanced AI-driven spatial data and physical automation toolkits, lowering operational risk and overhead costs for operators throughout India's transportation corridors and agricultural fields.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ FOOTER CALL TO ACTION ════════════════════════════ -->
+    <section class="ab-footer-cta">
+      <div class="ab-container text-center">
+        <div class="cta-box glass-dark">
+          <div class="cta-glow"></div>
+          <h2>Ready to Bring Next-Gen Automation<br>to Your Fleet or Fields?</h2>
+          <p>
+            Whether you are trying to optimize a complex transport network or scale up agricultural output with automated drone intelligence, NVIQ BHARAT builds the software, links the hardware, and analyzes the data for you.
+          </p>
+          <button class="btn-cta" (click)="redirectToContact()">
+            Let’s Innovate Together — Partner with Us
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ CORPORATE REGISTRY & LEGAL ══════════════════════ -->
+    <section class="ab-corporate-registry">
+      <div class="ab-container">
+        <div class="registry-card glass-dark">
+          <div class="registry-grid">
+            <div class="registry-item">
+              <span class="registry-label">Corporate Identity Number (CIN)</span>
+              <p class="registry-value font-mono">U62099RJ2026PTC113523 | ROC Manesar (CRC)</p>
+            </div>
+            
+            <div class="registry-item">
+              <span class="registry-label">Registered Office</span>
+              <p class="registry-value">Malakhera, Jamalpur, Alwar, Alwar - 301406, Rajasthan, India.</p>
+            </div>
+            
+            <div class="registry-item">
+              <span class="registry-label">Contact & Support</span>
+              <p class="registry-value">
+                <a href="mailto:nviqbharat&#64;gmail.com" class="registry-link">nviqbharat&#64;gmail.com</a>
+              </p>
+            </div>
+
+            <div class="registry-item legal-links-container">
+              <span class="registry-label">Legal Agreements</span>
+              <div class="legal-links">
+                <a href="/terms" class="legal-link">Terms of Service</a>
+                <span class="separator">•</span>
+                <a href="/privacy" class="legal-link">Privacy Policy</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   `,
   styles: [`
-    /* ── About Hero Slider ─────────────────────────────── */
-    .ab-slider {
+    /* ─── Hero Section ──────────────────────────────────── */
+    .ab-hero {
       position: relative;
-      width: 100%;
-      height: 92vh;
-      min-height: 600px;
+      background: #060913;
+      padding: 140px 0 100px;
       overflow: hidden;
-    }
-
-    .ab-slides-track {
-      width: 100%; height: 100%;
-      position: relative;
-    }
-
-    .ab-slide {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+      min-height: 85vh;
       display: flex;
       align-items: center;
-      justify-content: flex-end;
-      padding: 0 80px;
-      opacity: 0;
-      transform: scale(1.04);
-      transition: opacity 0.75s cubic-bezier(0.4,0,0.2,1),
-                  transform 0.75s cubic-bezier(0.4,0,0.2,1);
-      pointer-events: none;
     }
-
-    .ab-slide-active {
-      opacity: 1;
-      transform: scale(1);
-      pointer-events: auto;
+    .ab-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      box-sizing: border-box;
     }
-
-    .ab-hero-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(
-        -120deg,
-        rgba(2,6,16,0.88) 0%,
-        rgba(5,15,35,0.78) 50%,
-        rgba(0,0,0,0.20) 100%
-      );
+    .ab-hero-bg {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    }
+    .hero-glow-1 {
+      position: absolute; top: -100px; right: -50px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 60%);
+      filter: blur(80px);
+    }
+    .hero-glow-2 {
+      position: absolute; bottom: -100px; left: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 60%);
+      filter: blur(80px);
+    }
+    .ab-hero-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
       z-index: 1;
+      width: 100%;
     }
-
-    .ab-hero-glow {
-      position: absolute;
-      bottom: -120px; right: -80px;
-      width: 700px; height: 700px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 65%);
-      filter: blur(60px);
-      z-index: 2; pointer-events: none;
+    .ab-hero-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
     }
-
-    .ab-hero-content {
-      position: relative; z-index: 3;
-      max-width: 620px;
-      padding: 0 80px;
-      animation: abHeroIn 0.65s cubic-bezier(0.22,1,0.36,1) both;
+    .ab-eyebrow {
+      display: inline-block;
+      color: #3B82F6;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      background: rgba(59,130,246,0.06);
+      border: 1px solid rgba(59,130,246,0.15);
+      padding: 6px 14px;
+      border-radius: 99px;
+      margin-bottom: 24px;
     }
-    @keyframes abHeroIn {
-      from { opacity: 0; transform: translateY(28px); }
-      to   { opacity: 1; transform: none; }
-    }
-
-    .ab-hero-tag {
-      display: inline-flex; align-items: center;
-      padding: 6px 18px; border-radius: 999px;
-      border: 1px solid rgba(59,130,246,0.45);
-      background: rgba(59,130,246,0.12);
-      color: #60A5FA; font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.14em;
-      margin-bottom: 24px; width: fit-content;
-      box-shadow: 0 0 20px rgba(59,130,246,0.15);
-    }
-
     .ab-hero-title {
       font-family: 'Outfit', sans-serif;
-      font-size: clamp(2.5rem, 5vw, 4.5rem);
-      font-weight: 900; letter-spacing: -0.03em;
-      color: #F0F6FF; margin: 0 0 18px; line-height: 1.1;
-      text-shadow: 0 4px 40px rgba(0,0,0,0.5);
+      font-size: clamp(2.5rem, 5vw, 4.2rem);
+      font-weight: 900;
+      color: #F8FAFC;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 20px;
     }
-
-    .ab-hero-divider {
-      width: 64px; height: 3px;
-      background: linear-gradient(90deg, #3B82F6, #6366F1);
-      border-radius: 999px; margin-bottom: 24px;
-      box-shadow: 0 0 16px rgba(59,130,246,0.5);
+    .ab-hero-desc {
+      font-size: 16.5px;
+      color: #94A3B8;
+      line-height: 1.65;
+      margin-bottom: 32px;
+      max-width: 720px;
     }
-
-    .ab-hero-chips {
-      display: flex; gap: 10px; flex-wrap: wrap;
+    .ab-hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
-    .ab-chip {
-      padding: 6px 16px; border-radius: 999px;
-      border: 1px solid rgba(59,130,246,0.3);
-      background: rgba(59,130,246,0.1);
-      color: #93C5FD; font-size: 12px; font-weight: 600;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 0 12px rgba(59,130,246,0.1);
-    }
-
-    /* Arrows */
-    .ab-arrow {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      z-index: 10;
-      width: 50px; height: 50px; border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(0,0,0,0.35);
+    .btn-primary {
+      background: #2563EB;
       color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; backdrop-filter: blur(10px);
-      transition: all 0.25s ease;
-    }
-    .ab-arrow:hover {
-      background: rgba(59,130,246,0.25);
-      border-color: rgba(59,130,246,0.5);
-      box-shadow: 0 0 20px rgba(59,130,246,0.2);
-    }
-    .ab-arrow-prev { left: 20px; }
-    .ab-arrow-next { right: 20px; }
-
-    /* Dots */
-    .ab-dots {
-      position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
-      display: flex; gap: 10px; z-index: 10;
-    }
-    .ab-dot {
-      width: 8px; height: 8px; border-radius: 999px;
-      border: none; background: rgba(255,255,255,0.35);
-      cursor: pointer; padding: 0;
-      transition: width 0.35s ease, background 0.35s ease;
-    }
-    .ab-dot-active {
-      width: 28px; background: #3B82F6;
-      box-shadow: 0 0 10px rgba(59,130,246,0.6);
-    }
-
-    /* Counter */
-    .ab-counter {
-      position: absolute; bottom: 28px; right: 24px;
-      font-size: 12px; font-weight: 700;
-      color: rgba(255,255,255,0.45);
-      letter-spacing: 0.08em; z-index: 10;
-    }
-
-    @media (max-width: 1024px) {
-      .ab-slider { height: 75vh; }
-      .ab-slide { justify-content: center; padding: 0 20px; }
-      .ab-hero-content { padding: 0; text-align: center; }
-      .ab-hero-tag, .ab-hero-divider, .ab-hero-chips { margin-left: auto; margin-right: auto; }
-      .ab-hero-chips { justify-content: center; }
-    }
-    @media (max-width: 600px) {
-      .ab-hero { min-height: 65vh; }
-      .ab-hero-content { padding: 48px 24px; }
-      .ab-hero-title { font-size: 2.6rem; }
-    }
-    /* ── About Content Section ────────────────────────── */
-    .ab-root {
-      min-height: 100vh;
-      background: #0f172a; /* Solid premium dark slate from GPS page */
-      padding: 100px 32px 80px;
-      position: relative; overflow: hidden;
-    }
-    .ab-bg { position: absolute; inset: 0; pointer-events: none; }
-    .ab-orb {
-      position: absolute; border-radius: 50%; filter: blur(120px);
-    }
-    .ab-orb-1 {
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(37,99,235,0.07) 0%, transparent 65%);
-      top: -100px; right: -100px;
-    }
-    .ab-orb-2 {
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(99,102,241,0.05) 0%, transparent 65%);
-      bottom: -80px; left: -80px;
-    }
-    .ab-grid-bg {
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
-      background-size: 64px 64px;
-      mask-image: radial-gradient(ellipse 85% 75% at 50% 50%, black 10%, transparent 80%);
-    }
-
-    .ab-container { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
-
-    /* Header */
-    .ab-header { text-align: center; max-width: 720px; margin: 0 auto 72px; }
-    .ab-eyebrow {
-      display: inline-block; color: #3B82F6;
-      font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.16em;
-      border: 1px solid rgba(59,130,246,0.25);
-      background: rgba(101, 139, 201, 0.07);
-      padding: 5px 16px; border-radius: 999px; margin-bottom: 16px;
-    }
-    .ab-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(2.2rem, 5vw, 4rem);
-      font-weight: 900; letter-spacing: -0.04em;
-      color: #fff; line-height: 1.05;
-    }
-    .ab-accent {
-      color: #60A5FA;
-    }
-
-    /* Mission */
-    .ab-mission {
-      display: grid; grid-template-columns: 1fr 340px;
-      gap: 60px; align-items: start; margin-bottom: 72px;
-    }
-    .ab-mission-text h3 {
-      font-size: 1.8rem; font-weight: 800;
-      color: #fff; margin-bottom: 20px; letter-spacing: -0.02em;
-    }
-    .ab-mission-text p {
-      color: rgba(255,255,255,0.52);
-      font-size: 1rem; line-height: 1.8; margin-bottom: 16px;
-    }
-    .ab-mission-stats {
-      display: flex; flex-direction: column; gap: 24px;
-      padding: 32px; border-radius: 20px;
-    }
-    .ab-stat strong {
-      display: block;
-      font-size: 2.4rem; font-weight: 900; letter-spacing: -0.03em; line-height: 1;
-    }
-    .ab-stat span {
-      font-size: 12px; color: rgba(255,255,255,0.38);
-      font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
-      margin-top: 4px; display: block;
-    }
-
-    /* Visual Image Grid */
-    .ab-visual-grid {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr 1fr;
-      gap: 16px; height: 380px; margin-bottom: 72px;
-    }
-    .ab-visual-card {
-      position: relative; border-radius: 20px; overflow: hidden;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
       cursor: pointer;
+      transition: all 0.25s;
     }
-    .ab-vc-tall { grid-row: span 1; }
-    .ab-vc-bg {
-      position: absolute; inset: 0;
-      background-size: cover; background-position: center;
-      transition: transform .7s cubic-bezier(0.23,1,0.32,1);
+    .btn-primary:hover {
+      background: #1D4ED8;
+      box-shadow: 0 4px 20px rgba(37,99,235,0.3);
+      transform: translateY(-2px);
     }
-    .ab-visual-card:hover .ab-vc-bg { transform: scale(1.07); }
-
-    /* CSS gradient placeholders — swap to real images once you have them */
-    .ab-vc-bg-0 {
-      background:
-        linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)),
-        url('/images/about-team.jpg') center/cover,
-        linear-gradient(135deg, #1a2744 0%, #0f172a 50%, #1e3a5f 100%);
+    .btn-secondary {
+      background: rgba(255,255,255,0.03);
+      color: #F1F5F9;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
     }
-    .ab-vc-bg-1 {
-      background:
-        linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)),
-        url('/images/about-office.jpg') center/cover,
-        linear-gradient(135deg, #1a1044 0%, #0f0a2a 50%, #2d1b69 100%);
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-2px);
     }
-    .ab-vc-bg-2 {
-      background:
-        linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)),
-        url('/images/about-tech.jpg') center/cover,
-        linear-gradient(135deg, #0f2a1a 0%, #0a1f10 50%, #1a3a1a 100%);
+    /* ─── Philosophy Section ────────────────────────────── */
+    .ab-philosophy {
+      background: #080C16;
+      padding: 120px 0;
+      position: relative;
     }
-
-    .ab-vc-label {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      padding: 16px 20px;
-      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
-      z-index: 3;
+    .ab-philosophy::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
     }
-    .ab-vc-tag {
+    .philosophy-grid {
+      max-width: 950px;
+      margin: 0 auto;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .phil-text {
+      max-width: 800px;
+      margin-bottom: 56px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .section-badge {
       display: inline-block;
-      padding: 2px 10px; border-radius: 999px;
-      background: rgba(59,130,246,0.2); border: 1px solid rgba(59,130,246,0.35);
-      color: #60A5FA; font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      margin-bottom: 4px;
+      color: #10B981;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      background: rgba(16,185,129,0.06);
+      border: 1px solid rgba(16,185,129,0.15);
+      padding: 6px 14px;
+      border-radius: 99px;
+      margin-bottom: 24px;
     }
-    .ab-vc-label p {
-      color: #fff; font-size: 14px; font-weight: 700; margin: 0;
+    .phil-text h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 850;
+      color: #F8FAFC;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+    .lead-p {
+      font-size: 18.5px;
+      line-height: 1.65;
+      color: #E2E8F0;
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+    .phil-text p {
+      font-size: 15.5px;
+      line-height: 1.75;
+      color: #94A3B8;
+      margin-bottom: 20px;
     }
 
-    /* Values */
-    .ab-values-header {
-      text-align: center; margin-bottom: 28px;
+    /* Gorgeous 3-column Philosophy Cards */
+    .philosophy-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      width: 100%;
+      margin-top: 24px;
     }
-    .ab-values-header h3 {
-      font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.02em;
+    .phil-card {
+      background: rgba(15, 23, 42, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 20px;
+      padding: 32px 24px;
+      text-align: left;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
     }
-    .ab-values-section-label {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 11px; font-weight: 800;
-      text-transform: uppercase; letter-spacing: 0.14em;
-      color: rgba(255,255,255,0.35);
-      margin-bottom: 14px;
-      padding-left: 2px;
-    }
-    .ab-vs-dot {
-      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-    }
-    .ab-vs-dot-gps { background: #00D4FF; box-shadow: 0 0 8px #00D4FF; }
-    .ab-vs-dot-mf  { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
-
-    .ab-values {
-      display: grid; gap: 18px;
-      margin-bottom: 28px;
-    }
-    .ab-values-gps { grid-template-columns: repeat(4, 1fr); }
-    .ab-values-mf  { grid-template-columns: repeat(3, 1fr); margin-bottom: 80px; }
-    .ab-value {
-      padding: 28px 22px; border-radius: 18px;
-      display: flex; flex-direction: column; gap: 12px;
-      background: #1e293b; /* Same as GPS cards */
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      transition: border-color 0.3s ease, transform 0.3s ease;
-    }
-    .ab-value:hover {
-      border-color: rgba(96, 165, 250, 0.3);
+    .phil-card:hover {
+      border-color: rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.45);
       transform: translateY(-4px);
     }
-    .ab-value-icon {
-      width: 48px; height: 48px; border-radius: 12px; border: 1px solid;
+    .phil-card-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+    .phil-card:hover .phil-card-icon {
+      transform: scale(1.05);
+    }
+    .phil-card.c-blue .phil-card-icon {
+      background: rgba(59,130,246,0.05);
+      border-color: rgba(59,130,246,0.15);
+    }
+    .phil-card.c-green .phil-card-icon {
+      background: rgba(16,185,129,0.05);
+      border-color: rgba(16,185,129,0.15);
+    }
+    .phil-card.c-purple .phil-card-icon {
+      background: rgba(168,85,247,0.05);
+      border-color: rgba(168,85,247,0.15);
+    }
+    .phil-card h4 {
+      font-size: 16.5px;
+      font-weight: 700;
+      color: #F1F5F9;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+    .phil-card p {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #64748B;
+      margin: 0;
+    }
+    .phil-card:hover p {
+      color: #94A3B8;
+    }
+
+    /* ─── Ecosystems Section ────────────────────────────── */
+    .ab-ecosystems {
+      background: #060913;
+      padding: 100px 0;
+    }
+    .section-header {
+      margin-bottom: 56px;
+    }
+    .section-header.center {
+      text-align: center;
+    }
+    .section-header h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.3rem;
+      font-weight: 800;
+      color: #F8FAFC;
+      letter-spacing: -0.02em;
+    }
+    .section-subtitle {
+      font-size: 16px;
+      color: #64748B;
+      max-width: 650px;
+      margin: 16px auto 0;
+      line-height: 1.6;
+    }
+    .ecosystems-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    .eco-card {
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 24px;
+      padding: 40px;
+      transition: all 0.3s;
+    }
+    .eco-blue:hover {
+      border-color: rgba(59,130,246,0.25);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 30px rgba(59,130,246,0.02);
+    }
+    .eco-green:hover {
+      border-color: rgba(16,185,129,0.25);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 30px rgba(16,185,129,0.02);
+    }
+    .eco-card-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .eco-icon-container {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
       display: flex; align-items: center; justify-content: center;
     }
-    .ab-value h4 { font-size: 1rem; font-weight: 800; color: #fff; letter-spacing: -0.01em; }
-    .ab-value p  { font-size: 0.84rem; color: rgba(255,255,255,0.42); line-height: 1.65; }
+    .eco-card h3 {
+      font-size: 20px; font-weight: 800; color: #F8FAFC; letter-spacing: -0.01em;
+    }
+    .eco-intro {
+      font-size: 15px; color: #94A3B8; line-height: 1.65;
+      margin-bottom: 32px; border-bottom: 1px solid rgba(255,255,255,0.03);
+      padding-bottom: 24px;
+    }
+    .eco-points {
+      display: flex; flex-direction: column; gap: 24px;
+    }
+    .eco-point h5 {
+      font-size: 13.5px; font-weight: 700; color: #E2E8F0; margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+    .eco-point p {
+      font-size: 12.5px; color: #64748B; line-height: 1.6;
+    }
 
-    /* Timeline */
-    .ab-timeline-header {
-      text-align: center; margin-bottom: 48px;
+    /* ─── Edge Section ──────────────────────────────────── */
+    .ab-edge {
+      background: #080C16;
+      padding: 100px 0;
     }
-    .ab-timeline-header h3 {
-      font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.02em;
+    .edge-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
     }
-    .ab-timeline {
-      position: relative;
-      display: flex; flex-direction: column; gap: 32px;
-      max-width: 800px; margin: 0 auto;
+    .edge-card {
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 20px;
+      padding: 32px 24px;
+      transition: all 0.3s;
     }
-    .ab-timeline::before {
-      content: '';
-      position: absolute; left: 50%; top: 0; bottom: 0;
-      width: 1px; background: linear-gradient(to bottom, transparent, rgba(59,130,246,0.35) 20%, rgba(59,130,246,0.35) 80%, transparent);
-      transform: translateX(-50%);
-    }
-    .ab-tl-item {
-      display: flex; align-items: center;
-      justify-content: flex-end; gap: 28px;
-      padding-right: calc(50% + 20px);
-    }
-    .ab-tl-item.ab-tl-right {
-      flex-direction: row-reverse;
-      justify-content: flex-end;
-      padding-right: 0; padding-left: calc(50% + 20px);
-    }
-    .ab-tl-dot {
-      position: absolute; left: 50%;
-      transform: translateX(-50%);
-      width: 12px; height: 12px; border-radius: 50%;
-      box-shadow: 0 0 0 4px rgba(0,0,0,0.8), 0 0 16px rgba(59,130,246,0.5);
-      flex-shrink: 0;
-    }
-    .ab-tl-card {
-      max-width: 340px; padding: 24px 28px; border-radius: 16px;
-      background: #1e293b; /* Same as GPS cards */
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      transition: border-color 0.3s ease, transform 0.3s ease;
-    }
-    .ab-tl-card:hover {
-      border-color: rgba(96, 165, 250, 0.3);
+    .edge-card:hover {
+      border-color: rgba(255,255,255,0.08);
       transform: translateY(-4px);
     }
-    .ab-tl-year {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.12em;
-      display: block; margin-bottom: 6px;
+    .edge-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
     }
-    .ab-tl-card h4 {
-      font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 6px;
+    .edge-num {
+      font-size: 18px; font-weight: 800; color: #475569;
     }
-    .ab-tl-card p { font-size: 0.84rem; color: rgba(255,255,255,0.45); line-height: 1.6; }
-    .ab-live-row {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 12px; margin-top: 18px; margin-bottom: 14px; flex-wrap: wrap;
+    .edge-card h4 {
+      font-size: 15px; font-weight: 700; color: #E2E8F0; margin-bottom: 10px;
     }
-    .ab-live-pill {
-      display: inline-flex; align-items: center;
-      padding: 5px 10px; border-radius: 999px;
-      border: 1px solid rgba(59,130,246,0.28);
-      background: rgba(59,130,246,0.1);
-      color: #8ec5ff; font-size: 10px; font-weight: 800;
-      text-transform: uppercase; letter-spacing: 0.14em;
-    }
-    .ab-live-status {
-      display: inline-flex; align-items: center; gap: 8px;
-      color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 600;
-    }
-    .ab-live-pulse {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: #38bdf8; box-shadow: 0 0 14px rgba(56,189,248,0.8);
-      animation: abPulse 1.8s ease-in-out infinite;
-    }
-    @keyframes abPulse {
-      0%, 100% { transform: scale(0.9); opacity: 0.8; }
-      50% { transform: scale(1.15); opacity: 1; }
-    }
-    .ab-live-grid {
-      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px; margin-top: 4px;
-    }
-    .ab-live-stat {
-      padding: 12px 14px; border-radius: 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      border: 1px solid rgba(255,255,255,0.05);
-    }
-    .ab-live-stat strong {
-      display: block; color: #fff; font-size: 1.2rem;
-      font-weight: 900; letter-spacing: -0.03em; line-height: 1.1;
-    }
-    .ab-live-stat span {
-      display: block; margin-top: 4px;
-      color: rgba(255,255,255,0.46); font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.08em;
+    .edge-card p {
+      font-size: 12.5px; color: #64748B; line-height: 1.6;
     }
 
-    /* Responsive */
-    @media (max-width: 1024px) {
-      .ab-values-gps { grid-template-columns: repeat(2,1fr); }
-      .ab-values-mf  { grid-template-columns: repeat(2,1fr); }
-      .ab-visual-grid { grid-template-columns: 1fr 1fr; height: auto; }
-      .ab-vc-tall { grid-row: auto; height: 220px; }
-      .ab-visual-card { height: 200px; }
+    /* ─── Vision/Roadmap Section ────────────────────────── */
+    .ab-roadmap {
+      background: #060913;
+      padding: 100px 0;
     }
-    @media (max-width: 768px) {
-      .ab-slide-content { padding: 0 24px; }
-      .ab-mission { grid-template-columns: 1fr; }
-      .ab-values-gps, .ab-values-mf { grid-template-columns: 1fr; }
-      .ab-visual-grid { grid-template-columns: 1fr; height: auto; }
-      .ab-visual-card { height: 200px; }
-      .ab-timeline::before { left: 20px; }
-      .ab-tl-item, .ab-tl-item.ab-tl-right {
-        flex-direction: column; padding: 0 0 0 48px;
-        align-items: flex-start;
-      }
-      .ab-tl-dot { left: 20px; }
-      .ab-live-grid { grid-template-columns: 1fr; }
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .roadmap-card {
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 24px;
+      padding: 40px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    .roadmap-card:hover {
+      border-color: rgba(255,255,255,0.08);
+    }
+    .roadmap-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(255,255,255,0.02);
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .roadmap-card h3 {
+      font-size: 20px; font-weight: 800; color: #F8FAFC; margin-bottom: 16px;
+    }
+    .roadmap-card p {
+      font-size: 14px; color: #64748B; line-height: 1.65;
+    }
+
+    /* ─── Footer CTA Section ────────────────────────────── */
+    .ab-footer-cta {
+      background: #080C16;
+      padding: 120px 0;
+    }
+    .cta-box {
+      position: relative;
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255,255,255,0.06);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 32px;
+      padding: 72px 40px;
+      max-width: 900px;
+      margin: 0 auto;
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    }
+    .cta-glow {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 300px; height: 1px;
+      background: linear-gradient(90deg, rgba(59,130,246,0), rgba(59,130,246,0.4) 50%, rgba(59,130,246,0));
+    }
+    .cta-box h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2rem, 4vw, 2.7rem);
+      font-weight: 800; color: #F8FAFC; line-height: 1.15;
+      margin-bottom: 20px;
+    }
+    .cta-box p {
+      font-size: 15px; color: #64748B; max-width: 650px; margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+    .btn-cta {
+      background: #2563EB;
+      color: #fff;
+      border: none;
+      padding: 16px 36px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14.5px;
+      transition: all 0.25s;
+    }
+    .btn-cta:hover {
+      background: #1D4ED8;
+      box-shadow: 0 4px 20px rgba(37,99,235,0.3);
+      transform: translateY(-2px);
+    }
+
+    /* ─── Corporate Legal Registry Section ──────────────── */
+    .ab-corporate-registry {
+      background: #060913;
+      padding: 0 0 80px;
+      position: relative;
+    }
+    .registry-card {
+      background: rgba(15, 23, 42, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 20px;
+      padding: 32px;
+      transition: all 0.3s;
+    }
+    .registry-card:hover {
+      border-color: rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.45);
+    }
+    .registry-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+      align-items: start;
+    }
+    .registry-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .registry-label {
+      font-size: 10px;
+      font-weight: 800;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .registry-value {
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #E2E8F0;
+      margin: 0;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 12.5px;
+    }
+    .registry-link {
+      color: #3B82F6;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .registry-link:hover {
+      color: #60A5FA;
+      text-decoration: underline;
+    }
+    .legal-links {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .legal-link {
+      font-size: 13.5px;
+      color: #3B82F6;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .legal-link:hover {
+      color: #60A5FA;
+      text-decoration: underline;
+    }
+    .separator {
+      color: #475569;
+      font-size: 12px;
+    }
+
+    /* ─── Responsive Queries ────────────────────────────── */
+    @media (max-width: 1024px) {
+      .ab-hero-container { grid-template-columns: 1fr; gap: 48px; text-align: center; }
+      .ab-hero-desc { margin-left: auto; margin-right: auto; }
+      .ab-hero-ctas { justify-content: center; }
+      .ecosystems-grid { grid-template-columns: 1fr; }
+      .edge-grid { grid-template-columns: repeat(2, 1fr); }
+      .roadmap-grid { grid-template-columns: 1fr; }
+      .registry-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+      .philosophy-cards { grid-template-columns: 1fr; gap: 16px; }
+    }
+    @media (max-width: 640px) {
+      .edge-grid { grid-template-columns: 1fr; }
+      .ab-hero { padding-top: 100px; }
+      .cta-box { padding: 48px 24px; }
+      .registry-grid { grid-template-columns: 1fr; gap: 24px; }
     }
   `]
 })
-export class AboutSectionComponent implements OnInit, OnDestroy {
-  private timer: any;
-  private pollingSub?: Subscription;
-  private socket?: Socket;
-  private animationHandles = new Map<string, number>();
-  private readonly socketUrl = environment.apiUrl.replace(/\/api$/, '');
+export class AboutSectionComponent {
+  private navService = inject(NavService);
+  private router = inject(Router);
 
-  currentAboutSlide = 0;
-  aboutSlides = [
-    {
-      tag: 'About NViQ',
-      title: 'We Are NViQ',
-      desc: 'Fleet Intelligence + Fintech. We believe fleet operators shouldn\'t have to choose between operational excellence and financial growth.',
-      image: '/images/about%20slide.jpg.png',
-    },
-  ];
-
-  stats = [
-    { val: '10+',    label: 'Years GPS Experience', color: '#00D4FF' },
-    { val: '2026',   label: 'Founded in India',     color: '#60A5FA' },
-    { val: '99.9%',  label: 'Platform Uptime',      color: '#a78bfa' },
-    { val: 'AMFI',   label: 'ARN No: 359231',        color: '#22c55e' },
-  ];
-
-  gpsValues = [
-    {
-      icon: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
-      color: '#00D4FF', glow: 'rgba(0,212,255,0.1)',
-      title: '10+ Years of GPS Expertise',
-      desc: 'Over a decade of hands-on GPS and fleet tracking experience powering smarter routes, safer drivers, and profitable operations across India.',
-    },
-    {
-      icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2',
-      color: '#3B82F6', glow: 'rgba(59,130,246,0.1)',
-      title: 'Data First',
-      desc: 'Every product decision is backed by measurable outcomes. No vanity features.',
-    },
-    {
-      icon: 'M13 2L3 14h9l-1 8 10-12h-9z',
-      color: '#3B82F6', glow: 'rgba(59,130,246,0.1)',
-      title: 'Speed to Value',
-      desc: 'Onboard in a day. See measurable impact within the first week.',
-    },
-    {
-      icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
-      color: '#F59E0B', glow: 'rgba(245,158,11,0.1)',
-      title: 'Built for India',
-      desc: 'Designed for the real-world conditions of Indian fleet businesses.',
-    },
-  ];
-
-  mfValues = [
-    {
-      icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4',
-      color: '#22c55e', glow: 'rgba(34,197,94,0.1)',
-      title: 'AMFI Registered',
-      desc: 'Free Consultation • AMFI Registered mutual fund platform with ARN No: 359231, zero commission, and full transparency.',
-    },
-    {
-      icon: 'M23 6l-9.5 9.5-5-5L1 18M17 6h6v6',
-      color: '#A78BFA', glow: 'rgba(167,139,250,0.1)',
-      title: 'Wealth for All',
-      desc: 'SIP investments starting ₹1,000/month — making wealth creation accessible to every Indian.',
-    },
-    {
-      icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM12 6v6l4 2',
-      color: '#FB923C', glow: 'rgba(251,146,60,0.1)',
-      title: 'Long-Term Thinking',
-      desc: 'We optimise for your 10-year outcome, not the next quarter. Compounding is our strategy.',
-    },
-  ];
-
-  milestones = [
-    {
-      year: 'Q1 2026', color: '#3B82F6',
-      title: 'Company Founded',
-      desc: 'NViQ incorporated in India with a vision to unify fleet ops and fintech.',
-    },
-    {
-      year: 'Q2 2026', color: '#22c55e',
-      title: 'GPS Platform Launch',
-      desc: 'Live GPS tracking goes live across 500 vehicles in pilot across 3 cities.',
-    },
-    {
-      year: 'Q3 2026', color: '#a78bfa',
-      title: 'AMFI Registration',
-      desc: 'Mutual fund platform launches with Free Consultation • AMFI Registered support and ARN No: 359231.',
-    },
-    {
-      year: 'Q4 2026', color: '#f59e0b',
-      title: '0 Active Vehicles',
-      desc: 'Real-time GPS tracking actively monitoring commercial fleets across India with smart alerts, live tracking, fuel analytics, and route intelligence.',
-      liveStats: true,
-    },
-  ];
-
-  gpsLiveStatCards = [
-    { key: 'vehiclesOnline', label: 'Vehicles Online', value: 0, suffix: '+' },
-    { key: 'tripsTracked', label: 'Trips Tracked', value: 0, suffix: '+' },
-    { key: 'smartAlerts', label: 'Smart Alerts', value: 0, suffix: '+' },
-    { key: 'citiesCovered', label: 'Cities Covered', value: 0, suffix: '+' },
-  ];
-
-  lastGpsStatsUpdateLabel = 'just now';
-
-  constructor(
-    private ngZone: NgZone,
-    private apiService: ApiService,
-  ) {}
-
-  nextAboutSlide(): void {
-    this.currentAboutSlide = (this.currentAboutSlide + 1) % this.aboutSlides.length;
-  }
-
-  prevAboutSlide(): void {
-    this.currentAboutSlide = (this.currentAboutSlide - 1 + this.aboutSlides.length) % this.aboutSlides.length;
-  }
-
-  goToAboutSlide(index: number): void {
-    this.currentAboutSlide = index;
-  }
-
-  ngOnInit(): void {
-    this.startGpsStatsFeed();
-  }
-
-  ngOnDestroy(): void {
-    clearInterval(this.timer);
-    this.pollingSub?.unsubscribe();
-    this.socket?.disconnect();
-    this.animationHandles.forEach((handle) => cancelAnimationFrame(handle));
-    this.animationHandles.clear();
-  }
-
-  private startGpsStatsFeed(): void {
-    this.fetchGpsStats();
-    this.pollingSub = interval(15000).subscribe(() => this.fetchGpsStats());
-
-    this.socket = io(this.socketUrl, {
-      transports: ['websocket', 'polling'],
-      path: '/socket.io',
-      timeout: 3000,
-      reconnection: false,
-    });
-
-    this.socket.on('gps:live-stats', (stats: LiveGpsStats) => {
-      this.ngZone.run(() => this.applyGpsStats(stats));
-    });
-
-    this.socket.on('connect_error', () => {
-      this.socket?.disconnect();
-    });
-  }
-
-  private fetchGpsStats(): void {
-    this.apiService.getLiveGpsStats().subscribe({
-      next: (response) => this.applyGpsStats(response.data),
-      error: () => undefined,
-    });
-  }
-
-  private applyGpsStats(stats: LiveGpsStats): void {
-    const nextValues: Record<string, number> = {
-      vehiclesOnline: stats.vehiclesOnline,
-      tripsTracked: stats.tripsTracked,
-      smartAlerts: stats.smartAlerts,
-      citiesCovered: stats.citiesCovered,
-    };
-
-    this.gpsLiveStatCards.forEach((card) => {
-      const targetValue = nextValues[card.key];
-      this.animateLiveValue(card.key, card.value, targetValue);
-    });
-
-    this.lastGpsStatsUpdateLabel = this.formatUpdatedAt(stats.updatedAt);
-  }
-
-  private animateLiveValue(key: string, fromValue: number, toValue: number): void {
-    if (fromValue === toValue) return;
-
-    const existing = this.animationHandles.get(key);
-    if (existing) cancelAnimationFrame(existing);
-
-    const start = performance.now();
-    const duration = 900;
-
-    const tick = (now: number) => {
-      const progress = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const value = Math.round(fromValue + ((toValue - fromValue) * eased));
-
-      this.gpsLiveStatCards = this.gpsLiveStatCards.map((card) =>
-        card.key === key ? { ...card, value } : card
-      );
-
-      if (progress < 1) {
-        const handle = requestAnimationFrame(tick);
-        this.animationHandles.set(key, handle);
-      } else {
-        this.animationHandles.delete(key);
-      }
-    };
-
-    const handle = requestAnimationFrame(tick);
-    this.animationHandles.set(key, handle);
-  }
-
-  formatLiveValue(value: number, suffix = ''): string {
-    return `${new Intl.NumberFormat('en-IN').format(value)}${suffix}`;
-  }
-
-  private formatUpdatedAt(updatedAt: string): string {
-    const diffMs = Date.now() - new Date(updatedAt).getTime();
-    const diffSeconds = Math.max(0, Math.round(diffMs / 1000));
-    if (diffSeconds < 5) return 'just now';
-    if (diffSeconds < 60) return `${diffSeconds}s ago`;
-
-    const diffMinutes = Math.round(diffSeconds / 60);
-    if (diffMinutes < 60) return `${diffMinutes}m ago`;
-
-    return 'recently';
+  redirectToContact(): void {
+    this.router.navigate(['/contact']);
   }
 }

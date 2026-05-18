@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService, ProductCategory } from '../../services/api.service';
 import { NavService, ProductKey } from '../../services/nav.service';
+import { SessionService } from '../../services/session.service';
+import { ToastService } from '../../services/toast.service';
 
 interface ModalConfig {
   badge:      string;
@@ -55,14 +57,14 @@ const PRODUCT_CONFIG: Record<string, ModalConfig> = {
     title: 'Talk to Our Experts',
     subtitle: 'Discover the right solution for', accentText: 'your business',
     buttonText: 'Submit Enquiry',
-    trustItems: ['No commitment required', 'Response within 30 minutes', 'Tailored solutions'],
+    trustItems: ['No commitment required', 'Response within 24 hours', 'Tailored solutions'],
   },
   default: {
     badge: 'Get in Touch', badgeColor: '#93C5FD',
     title: 'Talk to Our Experts',
     subtitle: 'Discover the right solution for', accentText: 'your business',
     buttonText: 'Submit Enquiry',
-    trustItems: ['No commitment required', 'Response within 30 minutes', 'Tailored solutions'],
+    trustItems: ['No commitment required', 'Response within 24 hours', 'Tailored solutions'],
   },
 };
 
@@ -346,7 +348,7 @@ const PRODUCT_PILLS: { key: ProductCategory; label: string; icon: string }[] = [
           <p class="lm-success-sub">
             Our team will reach out to
             <strong>{{ form.phone || 'you' }}</strong>
-            within 30 minutes.
+            within 24 hours.
           </p>
           <button class="lm-success-close" (click)="closeModal.emit(); submitted = false">
             Close
@@ -578,6 +580,8 @@ export class LeadModalComponent implements OnChanges {
 
   private api = inject(ApiService);
   private nav = inject(NavService);
+  private sessionService = inject(SessionService);
+  private toastService = inject(ToastService);
 
   readonly pills = PRODUCT_PILLS;
 
@@ -609,6 +613,7 @@ export class LeadModalComponent implements OnChanges {
   selectProduct(key: ProductCategory): void {
     const prev = this.form.selectedProduct;
     this.form.selectedProduct = key;
+    this.sessionService.trackEvent('click', `modal-select-product-${key}`, `Switched category to ${key}`);
     // Only reset product-specific fields, not name/phone/email
     if (prev !== key) {
       this.form.company = ''; this.form.fleetSize = '';
@@ -655,6 +660,7 @@ export class LeadModalComponent implements OnChanges {
       this.sending   = false;
       const initial = (this.productType as ProductCategory) ?? 'gps';
       this.resetForm(initial);
+      this.sessionService.trackEvent('form_view', `modal-open-${initial}`, `Opened lead modal for ${initial}`);
     } else {
       document.body.style.overflow = '';
     }
@@ -701,7 +707,12 @@ export class LeadModalComponent implements OnChanges {
       riskPreference: riskPreference || undefined,
       message: message.trim() || undefined,
     }).subscribe({
-      next: () => { this.sending = false; this.submitted = true; },
+      next: () => {
+        this.sending = false;
+        this.submitted = true;
+        this.sessionService.trackEvent('form_submit', `modal-submit-${selectedProduct}`, `Submitted lead form for ${selectedProduct}`);
+        this.toastService.show("Thank you! Your inquiry has been recorded successfully.");
+      },
       error: (err: Error) => {
         this.sending = false;
         this.errorMsg = err.message || 'Something went wrong. Please try again.';

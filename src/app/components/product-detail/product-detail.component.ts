@@ -904,16 +904,16 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   ];
 
   ngOnInit(): void {
-    if (!this.nav.product()) {
-      const path = this.route.snapshot.url.map(s => s.path).join('/');
-      const urlMap: Record<string, ProductKey> = {
-        'gps-tracking': 'gps',
-        'gps-fleet-tracking': 'gps',
-        'fastag':       'fastag',
-        'drone':        'drone',
-      };
-      const key = Object.keys(urlMap).find(k => path.includes(k));
-      if (key) this.nav.go('product-detail', urlMap[key]);
+    const path = this.route.snapshot.url.map(s => s.path).join('/');
+    const urlMap: Record<string, ProductKey> = {
+      'gps-tracking': 'gps',
+      'gps-fleet-tracking': 'gps',
+      'fastag':       'fastag',
+      'drone':        'drone',
+    };
+    const key = Object.keys(urlMap).find(k => path.includes(k));
+    if (key) {
+      this.nav.go('product-detail', urlMap[key]);
     }
     if (this.nav.product() === 'mf') {
       setTimeout(() => {

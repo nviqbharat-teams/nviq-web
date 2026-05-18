@@ -37,14 +37,14 @@ import { NavService } from '../../services/nav.service';
         <!-- RIGHT: Contact + Our Team -->
         <div class="nav-right">
           <button class="nav-link" type="button"
-            [class.active]="nav.page() === 'contact'"
+            [class.active]="router.url === '/contact' || (router.url === '/' && nav.page() === 'contact')"
             (click)="goToContact()">
             Contact
           </button>
           <button class="nav-link" type="button"
-            [class.active]="nav.page() === 'team'"
-            (click)="navigate('team')">
-            Our Team
+            [class.active]="router.url === '/' && nav.page() === 'blog'"
+            (click)="navigate('blog')">
+            Blog
           </button>
         </div>
 
@@ -64,7 +64,7 @@ import { NavService } from '../../services/nav.service';
         <button class="mob-link" type="button" (click)="goToProduct()">Products</button>
         <button class="mob-link" type="button" (click)="goToAbout()">About Us</button>
         <button class="mob-link" type="button" (click)="goToContact()">Contact</button>
-        <button class="mob-link" type="button" (click)="navigate('team')">Our Team</button>
+        <button class="mob-link" type="button" (click)="navigate('blog')">Blog</button>
       </div>
     </nav>
   `,
@@ -247,7 +247,7 @@ export class NavbarComponent implements OnInit {
 
   get isCompanyPage(): boolean {
     const p = this.nav.page();
-    return p === 'about' || p === 'team';
+    return p === 'about' || p === 'blog';
   }
 
   ngOnInit(): void { this.scrolled = window.scrollY > 10; }
