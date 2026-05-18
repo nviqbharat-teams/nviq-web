@@ -2,6 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+import { SessionService } from '../../services/session.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-contact-section',
@@ -389,6 +391,8 @@ import { ApiService } from '../../services/api.service';
 })
 export class ContactSectionComponent implements OnInit {
   private api = inject(ApiService);
+  private sessionService = inject(SessionService);
+  private toastService = inject(ToastService);
 
   form = { name: '', phone: '', email: '', company: '', message: '' };
   submitted  = false;
@@ -406,6 +410,7 @@ export class ContactSectionComponent implements OnInit {
   channels: any[] = [];
 
   ngOnInit(): void {
+    this.sessionService.trackEvent('form_view', 'contact-us-form-load', 'Loaded Contact Us form');
     this.channels = [
       {
         icon: this.iconPhone,
@@ -454,6 +459,8 @@ export class ContactSectionComponent implements OnInit {
       next: () => {
         this.submitted = true;
         this.sending   = false;
+        this.sessionService.trackEvent('form_submit', 'contact-us-submit', 'Submitted Contact Us form successfully');
+        this.toastService.show("Thank you! Your inquiry has been recorded successfully.");
         this.form      = { name: '', phone: '', email: '', company: '', message: '' };
         setTimeout(() => { this.submitted = false; }, 4000);
       },

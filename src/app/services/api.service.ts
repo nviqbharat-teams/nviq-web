@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { SessionService } from './session.service';
 
 // ─── Response Types ───────────────────────────────────────────────────────────
 
@@ -103,6 +104,7 @@ export class ApiService {
 
   private readonly BASE = environment.apiUrl;
   private http = inject(HttpClient);
+  private session = inject(SessionService);
 
   // ── Auth header ─────────────────────────────────────────────────────────────
   private authHeaders(): HttpHeaders {
@@ -149,70 +151,98 @@ export class ApiService {
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // 📩 Contact Form
+  // 📩 Contact Form & Lead Submission (Attributed to Visitor Sessions)
   // ─────────────────────────────────────────────────────────────────────────
 
   submitContact(payload: ContactPayload): Observable<{ success: boolean; message: string }> {
+    const body = {
+      inquiryType: 'contact_us',
+      fullName: payload.name,
+      email: payload.email,
+      phoneNumber: payload.phone || 'N/A',
+      message: payload.message,
+      sessionId: this.session.getSessionId(),
+      sourcePage: typeof window !== 'undefined' ? window.location.pathname : '',
+      sourceElement: payload.source || 'contact-form',
+      fleetSize: 0
+    };
+
     return this.http.post<{ success: boolean; message: string }>(
-      `${this.BASE}/contact`,
-      payload
+      `${this.BASE}/web/inquiries`,
+      body
     ).pipe(catchError(this.handleError));
   }
 
   submitProductEnquiry(payload: ProductEnquiryPayload): Observable<{ success: boolean; message: string }> {
-    const sourceMap: Record<ProductCategory, EnquirySource> = {
-      gps:       'gps-enquiry',
-      mf:        'mf-enquiry',
-      fastag:    'fastag-enquiry',
-      insurance: 'insurance-enquiry',
-      ai:        'ai-enquiry',
-      other:     'other',
-    };
-    const labelMap: Record<ProductCategory, string> = {
-      gps:       'GPS Fleet Tracking',
-      mf:        'Mutual Fund Investment',
-      fastag:    'FASTag Fleet',
-      insurance: 'Insurance',
-      ai:        'AI Tools',
-      other:     'General Enquiry',
-    };
+    const category = payload.productCategory;
+    const isFleet = category === 'gps' || category === 'fastag';
+    const inquiryType = isFleet ? 'fleet_inquiry' : 'product_inquiry';
 
-    const cat = payload.productCategory;
-    const source = sourceMap[cat] ?? 'lead-modal';
-    const label  = labelMap[cat]  ?? 'Product';
+    const productMap: Record<ProductCategory, string> = {
+      gps:       'gps_fleet_tracking',
+      mf:        'mutual_funds',
+      fastag:    'fast_tag_system',
+      insurance: 'general',
+      ai:        'general',
+      other:     'general',
+    };
+    const productOfInterest = productMap[category] || 'general';
 
-    let parts: string[] = [`[${label} Enquiry]`];
-    if (cat === 'gps' || cat === 'fastag') {
-      if (payload.company)      parts.push(`Company: ${payload.company}`);
-      if (payload.businessType) parts.push(`Business Type: ${payload.businessType}`);
-      if (payload.fleetSize)    parts.push(`Fleet Size: ${payload.fleetSize}`);
-      if (payload.requirement)  parts.push(`Requirement: ${payload.requirement}`);
+    let numVehicles = 0;
+    if (isFleet && payload.fleetSize) {
+      if (payload.fleetSize.includes('1-10')) numVehicles = 10;
+      else if (payload.fleetSize.includes('10-50')) numVehicles = 50;
+      else if (payload.fleetSize.includes('50-100')) numVehicles = 100;
+      else if (payload.fleetSize.includes('100+')) numVehicles = 150;
+      else numVehicles = parseInt(payload.fleetSize, 10) || 0;
     }
-    if (cat === 'mf') {
+
+    let parts: string[] = [];
+    if (category === 'mf') {
       if (payload.budget)         parts.push(`Budget: ${payload.budget}`);
       if (payload.goal)           parts.push(`Goal: ${payload.goal}`);
       if (payload.experience)     parts.push(`Experience: ${payload.experience}`);
       if (payload.riskPreference) parts.push(`Risk: ${payload.riskPreference}`);
+    } else if (category === 'insurance' || category === 'ai') {
+      if (payload.requirement)    parts.push(`Requirement: ${payload.requirement}`);
+      if (payload.fleetSize)      parts.push(`Team Size: ${payload.fleetSize}`);
+    } else if (isFleet) {
+      if (payload.requirement)    parts.push(`Requirement: ${payload.requirement}`);
     }
+
     if (payload.message) parts.push(payload.message);
 
-    const extraData: Record<string, string> = {};
-    if (payload.company)      extraData['company']      = payload.company;
-    if (payload.businessType) extraData['businessType'] = payload.businessType;
-    if (payload.fleetSize)    extraData['fleetSize']    = payload.fleetSize;
-    if (payload.requirement)  extraData['requirement']  = payload.requirement;
-    if (payload.budget)       extraData['budget']       = payload.budget;
-    if (payload.goal)         extraData['goal']         = payload.goal;
-    if (payload.experience)   extraData['experience']   = payload.experience;
-    if (payload.riskPreference) extraData['riskPreference'] = payload.riskPreference;
+    const body: any = {
+      inquiryType,
+      fullName: payload.name,
+      email: payload.email || 'no-email@nviq.in',
+      phoneNumber: payload.phone,
+      message: parts.join(' | ') || 'No additional details.',
+      sessionId: this.session.getSessionId(),
+      sourcePage: typeof window !== 'undefined' ? window.location.pathname : '',
+      sourceElement: `cta-modal-${category}`,
+      productOfInterest
+    };
+
+    if (inquiryType === 'fleet_inquiry') {
+      body.businessName = payload.company || 'N/A';
+      body.numberOfVehicles = numVehicles;
+    }
 
     return this.http.post<{ success: boolean; message: string }>(
-      `${this.BASE}/contact`,
-      {
-        name: payload.name, email: payload.email, phone: payload.phone,
-        message: parts.join(' | '),
-        source, productCategory: cat, extraData,
-      },
+      `${this.BASE}/web/inquiries`,
+      body
+    ).pipe(catchError(this.handleError));
+  }
+
+  subscribeNewsletter(email: string): Observable<{ success: boolean; message: string }> {
+    const body = {
+      email,
+      sessionId: this.session.getSessionId()
+    };
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.BASE}/web/newsletter`,
+      body
     ).pipe(catchError(this.handleError));
   }
 
