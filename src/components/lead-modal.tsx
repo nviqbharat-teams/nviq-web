@@ -159,8 +159,10 @@ export function LeadModal({ open, plan, onClose }: LeadModalProps) {
 
   useEffect(() => {
     if (!open) {
-      setForm(EMPTY_FORM);
-      setSubmitted(false);
+      setTimeout(() => {
+        setForm(EMPTY_FORM);
+        setSubmitted(false);
+      }, 0);
     }
   }, [open]);
 

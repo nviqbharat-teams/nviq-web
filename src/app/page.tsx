@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import logoImg from "./logo.jpeg";
-import { LeadModal, type LeadPlan } from "@/components/lead-modal";
-
-const BANNER_DISMISS_KEY = "nviq-banner-dismissed";
+import { type LeadPlan } from "@/components/lead-modal";
+import { useLeadModal } from "@/context/lead-modal-context";
 
 const HERO_FLEET_INSIGHTS = {
   summary: { active: 27, total: 32, onRoute: 24, alerts: 2 },
@@ -22,17 +21,6 @@ const HERO_FLEET_INSIGHTS = {
   },
 };
 
-const NAV_LINKS = [
-  { href: "#services", label: "Services" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "#faq", label: "FAQ" },
-];
-
-const FOOTER_LINKS = [
-  { href: "#services", label: "Services" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "#faq", label: "FAQ" },
-];
 const FAQ_ITEMS = [
   {
     tag: "Setup",
@@ -103,36 +91,76 @@ const FLEET_VALUE = [
   },
 ];
 
-const PRICING_STARTER_FEATURES = {
-  "90-day": [
-    "Mobile App Access",
-    "Subscription 90 days",
-    "Live GPS Tracking",
-    "Alerts",
-    "Geo Fence",
-    "Playback Route",
-    "Business Visibility",
-  ],
-  annual: [
-    "Mobile App Access",
-    "Live GPS Tracking",
-    "Alerts",
-    "Geo Fence",
-    "Playback Route",
-    "Business Visibility",
-  ],
-} as const;
-
-const PRICING_PRO_EXTRA = ["Engine Control", "Trip Management"] as const;
-
-const PRICING_ENTERPRISE_FEATURES = [
-  "Unlimited Vehicles",
-  "Custom Integrations & API",
-  "Dedicated Success Manager",
-  "24×7 Priority Support",
-  "SLA-backed Uptime",
-  "Advanced Analytics Workspace",
+const PREMIUM_PLAN_FEATURES = [
+  "Mobile App & Web Access",
+  "Live GPS Tracking (10s refresh)",
+  "Geo-fence Breach Alerts",
+  "Ignition & Overspeed Alerts",
+  "90-Day Route Playback History",
+  "Anti-Theft Engine Cut-off",
+  "Trip Management & Mileage Reports",
+  "Free GPS Device & Installation",
+  "Lifetime Replacement Warranty",
 ] as const;
+
+const PRICING_PLANS = [
+  {
+    key: "3-month",
+    badge: "3 Months Plan",
+    tagline: "Great for quick testing",
+    price: 1599,
+    features: PREMIUM_PLAN_FEATURES,
+    cta: "Choose Plan",
+    featured: false,
+    badgeText: "3 Months Free Tracking included!",
+    modalPlan: "starter" as LeadPlan
+  },
+  {
+    key: "12-month",
+    badge: "12 Months Plan",
+    tagline: "Our most popular choice",
+    price: 2999,
+    features: PREMIUM_PLAN_FEATURES,
+    cta: "Get Started",
+    featured: true,
+    recommendedText: "★ Recommended",
+    modalPlan: "professional" as LeadPlan
+  },
+  {
+    key: "24-month",
+    badge: "24 Months Plan",
+    tagline: "Longer term stability",
+    price: 4499,
+    features: PREMIUM_PLAN_FEATURES,
+    cta: "Choose Plan",
+    featured: false,
+    modalPlan: "professional" as LeadPlan
+  },
+  {
+    key: "48-month",
+    badge: "48 Months Plan",
+    tagline: "Maximum savings",
+    price: 5999,
+    features: PREMIUM_PLAN_FEATURES,
+    cta: "Choose Plan",
+    featured: false,
+    modalPlan: "professional" as LeadPlan
+  },
+  {
+    key: "lifetime",
+    badge: "Lifetime Plan",
+    tagline: "No monthly/annual renewals",
+    price: 9999,
+    features: PREMIUM_PLAN_FEATURES,
+    cta: "Get Lifetime",
+    featured: true,
+    recommendedText: "★ Lifetime Free",
+    badgeText: "Pay Once, Track Free Forever!",
+    isLifetime: true,
+    modalPlan: "professional" as LeadPlan
+  }
+];
+
 
 function PricingCheck() {
   return (
@@ -274,135 +302,36 @@ function FleetValueVisual({ id }: { id: string }) {
 }
 
 export default function Home() {
-  const [billingCycle, setBillingCycle] = useState<"90-day" | "annual">("annual");
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
-  const [showBanner, setShowBanner] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [newsletterEmail, setNewsletterEmail] = useState("");
-  const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
-  const [leadModalOpen, setLeadModalOpen] = useState(false);
-  const [leadPlan, setLeadPlan] = useState<LeadPlan>("starter");
+  const { openLeadModal } = useLeadModal();
 
-  const openLeadModal = useCallback((plan: LeadPlan = "starter") => {
-    setLeadPlan(plan);
-    setLeadModalOpen(true);
-    setMobileMenuOpen(false);
-  }, []);
+  const pricingRef = useRef<HTMLDivElement>(null);
 
-  const closeLeadModal = useCallback(() => {
-    setLeadModalOpen(false);
-  }, []);
+  const scrollPricing = (dir: "left" | "right") => {
+    const el = pricingRef.current;
+    if (!el) return;
+    const cardWidth = 290 + 24; // card width + gap
+    el.scrollBy({ left: dir === "right" ? cardWidth : -cardWidth, behavior: "smooth" });
+  };
+
+  const [pricingAtStart, setPricingAtStart] = useState(true);
+  const [pricingAtEnd, setPricingAtEnd] = useState(false);
 
   useEffect(() => {
-    setShowBanner(localStorage.getItem(BANNER_DISMISS_KEY) !== "true");
+    const el = pricingRef.current;
+    if (!el) return;
+    const update = () => {
+      setPricingAtStart(el.scrollLeft <= 4);
+      setPricingAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+    };
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    return () => el.removeEventListener("scroll", update);
   }, []);
 
-  const dismissBanner = () => {
-    localStorage.setItem(BANNER_DISMISS_KEY, "true");
-    setShowBanner(false);
-  };
-
-  const closeMobileMenu = () => setMobileMenuOpen(false);
-
-  const handleNewsletterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!newsletterEmail.trim()) return;
-    setNewsletterSubmitted(true);
-    setNewsletterEmail("");
-  };
-
-  const starterPrice = billingCycle === "annual" ? 2599 : 1599;
-  const proPrice = billingCycle === "annual" ? 2999 : 1999;
-  const starterFeatures = [...PRICING_STARTER_FEATURES[billingCycle]];
-  const proFeatures = [...starterFeatures, ...PRICING_PRO_EXTRA];
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden">
-
-      <div className="site-header-stack">
-        {showBanner && (
-          <div className="announcement-bar">
-            <div className="announcement-bar__inner">
-              <p className="announcement-bar__text">
-                Start your <strong>90-day trial</strong> from <strong>₹1,599/vehicle</strong> — free installation included.
-              </p>
-              <a href="#pricing" className="announcement-bar__link">
-                View plans
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" />
-                </svg>
-              </a>
-              <button
-                onClick={dismissBanner}
-                aria-label="Dismiss announcement"
-                className="announcement-bar__close"
-              >
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-                  <path d="M3 3l10 10M13 3L3 13" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        )}
-
-        <header className="omega-header">
-          <div className="omega-header__inner">
-            <a href="#" className="omega-header__logo" onClick={closeMobileMenu}>
-              <Image src={logoImg} alt="NViQ Logo" width={32} height={32} className="object-cover" priority />
-              <span className="omega-header__logo-text">NViQ</span>
-            </a>
-
-            <nav className="omega-nav" aria-label="Main navigation">
-              {NAV_LINKS.map((link) => (
-                <a key={link.href} href={link.href} className="omega-nav__link">{link.label}</a>
-              ))}
-            </nav>
-
-            <div className="omega-header__actions">
-              <button type="button" className="omega-btn-register" onClick={() => openLeadModal("starter")}>
-                Get Started
-              </button>
-              <button
-                type="button"
-                className="omega-mobile-menu-btn"
-                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-                aria-expanded={mobileMenuOpen}
-                onClick={() => setMobileMenuOpen((open) => !open)}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                  {mobileMenuOpen ? (
-                    <path d="M6 6l12 12M18 6L6 18" />
-                  ) : (
-                    <>
-                      <path d="M4 6h16" />
-                      <path d="M4 12h16" />
-                      <path d="M4 18h16" />
-                    </>
-                  )}
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {mobileMenuOpen && (
-            <nav className="omega-mobile-nav" aria-label="Mobile navigation">
-              {NAV_LINKS.map((link) => (
-                <a key={link.href} href={link.href} className="omega-mobile-nav__link" onClick={closeMobileMenu}>
-                  {link.label}
-                </a>
-              ))}
-              <button type="button" className="omega-mobile-nav__cta" onClick={() => openLeadModal("starter")}>
-                Get Started
-              </button>
-            </nav>
-          )}
-        </header>
-      </div>
-
-      <div
-        className={`site-header-spacer${showBanner ? " site-header-spacer--with-banner" : ""}`}
-        aria-hidden="true"
-      />
+    <div className="bg-background text-foreground font-sans overflow-x-hidden">
 
       {/* HERO SECTION */}
       <section className="omega-hero">
@@ -460,36 +389,48 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Hero Content */}
-        <div className="omega-hero__content">
-          <div className="omega-hero__badge">
-            <span className="omega-hero__badge-icon">
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M13.485 4.515a1 1 0 0 1 0 1.414l-5.657 5.657a1 1 0 0 1-1.414 0L3.757 8.929a1 1 0 1 1 1.414-1.414L7.414 9.757l4.95-4.95a1 1 0 0 1 1.414 0z" />
-              </svg>
-            </span>
-            Free installation · 90-day trial · No hidden charges
+        <div className="omega-hero__layout">
+          {/* Hero Text Content */}
+          <div className="omega-hero__content">
+            <div className="omega-hero__badge">
+              <span className="omega-hero__badge-icon">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                  <path d="M13.485 4.515a1 1 0 0 1 0 1.414l-5.657 5.657a1 1 0 0 1-1.414 0L3.757 8.929a1 1 0 1 1 1.414-1.414L7.414 9.757l4.95-4.95a1 1 0 0 1 1.414 0z" />
+                </svg>
+              </span>
+              Free installation · 90-day trial · No hidden charges
+            </div>
+
+            <h1 className="omega-hero__heading">
+              Track Every Vehicle.<br />
+              Cut Fuel Costs
+            </h1>
+
+            <p className="omega-hero__desc">
+              NViQ gives Indian fleet owners live GPS, fuel theft alerts, and route deviation SMS — all in one dashboard. Built for low-signal highways and remote depots.
+            </p>
           </div>
 
-          <h1 className="omega-hero__heading">
-            Track Every Truck.<br />
-            Cut Fuel Costs
-          </h1>
+          {/* Hero Showcase Mockup */}
+          <div className="hero-showcase-layered" onClick={() => openLeadModal("starter")}>
+            <Image
+              src="/hero-phone-car.png"
+              alt="NViQ Live Tracking GPS App and Vehicle"
+              width={584}
+              height={602}
+              className="hero-showcase-single__image"
+              priority
+            />
+          </div>
 
-          <p className="omega-hero__desc">
-            NViQ gives Indian fleet owners live GPS, fuel theft alerts, and route deviation SMS — all in one dashboard. Built for low-signal highways and remote depots.
-          </p>
-
-          <div className="omega-hero__ctas">
+          {/* CTAs — below image on mobile, below text on desktop */}
+          <div className="omega-hero__ctas-wrapper">
             <button type="button" className="omega-cta-primary" onClick={() => openLeadModal("starter")}>
               Start Free Trial
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M3 8h10M9 4l4 4-4 4" />
               </svg>
             </button>
-            <a href="#services" className="omega-cta-secondary">
-              See how it works
-            </a>
           </div>
         </div>
 
@@ -580,94 +521,93 @@ export default function Home() {
             <p className="fleet-series__subtitle">Transparent plans. No hidden charges.</p>
           </div>
 
-          <div className="pricing__toggle-wrap">
-            <div className="pricing__toggle" role="tablist" aria-label="Billing cycle">
-              <span
-                className="pricing__toggle-slider"
-                style={{ transform: billingCycle === "annual" ? "translateX(100%)" : "translateX(0)" }}
-                aria-hidden="true"
-              />
-              {(["90-day", "annual"] as const).map((cycle) => (
-                <button
-                  key={cycle}
-                  type="button"
-                  role="tab"
-                  aria-selected={billingCycle === cycle}
-                  onClick={() => setBillingCycle(cycle)}
-                  className={`pricing__toggle-btn${billingCycle === cycle ? " pricing__toggle-btn--active" : ""}`}
-                >
-                  {cycle === "90-day" ? "90 Days" : "Annual"}
-                </button>
-              ))}
+          <div className="pricing__carousel">
+            {/* Left Arrow */}
+            <button
+              type="button"
+              className={`pricing__arrow pricing__arrow--left${pricingAtStart ? " pricing__arrow--hidden" : ""}`}
+              onClick={() => scrollPricing("left")}
+              aria-label="Scroll pricing left"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M13 4l-6 6 6 6" />
+              </svg>
+            </button>
+
+            <div className="pricing__grid" ref={pricingRef}>
+              {PRICING_PLANS.map((plan) => {
+                const cardClass = plan.featured
+                  ? `pricing__card pricing__card--featured${plan.isLifetime ? " pricing__card--lifetime" : ""}`
+                  : "pricing__card";
+
+                return (
+                  <article
+                    key={plan.key}
+                    className={cardClass}
+                  >
+                    {plan.featured && plan.recommendedText && (
+                      <span className="pricing__recommended">
+                        {plan.recommendedText}
+                      </span>
+                    )}
+
+                    <span className={`pricing__plan-badge${plan.featured ? " pricing__plan-badge--featured" : ""}${plan.isLifetime ? " pricing__plan-badge--lifetime" : ""}`}>
+                      {plan.badge}
+                    </span>
+
+                    <p className="pricing__tagline">{plan.tagline}</p>
+
+                    <div className={`pricing__price-row${plan.featured ? " pricing__price-row--featured" : ""}${plan.isLifetime ? " pricing__price-row--lifetime" : ""}`}>
+                      <span className="pricing__currency">₹</span>
+                      <span className="pricing__amount">{plan.price.toLocaleString("en-IN")}</span>
+                      <span className="pricing__period">
+                        {plan.isLifetime ? "One-Time" : `/${plan.key.split("-")[0]}M`}
+                      </span>
+                    </div>
+
+                    {plan.badgeText ? (
+                      <div style={{ fontSize: "11px", fontWeight: 700, color: "#10b981", marginTop: "4px", display: 'flex', alignItems: 'center', gap: '4px', minHeight: '16px' }}>
+                        <span style={{ fontSize: '12px' }}>✓</span> {plan.badgeText}
+                      </div>
+                    ) : (
+                      <div style={{ minHeight: "16px" }} />
+                    )}
+
+                    <div className="pricing__divider" style={{ marginTop: '16px' }} />
+
+                    <ul className="pricing__features">
+                      {plan.features.map((feature) => (
+                        <li key={feature} className="pricing__feature">
+                          <PricingCheck />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <button
+                      type="button"
+                      className={`pricing__cta${plan.featured ? " pricing__cta--primary" : " pricing__cta--ghost"}${plan.isLifetime ? " pricing__cta--lifetime" : ""}`}
+                      onClick={() => openLeadModal(plan.modalPlan)}
+                    >
+                      {plan.cta}
+                      <span aria-hidden="true">→</span>
+                    </button>
+                  </article>
+                );
+              })}
             </div>
-          </div>
 
-          <div className="pricing__grid">
-            <article className="pricing__card">
-              <span className="pricing__plan-badge">Starter</span>
-              <p className="pricing__tagline">Basic tracking for small fleets</p>
-              <div className="pricing__price-row">
-                <span className="pricing__currency">₹</span>
-                <span className="pricing__amount">{starterPrice.toLocaleString("en-IN")}</span>
-              </div>
-              <div className="pricing__divider" />
-              <ul className="pricing__features">
-                {starterFeatures.map((feature) => (
-                  <li key={feature} className="pricing__feature">
-                    <PricingCheck />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <button type="button" className="pricing__cta pricing__cta--ghost" onClick={() => openLeadModal("starter")}>
-                Choose Plan
-                <span aria-hidden="true">→</span>
-              </button>
-            </article>
-
-            <article className="pricing__card pricing__card--featured">
-              <span className="pricing__recommended">★ Recommended</span>
-              <span className="pricing__plan-badge pricing__plan-badge--featured">Professional</span>
-              <p className="pricing__tagline">Full tracking suite for growing fleets</p>
-              <div className="pricing__price-row pricing__price-row--featured">
-                <span className="pricing__currency">₹</span>
-                <span className="pricing__amount">{proPrice.toLocaleString("en-IN")}</span>
-              </div>
-              <div className="pricing__divider" />
-              <ul className="pricing__features">
-                {proFeatures.map((feature) => (
-                  <li key={feature} className="pricing__feature">
-                    <PricingCheck />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <button type="button" className="pricing__cta pricing__cta--primary" onClick={() => openLeadModal("professional")}>
-                Get Started
-                <span aria-hidden="true">→</span>
-              </button>
-            </article>
-
-            <article className="pricing__card">
-              <span className="pricing__plan-badge">Enterprise</span>
-              <p className="pricing__tagline">Full integration for large operations</p>
-              <div className="pricing__price-row">
-                <span className="pricing__amount pricing__amount--custom">Custom</span>
-              </div>
-              <div className="pricing__divider" />
-              <ul className="pricing__features">
-                {PRICING_ENTERPRISE_FEATURES.map((feature) => (
-                  <li key={feature} className="pricing__feature">
-                    <PricingCheck />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <button type="button" className="pricing__cta pricing__cta--ghost" onClick={() => openLeadModal("enterprise")}>
-                Contact Sales
-                <span aria-hidden="true">→</span>
-              </button>
-            </article>
+            {/* Right Arrow */}
+            <button
+              type="button"
+              className={`pricing__arrow pricing__arrow--right${pricingAtEnd ? " pricing__arrow--hidden" : ""}`}
+              onClick={() => scrollPricing("right")}
+              aria-label="Scroll pricing right"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 4l6 6-6 6" />
+              </svg>
+            </button>
           </div>
         </div>
       </section>
@@ -690,7 +630,7 @@ export default function Home() {
                 <p className="faq__support-text">
                   Our fleet specialists are available Monday–Saturday, 9 AM – 7 PM IST.
                 </p>
-                <a href="tel:+918888888888" className="faq__support-cta">
+                <a href="tel:+918529245390" className="faq__support-cta">
                   Speak to a specialist
                   <span aria-hidden="true">→</span>
                 </a>
@@ -747,91 +687,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="site-footer">
-        <div className="site-footer__inner">
-          <div className="site-footer__grid">
-            <div className="site-footer__brand">
-              <a href="#" className="site-footer__logo">
-                <Image src={logoImg} alt="NViQ Logo" width={32} height={32} className="object-cover" />
-                <span className="site-footer__logo-text">
-                  NV<span className="site-footer__logo-accent">i</span>Q
-                </span>
-              </a>
-              <p className="site-footer__tagline">
-                Real-time fleet tracking, fuel insights, and compliance tools built for Indian logistics teams.
-              </p>
-            </div>
-
-            <div className="site-footer__col">
-              <h3 className="site-footer__heading">Quick Links</h3>
-              <ul className="site-footer__links">
-                {FOOTER_LINKS.map((link) => (
-                  <li key={link.href}>
-                    <a href={link.href} className="site-footer__link">{link.label}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="site-footer__col">
-              <h3 className="site-footer__heading">Contact</h3>
-              <ul className="site-footer__links">
-                <li>
-                  <a href="tel:+918888888888" className="site-footer__link">+91 88888 88888</a>
-                </li>
-                <li>
-                  <a href="mailto:hello@nviq.com" className="site-footer__link">hello@nviq.com</a>
-                </li>
-                <li>
-                  <span className="site-footer__link site-footer__link--static">Pune, Maharashtra</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="site-footer__newsletter">
-              <h3 className="site-footer__heading">Newsletter</h3>
-              <p className="site-footer__newsletter-desc">
-                Fleet tips, product updates, and industry insights — monthly, no spam.
-              </p>
-              {newsletterSubmitted ? (
-                <p className="site-footer__newsletter-success" role="status">
-                  You&apos;re subscribed. Thanks for joining!
-                </p>
-              ) : (
-                <form className="site-footer__form" onSubmit={handleNewsletterSubmit}>
-                  <label htmlFor="newsletter-email" className="sr-only">Email address</label>
-                  <input
-                    id="newsletter-email"
-                    type="email"
-                    required
-                    value={newsletterEmail}
-                    onChange={(e) => setNewsletterEmail(e.target.value)}
-                    placeholder="Enter your email"
-                    className="site-footer__input"
-                    autoComplete="email"
-                  />
-                  <button type="submit" className="site-footer__submit">
-                    Subscribe
-                    <span aria-hidden="true">→</span>
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
-
-          <div className="site-footer__bottom">
-            <p className="site-footer__copy">
-              &copy; {new Date().getFullYear()} NViQ Technologies. All rights reserved.
-            </p>
-            <div className="site-footer__legal">
-              <a href="#" className="site-footer__legal-link">Privacy Policy</a>
-              <a href="#" className="site-footer__legal-link">Terms of Service</a>
-            </div>
-          </div>
-        </div>
-      </footer>
-
       {/* Mobile Sticky CTA */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 p-3.5 bg-background/95 backdrop-blur-md border-t border-border z-50 flex items-center justify-between shadow-2xl">
         <div className="flex items-center gap-2">
@@ -843,9 +698,6 @@ export default function Home() {
           <span className="flex h-full items-center bg-primary text-white px-3">→</span>
         </button>
       </div>
-
-      <LeadModal open={leadModalOpen} plan={leadPlan} onClose={closeLeadModal} />
-
     </div>
   );
 }
