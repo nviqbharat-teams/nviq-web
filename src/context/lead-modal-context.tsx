@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { LeadModal, type LeadPlan } from "@/components/lead-modal";
+import { initSession } from "@/lib/api";
 
 interface LeadModalContextType {
   openLeadModal: (plan?: LeadPlan) => void;
@@ -12,6 +13,10 @@ const LeadModalContext = createContext<LeadModalContextType | undefined>(undefin
 export function LeadModalProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [plan, setPlan] = useState<LeadPlan>("starter");
+
+  useEffect(() => {
+    initSession();
+  }, []);
 
   const openLeadModal = useCallback((selectedPlan: LeadPlan = "starter") => {
     setPlan(selectedPlan);

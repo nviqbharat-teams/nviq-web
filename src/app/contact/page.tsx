@@ -1,12 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { submitInquiry, trackEvent } from "@/lib/api";
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: "", phone: "", fleet: "", message: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", fleet: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  useEffect(() => {
+    trackEvent("form_view", "contact-page-load", "Loaded Contact Us page");
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -15,10 +21,37 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate async submit
-    await new Promise((r) => setTimeout(r, 1200));
+    setErrorMsg("");
+
+    let fleetSizeNum = 0;
+    if (form.fleet) {
+      if (form.fleet === "1-5") fleetSizeNum = 5;
+      else if (form.fleet === "6-20") fleetSizeNum = 20;
+      else if (form.fleet === "21-50") fleetSizeNum = 50;
+      else if (form.fleet === "51-200") fleetSizeNum = 200;
+      else if (form.fleet === "200+") fleetSizeNum = 250;
+    }
+
+    const payload = {
+      inquiryType: "contact_us" as const,
+      fullName: form.name.trim(),
+      email: form.email.trim(),
+      phoneNumber: form.phone.trim(),
+      message: form.message.trim() || "No additional message.",
+      fleetSize: fleetSizeNum,
+      sourceElement: "contact-form",
+      productOfInterest: "general",
+    };
+
+    const res = await submitInquiry(payload);
     setLoading(false);
-    setSubmitted(true);
+    if (res.success) {
+      setSubmitted(true);
+      trackEvent("form_submit", "contact-us-submit", "Submitted Contact Us form successfully");
+      setForm({ name: "", phone: "", email: "", fleet: "", message: "" });
+    } else {
+      setErrorMsg(res.message || "Failed to send message. Please try again.");
+    }
   };
 
   return (
@@ -108,7 +141,7 @@ export default function ContactPage() {
                   <button
                     type="button"
                     className="mt-6 inline-flex items-center gap-2.5 text-[15px] font-bold text-white bg-gradient-to-br from-blue-500 to-blue-600 rounded-none px-8 py-4 cursor-pointer transition-all duration-200 shadow-[0_8px_24px_rgba(59,130,246,0.4),inset_0_0_0_1px_rgba(255,255,255,0.1)] hover:from-blue-600 hover:to-blue-700 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(59,130,246,0.45)]"
-                    onClick={() => { setSubmitted(false); setForm({ name: "", phone: "", fleet: "", message: "" }); }}
+                    onClick={() => { setSubmitted(false); setForm({ name: "", phone: "", email: "", fleet: "", message: "" }); }}
                   >
                     Send Another Message
                   </button>
@@ -123,6 +156,12 @@ export default function ContactPage() {
                       We&apos;ll reply within 4 hours during business days.
                     </p>
                   </div>
+
+                  {errorMsg && (
+                    <div className="p-4 text-sm font-semibold text-rose-600 bg-rose-50 border border-rose-100 rounded-none">
+                      {errorMsg}
+                    </div>
+                  )}
 
                   <div className="flex flex-col gap-2">
                     <label htmlFor="contact-name" className="text-xs font-bold text-slate-900 uppercase tracking-wider">
@@ -151,6 +190,22 @@ export default function ContactPage() {
                       className="w-full px-4 py-3 border border-slate-200 rounded-none bg-white text-slate-900 text-[15px] outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-slate-400"
                       placeholder="+91 98765 43210"
                       value={form.phone}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="contact-email" className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                      Email Address *
+                    </label>
+                    <input
+                      id="contact-email"
+                      name="email"
+                      type="email"
+                      className="w-full px-4 py-3 border border-slate-200 rounded-none bg-white text-slate-900 text-[15px] outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-slate-400"
+                      placeholder="you@gmail.com"
+                      value={form.email}
                       onChange={handleChange}
                       required
                     />

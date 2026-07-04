@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useId, useRef, useState } from "react";
+import { submitInquiry, trackEvent } from "@/lib/api";
 
 export type LeadPlan = "starter" | "professional" | "enterprise";
 
@@ -139,6 +140,14 @@ export function LeadModal({ open, plan, onClose }: LeadModalProps) {
   const titleId = useId();
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  useEffect(() => {
+    if (open) {
+      trackEvent("form_view", `lead-modal-open-${plan}`, `Opened lead modal for plan: ${plan}`);
+    }
+  }, [open, plan]);
 
   useEffect(() => {
     if (!open) return;
@@ -162,6 +171,8 @@ export function LeadModal({ open, plan, onClose }: LeadModalProps) {
       setTimeout(() => {
         setForm(EMPTY_FORM);
         setSubmitted(false);
+        setLoading(false);
+        setErrorMsg("");
       }, 0);
     }
   }, [open]);
@@ -172,9 +183,40 @@ export function LeadModal({ open, plan, onClose }: LeadModalProps) {
     setForm((current) => ({ ...current, [field]: value }));
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setErrorMsg("");
+
+    let numberOfVehicles = 0;
+    if (form.fleetSize) {
+      if (form.fleetSize === "1-5") numberOfVehicles = 5;
+      else if (form.fleetSize === "6-15") numberOfVehicles = 15;
+      else if (form.fleetSize === "16-50") numberOfVehicles = 50;
+      else if (form.fleetSize === "51-100") numberOfVehicles = 100;
+      else if (form.fleetSize === "100+") numberOfVehicles = 150;
+    }
+
+    const payload = {
+      inquiryType: "fleet_inquiry" as const,
+      fullName: form.fullName.trim(),
+      email: form.email.trim(),
+      phoneNumber: form.phone.trim(),
+      message: form.requirement.trim() || "No additional requirements.",
+      businessName: form.company.trim(),
+      numberOfVehicles,
+      sourceElement: `lead-modal-${plan}`,
+      productOfInterest: "gps_fleet_tracking",
+    };
+
+    const res = await submitInquiry(payload);
+    setLoading(false);
+    if (res.success) {
+      setSubmitted(true);
+      trackEvent("form_submit", `lead-modal-submit-${plan}`, `Submitted lead modal for plan: ${plan}`);
+    } else {
+      setErrorMsg(res.message || "Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -307,9 +349,15 @@ export function LeadModal({ open, plan, onClose }: LeadModalProps) {
               </div>
             </div>
 
-            <button type="submit" className="lead-modal__submit">
-              {PLAN_CTA[plan]}
-              <span aria-hidden="true">→</span>
+            {errorMsg && (
+              <p className="text-sm font-semibold text-rose-600 my-3 bg-rose-50 border border-rose-100 p-3 text-center">
+                {errorMsg}
+              </p>
+            )}
+
+            <button type="submit" className="lead-modal__submit" disabled={loading}>
+              {loading ? "Activating Plan..." : PLAN_CTA[plan]}
+              {!loading && <span aria-hidden="true">→</span>}
             </button>
           </form>
         )}

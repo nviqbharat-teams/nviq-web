@@ -25,6 +25,9 @@ import { LeadModalProvider } from "@/context/lead-modal-context";
 export const metadata: Metadata = {
   title: "NViQ - Fleet Tracking Platform",
   description: "Modern fleet tracking tools for your business. Track vehicles in real time with the simplest dashboard built for transport operators.",
+  icons: {
+    icon: "/logo.jpeg",
+  },
 };
 
 export default function RootLayout({

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import logoImg from "@/app/logo.jpeg";
+import { subscribeNewsletter, trackEvent } from "@/lib/api";
 
 const FOOTER_NAV = [
   { href: "/", label: "Home" },
@@ -20,12 +21,24 @@ const LEGAL_LINKS = [
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
-    setSubmitted(true);
-    setEmail("");
+    setLoading(true);
+    setErrorMsg("");
+
+    const res = await subscribeNewsletter(email.trim());
+    setLoading(false);
+    if (res.success) {
+      setSubmitted(true);
+      trackEvent("form_submit", "newsletter-subscribe", `Subscribed to newsletter: ${email.trim()}`);
+      setEmail("");
+    } else {
+      setErrorMsg(res.message || "Failed to subscribe. Please try again.");
+    }
   };
 
   return (
@@ -103,21 +116,30 @@ export default function Footer() {
                   ✓ You&apos;re subscribed. Thank you!
                 </p>
               ) : (
-                <form onSubmit={handleSubscribe} className="flex gap-2">
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                    className="flex-1 bg-white/10 text-white text-sm rounded-lg px-3 py-2 border border-white/20 focus:outline-none focus:border-blue-500 placeholder-gray-500"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer"
-                  >
-                    Subscribe
-                  </button>
+                <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      className="flex-1 bg-white/10 text-white text-sm rounded-lg px-3 py-2 border border-white/20 focus:outline-none focus:border-blue-500 placeholder-gray-500"
+                      disabled={loading}
+                    />
+                    <button
+                      type="submit"
+                      className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                      disabled={loading}
+                    >
+                      {loading ? "..." : "Subscribe"}
+                    </button>
+                  </div>
+                  {errorMsg && (
+                    <p className="text-xs text-rose-400 font-medium" role="alert">
+                      {errorMsg}
+                    </p>
+                  )}
                 </form>
               )}
             </div>
