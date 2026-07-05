@@ -105,35 +105,16 @@ const PREMIUM_PLAN_FEATURES = [
 
 const PRICING_PLANS = [
   {
-    key: "3-month",
-    badge: "3 Months Plan",
-    tagline: "Great for quick testing",
-    price: 1599,
+    key: "lifetime",
+    badge: "Lifetime Plan",
+    tagline: "No monthly/annual renewals",
+    price: 9999,
     features: PREMIUM_PLAN_FEATURES,
-    cta: "Choose Plan",
-    featured: false,
-    badgeText: "3 Months Free Tracking included!",
-    modalPlan: "starter" as LeadPlan
-  },
-  {
-    key: "12-month",
-    badge: "12 Months Plan",
-    tagline: "Our most popular choice",
-    price: 2999,
-    features: PREMIUM_PLAN_FEATURES,
-    cta: "Get Started",
+    cta: "Get Lifetime",
     featured: true,
-    recommendedText: "★ Recommended",
-    modalPlan: "professional" as LeadPlan
-  },
-  {
-    key: "24-month",
-    badge: "24 Months Plan",
-    tagline: "Longer term stability",
-    price: 4499,
-    features: PREMIUM_PLAN_FEATURES,
-    cta: "Choose Plan",
-    featured: false,
+    recommendedText: "★ Lifetime Free",
+    badgeText: "Pay Once, Track Free Forever!",
+    isLifetime: true,
     modalPlan: "professional" as LeadPlan
   },
   {
@@ -147,18 +128,38 @@ const PRICING_PLANS = [
     modalPlan: "professional" as LeadPlan
   },
   {
-    key: "lifetime",
-    badge: "Lifetime Plan",
-    tagline: "No monthly/annual renewals",
-    price: 9999,
+    key: "24-month",
+    badge: "24 Months Plan",
+    tagline: "Longer term stability",
+    price: 4499,
     features: PREMIUM_PLAN_FEATURES,
-    cta: "Get Lifetime",
-    featured: true,
-    recommendedText: "★ Lifetime Free",
-    badgeText: "Pay Once, Track Free Forever!",
-    isLifetime: true,
+    cta: "Choose Plan",
+    recommendedText: "★ Recommended",
+    featured: false,
     modalPlan: "professional" as LeadPlan
+  },
+  {
+    key: "12-month",
+    badge: "12 Months Plan",
+    tagline: "Our most popular choice",
+    price: 2999,
+    features: PREMIUM_PLAN_FEATURES,
+    cta: "Get Started",
+    featured: true,
+    modalPlan: "professional" as LeadPlan
+  },
+  {
+    key: "3-month",
+    badge: "3 Months Plan",
+    tagline: "Great for quick testing",
+    price: 1599,
+    features: PREMIUM_PLAN_FEATURES,
+    cta: "Choose Plan",
+    featured: false,
+    badgeText: "3 Months Free Tracking included!",
+    modalPlan: "starter" as LeadPlan
   }
+
 ];
 
 
@@ -545,7 +546,7 @@ export default function Home() {
                     key={plan.key}
                     className={cardClass}
                   >
-                    {plan.featured && plan.recommendedText && (
+                    {plan.recommendedText && (
                       <span className="pricing__recommended">
                         {plan.recommendedText}
                       </span>
