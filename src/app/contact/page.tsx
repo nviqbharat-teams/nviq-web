@@ -62,7 +62,7 @@ export default function ContactPage() {
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-12 lg:gap-16 items-stretch">
 
             {/* Left Column: Blue Gradient Card */}
-            <div className="w-full bg-gradient-to-b from-blue-700 via-blue-600 to-blue-500 border border-blue-700 p-8 md:p-10 flex flex-col justify-between min-h-[580px] rounded-none shadow-[6px_6px_0px_0px_rgba(37,99,235,0.15)] text-white">
+            <div className="order-2 lg:order-1 w-full bg-gradient-to-b from-blue-700 via-blue-600 to-blue-500 border border-blue-700 p-8 md:p-10 flex flex-col justify-between min-h-[580px] rounded-none shadow-[6px_6px_0px_0px_rgba(37,99,235,0.15)] text-white">
               <div>
                 <h2 className="text-3xl font-extrabold tracking-tight mb-8">
                   Get in touch
@@ -123,7 +123,7 @@ export default function ContactPage() {
             </div>
 
             {/* Right Column: Form */}
-            <div className="bg-white border border-slate-200/60 rounded-none p-8 md:p-10 lg:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.04)] flex flex-col justify-center">
+            <div className="order-1 lg:order-2 bg-white border border-slate-200/60 rounded-none p-8 md:p-10 lg:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.04)] flex flex-col justify-center">
               {submitted ? (
                 <div className="flex flex-col items-center text-center py-8">
                   <div className="w-[72px] h-[72px] bg-emerald-50 border-2 border-emerald-500 rounded-none flex items-center justify-center text-emerald-500 mb-6">
@@ -136,7 +136,7 @@ export default function ContactPage() {
                     We&apos;ve Got Your Message!
                   </h3>
                   <p className="text-[15px] text-slate-500 leading-relaxed max-w-[360px]">
-                    Our team will reach out to you within 4 hours on your phone number or email.
+                    Our team will reach out to you within 24-48 hours on your phone number or email.
                   </p>
                   <button
                     type="button"
@@ -153,7 +153,7 @@ export default function ContactPage() {
                       Send Us a Message
                     </h2>
                     <p className="text-sm text-slate-500 leading-normal">
-                      We&apos;ll reply within 4 hours during business days.
+                      We&apos;ll reply within 24-48 hours during business days.
                     </p>
                   </div>
 

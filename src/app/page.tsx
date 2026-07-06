@@ -51,7 +51,7 @@ const FLEET_VALUE = [
     desc: "Always-on location visibility with clean route history to keep fleet operations grounded.",
     accent: "blue",
     features: [
-      "Live GPS position every 10 seconds",
+      "Live GPS position every 5 seconds",
       "Full route history with timestamps",
       "Geofence Breach Alerts",
     ],
@@ -75,7 +75,7 @@ const FLEET_VALUE = [
     features: [
       "Overspeed & harsh braking alerts",
       "Geo-fence entry/exit alerts",
-      "Fuel theft & drain alerts",
+      "Engine ignition & idling alerts",
     ],
   },
   {
@@ -92,11 +92,11 @@ const FLEET_VALUE = [
 ];
 
 const PREMIUM_PLAN_FEATURES = [
-  "Mobile App & Web Access",
-  "Live GPS Tracking (10s refresh)",
+  "Mobile App Access",
+  "Live GPS Tracking (5s refresh)",
   "Geo-fence Breach Alerts",
   "Ignition & Overspeed Alerts",
-  "90-Day Route Playback History",
+  "30-Day Route Playback History",
   "Anti-Theft Engine Cut-off",
   "Trip Management & Mileage Reports",
   "Free GPS Device & Installation",
@@ -135,7 +135,7 @@ const PRICING_PLANS = [
     features: PREMIUM_PLAN_FEATURES,
     cta: "Choose Plan",
     recommendedText: "★ Recommended",
-    featured: false,
+    featured: true,
     modalPlan: "professional" as LeadPlan
   },
   {
@@ -145,7 +145,7 @@ const PRICING_PLANS = [
     price: 2999,
     features: PREMIUM_PLAN_FEATURES,
     cta: "Get Started",
-    featured: true,
+    featured: false,
     modalPlan: "professional" as LeadPlan
   },
   {
@@ -408,7 +408,7 @@ export default function Home() {
             </h1>
 
             <p className="omega-hero__desc">
-              NViQ gives Indian fleet owners live GPS, fuel theft alerts, and route deviation SMS — all in one dashboard. Built for low-signal highways and remote depots.
+              NViQ gives Indian fleet owners live GPS, theft and overspeeding alerts, vehicle past running history — all in one dashboard. Built for low-signal highways and remote depots.
             </p>
           </div>
 
@@ -580,7 +580,7 @@ export default function Home() {
                       {plan.features.map((feature) => (
                         <li key={feature} className="pricing__feature">
                           <PricingCheck />
-                          <span>{feature}</span>
+                          <span>{feature === "Free GPS Device & Installation" ? <strong className="text-[14px]">{feature}</strong> : feature}</span>
                         </li>
                       ))}
                     </ul>
