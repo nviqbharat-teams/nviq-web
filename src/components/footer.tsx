@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import logoImg from "@/app/logo.jpeg";
 import { subscribeNewsletter, trackEvent } from "@/lib/api";
 
@@ -19,6 +20,8 @@ const LEGAL_LINKS = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+  const isContactPage = pathname === "/contact";
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,7 +45,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gray-950 text-white">
+    <footer className={`bg-gray-950 text-white${isContactPage ? " hidden md:block" : ""}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 pb-10 border-b border-white/10">
 

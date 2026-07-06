@@ -53,8 +53,10 @@ export default function Navbar({ fixed = true }: NavbarProps) {
     return pathname.startsWith(href.replace("/#", "/"));
   };
 
+  const isContactPage = pathname === "/contact";
+
   return (
-    <>
+    <div className={isContactPage ? "hidden md:block" : undefined}>
       <div className={fixed ? "fixed top-0 left-0 right-0 z-50 flex flex-col" : "relative w-full z-50 flex flex-col"}>
         {showBanner && (
           <div className="announcement-bar">
@@ -187,6 +189,6 @@ export default function Navbar({ fixed = true }: NavbarProps) {
         </header>
       </div>
       {fixed && <div className={showBanner ? "h-[116px] shrink-0" : "h-16 shrink-0"} aria-hidden="true" />}
-    </>
+    </div>
   );
 }
