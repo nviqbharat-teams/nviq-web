@@ -614,7 +614,7 @@ export default function Home() {
       </section>
 
       {/* FAQ SECTION */}
-      <section id="faq" className="faq">
+      {/* <section id="faq" className="faq">
         <div className="faq__inner">
           <div className="faq__layout">
             <div className="faq__intro">
@@ -686,7 +686,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Mobile Sticky CTA */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 p-3.5 bg-background/95 backdrop-blur-md border-t border-border z-50 flex items-center justify-between shadow-2xl">
