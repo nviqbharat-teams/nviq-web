@@ -26,7 +26,6 @@ export function getSessionId(): string {
   return savedId;
 }
 
-
 // Helper to parse UTM params
 function getUtmParams(): Record<string, string> {
   if (typeof window === "undefined") return {};
