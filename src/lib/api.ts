@@ -31,11 +31,11 @@ function getUtmParams(): Record<string, string> {
   if (typeof window === "undefined") return {};
   const params = new URLSearchParams(window.location.search);
   return {
-    source:   params.get("utm_source") || "",
-    medium:   params.get("utm_medium") || "",
+    source: params.get("utm_source") || "",
+    medium: params.get("utm_medium") || "",
     campaign: params.get("utm_campaign") || "",
-    term:     params.get("utm_term") || "",
-    content:  params.get("utm_content") || ""
+    term: params.get("utm_term") || "",
+    content: params.get("utm_content") || ""
   };
 }
 
