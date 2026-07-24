@@ -1,6 +1,6 @@
 "use client";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://nviq-backend.onrender.com/api";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.naviqbharat.com/api";
 
 export interface ContactPayload {
   name: string;

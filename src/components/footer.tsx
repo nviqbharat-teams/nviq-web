@@ -15,8 +15,8 @@ const FOOTER_NAV = [
 ];
 
 const LEGAL_LINKS = [
-  { href: "#", label: "Privacy Policy" },
-  { href: "#", label: "Terms of Service" },
+  { href: "/privacy-policy", label: "Privacy Policy" },
+  { href: "/terms", label: "Terms of Service" },
 ];
 
 export default function Footer() {
