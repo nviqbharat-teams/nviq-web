@@ -152,7 +152,7 @@ const PRICING_PLANS = [
     key: "3-month",
     badge: "3 Months Plan",
     tagline: "Great for quick testing",
-    price: 1599,
+    price: 1999,
     features: PREMIUM_PLAN_FEATURES,
     cta: "Choose Plan",
     featured: false,

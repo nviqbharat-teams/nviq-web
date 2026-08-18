@@ -62,7 +62,7 @@ export default function Navbar({ fixed = true }: NavbarProps) {
           <div className="announcement-bar">
             <div className="announcement-bar__inner">
               <p className="announcement-bar__text">
-                Start your <strong>90-day trial</strong> from <strong>₹1,599/vehicle</strong> — free installation included.
+                Start your <strong>90-day trial</strong> from <strong>₹1,999/vehicle</strong> — free installation included.
               </p>
               <Link href="/#pricing" className="announcement-bar__link">
                 View plans
