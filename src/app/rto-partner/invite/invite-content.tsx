@@ -1,0 +1,157 @@
+"use client";
+
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState, useMemo } from "react";
+import Image from "next/image";
+import logoImg from "@/app/logo.jpeg";
+import { getPlayStoreUrl, DEFAULT_APP_ID } from "@/lib/playstore";
+
+export default function InviteContent() {
+  const searchParams = useSearchParams();
+
+  const token = searchParams.get("token") || "";
+  const mobile = searchParams.get("mobile") || "";
+  const caseId = searchParams.get("caseId") || "";
+  const customAppId = searchParams.get("appId") || "";
+
+  const appId = customAppId || DEFAULT_APP_ID;
+
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Generate Play Store URL with URL-encoded referrer string
+  const playStoreUrl = useMemo(() => {
+    return getPlayStoreUrl({ token, mobile, caseId }, appId);
+  }, [token, mobile, caseId, appId]);
+
+  useEffect(() => {
+    // Check device type after mount and trigger redirect
+    const isAndroid = typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+    const isMobile = typeof navigator !== "undefined" && /iphone|ipad|ipod|android/i.test(navigator.userAgent);
+
+    if (isAndroid || isMobile) {
+      const timer = setTimeout(() => {
+        setIsMobileDevice(true);
+        window.location.href = playStoreUrl;
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [playStoreUrl]);
+
+  const handleCopyCode = async () => {
+    if (!token) return;
+    try {
+      await navigator.clipboard.writeText(token);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      // Fallback if clipboard API fails
+      setCopied(false);
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+      {/* Background glow effects */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-md bg-gray-900/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl relative z-10 flex flex-col items-center text-center">
+        {/* Brand Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <Image
+            src={logoImg}
+            alt="NViQ Logo"
+            width={44}
+            height={44}
+            className="rounded-xl object-cover shadow-md shadow-blue-500/20"
+          />
+          <div className="text-left">
+            <span className="text-2xl font-black tracking-tight text-white">
+              NV<span className="text-blue-400">i</span>Q
+            </span>
+            <span className="block text-xs uppercase tracking-widest text-blue-400 font-semibold">
+              RTO Partner
+            </span>
+          </div>
+        </div>
+
+        {/* Title & Description */}
+        <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">
+          Partner Portal Invitation
+        </h1>
+        <p className="text-sm text-gray-400 mb-6 leading-relaxed">
+          {mobile ? (
+            <>
+              You’ve been invited to join the NViQ RTO Partner network for{" "}
+              <span className="font-semibold text-white">
+                {mobile.startsWith("+") ? mobile : `+91 ${mobile}`}
+              </span>
+              .
+            </>
+          ) : (
+            "You’ve been invited to join the NViQ RTO Partner network."
+          )}
+        </p>
+
+        {/* Auto-redirect Status Badge */}
+        {isMobileDevice ? (
+          <div className="w-full bg-blue-500/10 border border-blue-500/20 rounded-xl p-3.5 mb-6 flex items-center justify-center gap-3 text-sm text-blue-300">
+            <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin shrink-0" />
+            <span>Opening Google Play Store...</span>
+          </div>
+        ) : null}
+
+        {/* Primary Action Button: Open Google Play */}
+        <a
+          href={playStoreUrl}
+          className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-blue-600/30 transition-all duration-200 transform active:scale-[0.98] mb-4"
+        >
+          {/* Google Play store icon */}
+          <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+            <path d="M3.609 1.814L13.793 12 3.61 22.186a1.996 1.996 0 0 1-.61-1.42V3.234c0-.55.23-1.05.609-1.42zm11.602 11.602l2.365-2.365-11.89-6.85 9.525 9.215zm2.365-2.365L20.25 12.5a1.1 1.1 0 0 1 0 1.9l-2.674 1.45-2.222-2.222 2.222-2.222zm-3.783 3.783l-9.525 9.215 11.89-6.85-2.365-2.365z" />
+          </svg>
+          <span>Install from Google Play</span>
+        </a>
+
+        {/* Token Info & Copy Option */}
+        {token && (
+          <div className="w-full bg-gray-950/60 border border-white/5 rounded-xl p-3 mb-4 flex items-center justify-between text-left">
+            <div className="truncate mr-2">
+              <span className="text-[11px] uppercase tracking-wider text-gray-500 block font-mono">
+                Invitation Code
+              </span>
+              <span className="text-xs font-mono text-gray-300 truncate block">
+                {token}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={handleCopyCode}
+              className="shrink-0 px-3 py-1.5 bg-white/10 hover:bg-white/15 text-xs font-medium text-white rounded-lg transition-colors"
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+        )}
+
+        {/* Case ID badge if exists */}
+        {caseId && (
+          <div className="text-xs text-gray-400 mb-4">
+            Case ID: <span className="font-mono text-gray-200">{caseId}</span>
+          </div>
+        )}
+
+        {/* Footer info note */}
+        <p className="text-[12px] text-gray-400 mt-2">
+          After installing the app, your invitation code will be applied automatically.
+        </p>
+      </div>
+
+      <p className="text-xs text-gray-400 mt-6 text-center">
+        © {new Date().getFullYear()} NViQ Technologies Pvt. Ltd. All rights reserved.
+      </p>
+    </main>
+  );
+}
