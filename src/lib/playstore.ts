@@ -2,13 +2,22 @@
  * Utility functions for Google Play Store Install Referrer and Deep Linking
  */
 
-export const DEFAULT_APP_ID = "com.nviqbharat.nviqapp";
+export const DEFAULT_APP_ID = "com.nviqbharat.nviq_partner";
 
 export interface InviteReferrerParams {
   token?: string | null;
   mobile?: string | null;
   caseId?: string | null;
   [key: string]: string | null | undefined;
+}
+
+/**
+ * Generates the Google Play Store internal / closed testing opt-in URL.
+ * Testers must accept the invite via this link before they can download the app from Google Play.
+ * e.g., https://play.google.com/apps/testing/com.nviqbharat.nviq_partner
+ */
+export function getPlayStoreTestingUrl(appId: string = DEFAULT_APP_ID): string {
+  return `https://play.google.com/apps/testing/${encodeURIComponent(appId)}`;
 }
 
 /**

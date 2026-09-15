@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import logoImg from "@/app/logo.jpeg";
-import { getPlayStoreUrl, DEFAULT_APP_ID } from "@/lib/playstore";
+import { getPlayStoreUrl, getPlayStoreTestingUrl, DEFAULT_APP_ID } from "@/lib/playstore";
 
 export default function InviteContent() {
   const searchParams = useSearchParams();
@@ -106,13 +106,23 @@ export default function InviteContent() {
         {/* Primary Action Button: Open Google Play */}
         <a
           href={playStoreUrl}
-          className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-blue-600/30 transition-all duration-200 transform active:scale-[0.98] mb-4"
+          className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-blue-600/30 transition-all duration-200 transform active:scale-[0.98] mb-2"
         >
           {/* Google Play store icon */}
           <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
             <path d="M3.609 1.814L13.793 12 3.61 22.186a1.996 1.996 0 0 1-.61-1.42V3.234c0-.55.23-1.05.609-1.42zm11.602 11.602l2.365-2.365-11.89-6.85 9.525 9.215zm2.365-2.365L20.25 12.5a1.1 1.1 0 0 1 0 1.9l-2.674 1.45-2.222-2.222 2.222-2.222zm-3.783 3.783l-9.525 9.215 11.89-6.85-2.365-2.365z" />
           </svg>
           <span>Install from Google Play</span>
+        </a>
+
+        {/* Internal Testing Opt-In Link */}
+        <a
+          href={getPlayStoreTestingUrl(appId)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-blue-400 hover:text-blue-300 underline underline-offset-4 mb-4 transition-colors block"
+        >
+          Testing internal release? Join testing program
         </a>
 
         {/* Token Info & Copy Option */}
