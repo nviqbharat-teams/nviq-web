@@ -7,10 +7,13 @@ import { usePathname } from "next/navigation";
 import logoImg from "@/app/logo.jpeg";
 
 import { useLeadModal } from "@/context/lead-modal-context";
+import { useIsApp } from "@/context/is-app-context";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/#pricing", label: "Pricing" },
+  { href: "/vltd", label: "Mines & VLTD" },
+  // { href: "/#pricing", label: "Pricing" },
+  { href: "/rto-partner/invite", label: "RTO Partner" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact Us" },
 ];
@@ -54,11 +57,14 @@ export default function Navbar({ fixed = true }: NavbarProps) {
   };
 
   const isContactPage = pathname === "/contact";
+  const isApp = useIsApp();
+
+  if (isApp) return null;
 
   return (
-    <div className={isContactPage ? "hidden md:block" : undefined}>
+    <div data-app-hide="true" className={isContactPage ? "hidden md:block" : undefined}>
       <div className={fixed ? "fixed top-0 left-0 right-0 z-50 flex flex-col" : "relative w-full z-50 flex flex-col"}>
-        {showBanner && (
+        {/* {showBanner && (
           <div className="announcement-bar">
             <div className="announcement-bar__inner">
               <p className="announcement-bar__text">
@@ -81,14 +87,13 @@ export default function Navbar({ fixed = true }: NavbarProps) {
               </button>
             </div>
           </div>
-        )}
+        )} */}
 
         <header
-          className={`transition-all duration-300 ${
-            scrolled
-              ? "bg-white/95 backdrop-blur-md shadow-[0_1px_20px_rgba(0,0,0,0.06)] border-b border-black/[0.05]"
-              : "bg-white/80 backdrop-blur-sm"
-          }`}
+          className={`transition-all duration-300 ${scrolled
+            ? "bg-white/95 backdrop-blur-md shadow-[0_1px_20px_rgba(0,0,0,0.06)] border-b border-black/[0.05]"
+            : "bg-white/80 backdrop-blur-sm"
+            }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
@@ -107,11 +112,10 @@ export default function Navbar({ fixed = true }: NavbarProps) {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
-                      isActive(link.href)
-                        ? "text-blue-600 bg-blue-50"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                    }`}
+                    className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${isActive(link.href)
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                      }`}
                   >
                     {link.label}
                     {isActive(link.href) && (
@@ -165,11 +169,10 @@ export default function Navbar({ fixed = true }: NavbarProps) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                    isActive(link.href)
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-gray-700 hover:bg-gray-50"
-                  }`}
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive(link.href)
+                    ? "bg-blue-50 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-50"
+                    }`}
                   onClick={() => setMenuOpen(false)}
                 >
                   {link.label}
@@ -188,7 +191,7 @@ export default function Navbar({ fixed = true }: NavbarProps) {
           )}
         </header>
       </div>
-      {fixed && <div className={showBanner ? "h-[116px] shrink-0" : "h-16 shrink-0"} aria-hidden="true" />}
+      {/* {fixed && <div className={showBanner ? "h-[116px] shrink-0" : "h-16 shrink-0"} aria-hidden="true" />} */}
     </div>
   );
 }

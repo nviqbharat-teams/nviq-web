@@ -4153,3 +4153,8 @@
   color: #ffffff;
   text-decoration-color: #ffffff;
 }
+
+/* App Mode: hide navbar, footer, and marked elements when loaded with isApp=true */
+html.is-app [data-app-hide="true"] {
+  display: none !important;
+}

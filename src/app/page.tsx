@@ -331,8 +331,112 @@ export default function Home() {
   }, []);
 
 
+  const homeJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://naviqbharat.com/#website",
+        "url": "https://naviqbharat.com",
+        "name": "NViQ Bharat",
+        "description": "AIS 140 VLTD & Mines GPS Tracker Platform India",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://naviqbharat.com/vltd?q={search_term_string}",
+          "query-input": "required name=search_term_string",
+        },
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://naviqbharat.com/#organization",
+        "name": "NViQ Technologies Pvt. Ltd.",
+        "alternateName": "NViQ Bharat",
+        "url": "https://naviqbharat.com",
+        "logo": "https://naviqbharat.com/logo.jpeg",
+        "telephone": "+918529245390",
+        "contactPoint": [
+          {
+            "@type": "ContactPoint",
+            "telephone": "+918529245390",
+            "contactType": "customer service",
+            "areaServed": "IN",
+            "availableLanguage": ["en", "Hindi"],
+          },
+        ],
+      },
+      {
+        "@type": "Product",
+        "@id": "https://naviqbharat.com/#vltd-product",
+        "name": "NViQ AIS 140 VLTD & Mines GPS Tracker",
+        "image": "https://naviqbharat.com/logo.jpeg",
+        "description": "Government-approved AIS 140 GPS tracker for commercial vehicles, mining tippers, and dumpers with emergency panic buttons and Vahan 4.0 sync.",
+        "brand": {
+          "@type": "Brand",
+          "name": "NViQ",
+        },
+        "offers": {
+          "@type": "AggregateOffer",
+          "priceCurrency": "INR",
+          "lowPrice": "2699",
+          "highPrice": "3799",
+          "offerCount": "4",
+          "availability": "https://schema.org/InStock",
+        },
+      },
+      {
+        "@type": "Service",
+        "@id": "https://naviqbharat.com/#vltd-service",
+        "name": "AIS 140 VLTD Fitment & Mining Portal Whitelist Certification",
+        "serviceType": "Automotive GPS Tracking & Compliance Certification",
+        "provider": {
+          "@id": "https://naviqbharat.com/#organization",
+        },
+        "areaServed": {
+          "@type": "Country",
+          "name": "India",
+        },
+        "description": "Doorstep installation of ARAI/ICAT certified AIS 140 devices with 1-hour certificate upload to Vahan 4.0 and state mining portals (Rajasthan DMG, MP Khanij, Gujarat i-Khanij, Haryana e-Ravanna).",
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://naviqbharat.com/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is NViQ GPS approved for AIS 140 fitness passing and state mining portals?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. NViQ VLTD devices are ARAI and ICAT certified under AIS 140 standard and whitelisted on Vahan 4.0 as well as state mining systems (Rajasthan DMG, MP Khanij, Gujarat i-Khanij, and Haryana e-Ravanna). Certificates are issued within 60 minutes.",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": "Do I need to install the tracking device myself?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. NViQ provides free local technician installation at your yard, warehouse, or mining quarry at no extra charge.",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": "How can RTO consultants partner with NViQ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "RTO consultants and agents can join the NViQ RTO Partner Network to access wholesale dealer pricing, 24/7 self-service certificate generation, and lucrative margins.",
+            },
+          },
+        ],
+      },
+    ],
+  };
+
   return (
-    <div className="bg-background text-foreground font-sans overflow-x-hidden">
+    <div className="bg-background text-foreground font-sans overflow-x-hidden pt-10">
+      {/* Structured Data for SEO (AIS 140 VLTD & Mines) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
+      />
 
       {/* HERO SECTION */}
       <section className="omega-hero">
@@ -393,14 +497,14 @@ export default function Home() {
         <div className="omega-hero__layout">
           {/* Hero Text Content */}
           <div className="omega-hero__content">
-            <div className="omega-hero__badge">
+            {/* <div className="omega-hero__badge">
               <span className="omega-hero__badge-icon">
                 <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                   <path d="M13.485 4.515a1 1 0 0 1 0 1.414l-5.657 5.657a1 1 0 0 1-1.414 0L3.757 8.929a1 1 0 1 1 1.414-1.414L7.414 9.757l4.95-4.95a1 1 0 0 1 1.414 0z" />
                 </svg>
               </span>
               Free installation · 90-day trial · No hidden charges
-            </div>
+            </div> */}
 
             <h1 className="omega-hero__heading">
               Track Every Vehicle.<br />
