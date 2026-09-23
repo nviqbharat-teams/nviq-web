@@ -5,6 +5,7 @@ import Image from "next/image";
 import logoImg from "./logo.jpeg";
 import { type LeadPlan } from "@/components/lead-modal";
 import { useLeadModal } from "@/context/lead-modal-context";
+import HeroCarousel from "@/components/home/hero-carousel";
 
 const HERO_FLEET_INSIGHTS = {
   summary: { active: 27, total: 32, onRoute: 24, alerts: 2 },
@@ -349,7 +350,7 @@ export default function Home() {
       {
         "@type": "Organization",
         "@id": "https://naviqbharat.com/#organization",
-        "name": "NViQ Technologies Pvt. Ltd.",
+        "name": "NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED",
         "alternateName": "NViQ Bharat",
         "url": "https://naviqbharat.com",
         "logo": "https://naviqbharat.com/logo.jpeg",
@@ -422,7 +423,7 @@ export default function Home() {
             "name": "How can RTO consultants partner with NViQ?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "RTO consultants and agents can join the NViQ RTO Partner Network to access wholesale dealer pricing, 24/7 self-service certificate generation, and lucrative margins.",
+              "text": "RTO consultants and agents can join the NViQ RTO Partner Network to access partner dealer access, mobile app certificate issuance, and priority technical support.",
             },
           },
         ],
@@ -431,7 +432,7 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-background text-foreground font-sans overflow-x-hidden pt-10">
+    <div className="bg-background text-foreground font-sans overflow-x-hidden pt-0">
       {/* Structured Data for SEO (AIS 140 VLTD & Mines) */}
       <script
         type="application/ld+json"
@@ -439,106 +440,8 @@ export default function Home() {
       />
 
       {/* HERO SECTION */}
-      <section className="omega-hero">
-        <div className="omega-hero__bg" aria-hidden="true">
-          <div className="omega-hero__glow omega-hero__glow--center" />
-          <div className="omega-hero__glow omega-hero__glow--left" />
-          <div className="omega-hero__glow omega-hero__glow--right" />
-        </div>
-
-        {/* Decorative grid boxes */}
-        <div className="hero-grid-boxes" aria-hidden="true">
-          <div className="grid-box grid-box--l1">
-            <span className="grid-box__line grid-box__line--h" style={{ top: "28%" }} />
-            <span className="grid-box__line grid-box__line--h" style={{ top: "52%" }} />
-            <span className="grid-box__line grid-box__line--v" style={{ left: "35%" }} />
-            <span className="grid-box__dot" style={{ top: 18, left: 18 }} />
-            <span className="grid-box__dot" style={{ bottom: 18, right: 18 }} />
-          </div>
-          <div className="grid-box grid-box--accent grid-box--l2">
-            <span className="grid-box__line grid-box__line--h" style={{ top: "40%" }} />
-            <span className="grid-box__line grid-box__line--v" style={{ left: "50%" }} />
-          </div>
-          <div className="grid-box grid-box--l3">
-            <span className="grid-box__line grid-box__line--h" style={{ top: "35%" }} />
-            <span className="grid-box__dot" style={{ top: 18, right: 18 }} />
-          </div>
-          <div className="grid-box grid-box--accent grid-box--r1">
-            <span className="grid-box__line grid-box__line--h" style={{ top: "30%" }} />
-            <span className="grid-box__line grid-box__line--h" style={{ top: "60%" }} />
-            <span className="grid-box__line grid-box__line--v" style={{ left: "40%" }} />
-          </div>
-          <div className="grid-box grid-box--r2">
-            <span className="grid-box__line grid-box__line--v" style={{ left: "30%" }} />
-            <span className="grid-box__line grid-box__line--v" style={{ left: "65%" }} />
-            <span className="grid-box__dot" style={{ bottom: 18, left: 18 }} />
-          </div>
-          <div className="grid-box grid-box--accent grid-box--r3">
-            <span className="grid-box__line grid-box__line--h" style={{ top: "45%" }} />
-          </div>
-          <div className="grid-box grid-box--t1">
-            <span className="grid-box__line grid-box__line--v" style={{ left: "25%" }} />
-            <span className="grid-box__line grid-box__line--v" style={{ left: "50%" }} />
-            <span className="grid-box__line grid-box__line--v" style={{ left: "75%" }} />
-          </div>
-          <div className="grid-box grid-box--accent grid-box--t2">
-            <span className="grid-box__line grid-box__line--h" style={{ top: "50%" }} />
-          </div>
-          <div className="grid-box grid-box--b1">
-            <span className="grid-box__line grid-box__line--h" style={{ top: "40%" }} />
-            <span className="grid-box__dot" style={{ top: 18, right: 18 }} />
-          </div>
-          <div className="grid-box grid-box--accent grid-box--b2">
-            <span className="grid-box__line grid-box__line--v" style={{ left: "45%" }} />
-            <span className="grid-box__dot" style={{ bottom: 18, left: 18 }} />
-          </div>
-        </div>
-
-        <div className="omega-hero__layout">
-          {/* Hero Text Content */}
-          <div className="omega-hero__content">
-            {/* <div className="omega-hero__badge">
-              <span className="omega-hero__badge-icon">
-                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                  <path d="M13.485 4.515a1 1 0 0 1 0 1.414l-5.657 5.657a1 1 0 0 1-1.414 0L3.757 8.929a1 1 0 1 1 1.414-1.414L7.414 9.757l4.95-4.95a1 1 0 0 1 1.414 0z" />
-                </svg>
-              </span>
-              Free installation · 90-day trial · No hidden charges
-            </div> */}
-
-            <h1 className="omega-hero__heading">
-              Track Every Vehicle.<br />
-              Cut Fuel Costs
-            </h1>
-
-            <p className="omega-hero__desc">
-              NViQ gives Indian fleet owners live GPS, theft and overspeeding alerts, vehicle past running history — all in one dashboard. Built for low-signal highways and remote depots.
-            </p>
-          </div>
-
-          {/* Hero Showcase Mockup */}
-          <div className="hero-showcase-layered" onClick={() => openLeadModal("starter")}>
-            <Image
-              src="/hero-phone-car.png"
-              alt="NViQ Live Tracking GPS App and Vehicle"
-              width={584}
-              height={602}
-              className="hero-showcase-single__image"
-              priority
-            />
-          </div>
-
-          {/* CTAs — below image on mobile, below text on desktop */}
-          <div className="omega-hero__ctas-wrapper">
-            <button type="button" className="omega-cta-primary" onClick={() => openLeadModal("starter")}>
-              Start Free Trial
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M3 8h10M9 4l4 4-4 4" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
+      <section className="relative w-full bg-white overflow-hidden" aria-label="NViQ Overview">
+        <HeroCarousel onOpenLeadModal={openLeadModal} />
       </section>
 
       {/* SERVICES SECTION */}

@@ -12,7 +12,7 @@ const FOOTER_NAV = [
   { href: "/", label: "Home" },
   { href: "/vltd", label: "Mines & VLTD Hub" },
   { href: "/#pricing", label: "Pricing" },
-  { href: "/rto-partner/invite", label: "RTO Partner Portal" },
+  { href: "/rto-partner", label: "RTO Partner Portal" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact Us" },
 ];
@@ -88,9 +88,9 @@ export default function Footer() {
                   <circle cx="12" cy="10" r="3" />
                 </svg>
                 <span className="leading-relaxed">
-                  NViQ Technologies Pvt. Ltd.<br />
-                  Malakhera Jamalpur 301406,<br />
-                  Alwar, Rajasthan, India
+                  NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED<br />
+                  320, 3rd floor, Wonder Mall, Company Bagh Road,<br />
+                  Katla, Sector 7, Alwar, Rajasthan 301001
                 </span>
               </span>
             </div>

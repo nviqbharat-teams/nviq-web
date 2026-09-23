@@ -52,7 +52,7 @@ export default function VltdIndexPage() {
     },
     {
       q: "What are the benefits for RTO consultants partnering with NViQ?",
-      a: "RTO agents receive wholesale dealer pricing (₹2,699/unit), earn ₹1,500–₹3,000 margin per client, get a self-service 24/7 certificate issuance portal, and priority technical assistance for their clients.",
+      a: "RTO agents receive confidential wholesale dealer pricing, strong profit margins per vehicle, a mobile certificate issuance portal, and priority technical assistance for their clients.",
     },
   ];
 

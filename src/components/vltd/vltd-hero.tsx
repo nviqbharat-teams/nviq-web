@@ -74,7 +74,7 @@ export default function VltdHero({
           </a>
 
           <Link
-            href="/rto-partner/invite"
+            href="/rto-partner"
             className="inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-all text-sm"
           >
             <Building2 className="h-4 w-4 text-amber-700" />
@@ -154,7 +154,7 @@ export default function VltdHero({
             </p>
             <div className="mt-4">
               <Link
-                href="/rto-partner/invite"
+                href="/rto-partner"
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800 underline underline-offset-4"
               >
                 <span>Join NViQ RTO Partner Program</span>

@@ -189,9 +189,9 @@ export default function AboutPage() {
                   Registered Address
                 </span>
                 <address className="not-italic text-[15px] text-slate-700 leading-relaxed font-medium">
-                  NViQ Technologies Pvt. Ltd.<br />
-                  Malakhera Jamalpur 301406,<br />
-                  Alwar, Rajasthan, India
+                  NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED<br />
+                  320, 3rd floor, Wonder Mall, Company Bagh Road,<br />
+                  Katla, Sector 7, Alwar, Rajasthan 301001
                 </address>
               </div>
 

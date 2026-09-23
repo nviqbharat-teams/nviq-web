@@ -92,7 +92,7 @@ export default async function CityDetailPage({ params }: Props) {
     },
     {
       q: `How can local RTO agents in ${city.name} get wholesale dealer margins?`,
-      a: `RTO agents in ${city.name} can register for the NViQ RTO Partner Program to unlock wholesale rates from ₹2,699/unit, earn ₹1,500–₹3,000 per fitment, and issue certificates 24/7.`,
+      a: `RTO agents in ${city.name} can register for the NViQ RTO Partner Program to unlock confidential wholesale dealer pricing, earn strong margins per fitment, and issue verified fitment certificates via mobile app.`,
     },
   ];
 

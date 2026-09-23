@@ -52,12 +52,11 @@ export default function InviteContent() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
-      {/* Background glow effects */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+    <main className="min-h-screen bg-gray-50 text-gray-900 flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+      {/* Background subtle radial gradient */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="w-full max-w-md bg-gray-900/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl relative z-10 flex flex-col items-center text-center">
+      <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-xs relative z-10 flex flex-col items-center text-center">
         {/* Brand Header */}
         <div className="flex items-center gap-3 mb-6">
           <Image
@@ -65,27 +64,27 @@ export default function InviteContent() {
             alt="NViQ Logo"
             width={44}
             height={44}
-            className="rounded-xl object-cover shadow-md shadow-blue-500/20"
+            className="rounded-xl object-cover border border-gray-100 shadow-2xs"
           />
           <div className="text-left">
-            <span className="text-2xl font-black tracking-tight text-white">
-              NV<span className="text-blue-400">i</span>Q
+            <span className="text-2xl font-black tracking-tight text-gray-900">
+              NV<span className="text-blue-600">i</span>Q
             </span>
-            <span className="block text-xs uppercase tracking-widest text-blue-400 font-semibold">
+            <span className="block text-xs uppercase tracking-widest text-blue-600 font-semibold">
               RTO Partner
             </span>
           </div>
         </div>
 
         {/* Title & Description */}
-        <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
           Partner Portal Invitation
         </h1>
-        <p className="text-sm text-gray-400 mb-6 leading-relaxed">
+        <p className="text-sm text-gray-600 mb-6 leading-relaxed">
           {mobile ? (
             <>
               You’ve been invited to join the NViQ RTO Partner network for{" "}
-              <span className="font-semibold text-white">
+              <span className="font-semibold text-gray-900">
                 {mobile.startsWith("+") ? mobile : `+91 ${mobile}`}
               </span>
               .
@@ -97,8 +96,8 @@ export default function InviteContent() {
 
         {/* Auto-redirect Status Badge */}
         {isMobileDevice ? (
-          <div className="w-full bg-blue-500/10 border border-blue-500/20 rounded-xl p-3.5 mb-6 flex items-center justify-center gap-3 text-sm text-blue-300">
-            <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin shrink-0" />
+          <div className="w-full bg-blue-50 border border-blue-200 rounded-xl p-3.5 mb-6 flex items-center justify-center gap-3 text-sm text-blue-700">
+            <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin shrink-0" />
             <span>Opening Google Play Store...</span>
           </div>
         ) : null}
@@ -106,7 +105,7 @@ export default function InviteContent() {
         {/* Primary Action Button: Open Google Play */}
         <a
           href={playStoreUrl}
-          className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-blue-600/30 transition-all duration-200 transform active:scale-[0.98] mb-2"
+          className="w-full flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-6 rounded-xl shadow-sm transition-all duration-200 transform active:scale-[0.98] mb-2"
         >
           {/* Google Play store icon */}
           <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -120,26 +119,26 @@ export default function InviteContent() {
           href={getPlayStoreTestingUrl(appId)}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-blue-400 hover:text-blue-300 underline underline-offset-4 mb-4 transition-colors block"
+          className="text-xs text-blue-600 hover:text-blue-700 underline underline-offset-4 mb-4 transition-colors block"
         >
           Testing internal release? Join testing program
         </a>
 
         {/* Token Info & Copy Option */}
         {token && (
-          <div className="w-full bg-gray-950/60 border border-white/5 rounded-xl p-3 mb-4 flex items-center justify-between text-left">
+          <div className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 mb-4 flex items-center justify-between text-left">
             <div className="truncate mr-2">
               <span className="text-[11px] uppercase tracking-wider text-gray-500 block font-mono">
                 Invitation Code
               </span>
-              <span className="text-xs font-mono text-gray-300 truncate block">
+              <span className="text-xs font-mono text-gray-800 font-semibold truncate block">
                 {token}
               </span>
             </div>
             <button
               type="button"
               onClick={handleCopyCode}
-              className="shrink-0 px-3 py-1.5 bg-white/10 hover:bg-white/15 text-xs font-medium text-white rounded-lg transition-colors"
+              className="shrink-0 px-3 py-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-xs font-medium text-gray-700 rounded-lg transition-colors shadow-2xs"
             >
               {copied ? "Copied!" : "Copy"}
             </button>
@@ -148,19 +147,19 @@ export default function InviteContent() {
 
         {/* Case ID badge if exists */}
         {caseId && (
-          <div className="text-xs text-gray-400 mb-4">
-            Case ID: <span className="font-mono text-gray-200">{caseId}</span>
+          <div className="text-xs text-gray-500 mb-4">
+            Case ID: <span className="font-mono text-gray-900 font-medium">{caseId}</span>
           </div>
         )}
 
         {/* Footer info note */}
-        <p className="text-[12px] text-gray-400 mt-2">
+        <p className="text-[12px] text-gray-500 mt-2">
           After installing the app, your invitation code will be applied automatically.
         </p>
       </div>
 
-      <p className="text-xs text-gray-400 mt-6 text-center">
-        © {new Date().getFullYear()} NViQ Technologies Pvt. Ltd. All rights reserved.
+      <p className="text-xs text-gray-500 mt-6 text-center">
+        © {new Date().getFullYear()} NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED. All rights reserved.
       </p>
     </main>
   );

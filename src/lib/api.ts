@@ -231,3 +231,144 @@ export async function subscribeNewsletter(email: string): Promise<{ success: boo
     };
   }
 }
+
+// ── RTO Partner Leads API ────────────────────────────────────────────────────
+
+export interface RtoPartnerLeadPayload {
+  fullName: string;
+  phone: string;
+  altPhone?: string;
+  email?: string;
+  businessName?: string;
+  businessType?: "individual_agent" | "registered_agency" | "dealership" | "driving_school" | "other";
+  primaryRtoCode: string;
+  primaryRtoName?: string;
+  state?: string;
+  city?: string;
+  monthlyPassingVolume?: "1-10" | "11-30" | "31-75" | "75+";
+  estimatedFleetSize?: number;
+  hasOwnTechnicians?: boolean;
+  currentVltdBrand?: string;
+  preferredContactMode?: "whatsapp" | "phone_call" | "email";
+  message?: string;
+  sourceElement?: string;
+  website?: string; // honeypot
+}
+
+export async function submitRtoPartnerLead(
+  payload: RtoPartnerLeadPayload
+): Promise<{ success: boolean; message: string; leadId?: string; isExisting?: boolean }> {
+  const utmParams = getUtmParams();
+  const sourcePage = typeof window !== "undefined" ? window.location.pathname : "";
+  const referrerUrl = typeof document !== "undefined" ? document.referrer : "";
+
+  const body = {
+    ...payload,
+    sourcePage,
+    referrerUrl,
+    utmParams,
+  };
+
+  try {
+    const response = await fetch(`${BASE_URL}/web/rto-partner-leads`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+    if (response.ok && data.success) {
+      return {
+        success: true,
+        message: data.message || "Application submitted successfully.",
+        leadId: data.leadId,
+        isExisting: data.isExisting,
+      };
+    } else {
+      return {
+        success: false,
+        message: data.message || "Failed to submit partner application. Please try again.",
+      };
+    }
+  } catch (err) {
+    console.error("❌ Error submitting RTO partner lead:", err);
+    return {
+      success: false,
+      message: "Network error. Please try again later or reach out via WhatsApp.",
+    };
+  }
+}
+
+export async function fetchRtoPartnerLeads(
+  queryParams: Record<string, string | number | boolean> = {},
+  token?: string
+): Promise<{ success: boolean; data?: any[]; pagination?: any; message?: string }> {
+  const params = new URLSearchParams();
+  Object.entries(queryParams).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && v !== "") params.append(k, String(v));
+  });
+
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  try {
+    const response = await fetch(`${BASE_URL}/web/rto-partner-leads?${params.toString()}`, {
+      method: "GET",
+      headers,
+    });
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("❌ Error fetching RTO partner leads:", err);
+    return { success: false, message: "Network error fetching leads" };
+  }
+}
+
+export async function updateRtoPartnerLead(
+  id: string,
+  updates: Record<string, any>,
+  token?: string
+): Promise<{ success: boolean; data?: any; message?: string }> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  try {
+    const response = await fetch(`${BASE_URL}/web/rto-partner-leads/${id}`, {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify(updates),
+    });
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("❌ Error updating RTO partner lead:", err);
+    return { success: false, message: "Network error updating lead" };
+  }
+}
+
+export async function deleteRtoPartnerLead(
+  id: string,
+  permanent: boolean = false,
+  token?: string
+): Promise<{ success: boolean; message?: string }> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/web/rto-partner-leads/${id}${permanent ? "?permanent=true" : ""}`,
+      {
+        method: "DELETE",
+        headers,
+      }
+    );
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("❌ Error deleting RTO partner lead:", err);
+    return { success: false, message: "Network error deleting lead" };
+  }
+}
+

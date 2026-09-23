@@ -13,7 +13,7 @@ const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/vltd", label: "Mines & VLTD" },
   // { href: "/#pricing", label: "Pricing" },
-  { href: "/rto-partner/invite", label: "RTO Partner" },
+  { href: "/rto-partner", label: "RTO Partner" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact Us" },
 ];

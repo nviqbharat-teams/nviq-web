@@ -92,7 +92,7 @@ export default async function RtoDetailPage({ params }: Props) {
     },
     {
       q: `How can RTO consultants in ${rto.code} earn wholesale dealer margins?`,
-      a: `RTO agents can register on our RTO Partner portal to access wholesale rates starting at ₹2,699, earn ₹1,500–₹3,000 margin per client, and generate fitment certificates directly 24/7.`,
+      a: `RTO agents can register on our RTO Partner portal to access confidential wholesale dealer pricing, earn strong margins per client, and generate verified fitment certificates via mobile app.`,
     },
   ];
 
@@ -177,7 +177,7 @@ export default async function RtoDetailPage({ params }: Props) {
                 <span>Book 1-Hour Passing Fitment</span>
               </a>
               <Link
-                href="/rto-partner/invite"
+                href="/rto-partner"
                 className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-xs sm:text-sm transition-all"
               >
                 <Building2 className="h-4 w-4 text-amber-700" />

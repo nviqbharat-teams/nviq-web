@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { getAllStates } from "@/data/vltd-locations";
+import { ALL_INDIA_STATES } from "@/data/india-rto-master";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://naviqbharat.com";
@@ -20,7 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.95,
     },
     {
-      url: `${baseUrl}/rto-partner/invite`,
+      url: `${baseUrl}/rto-partner`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.9,
@@ -36,6 +37,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/privacy-policy`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/terms`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
     },
   ];
 
@@ -72,5 +85,35 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
-  return [...staticPages, ...vltdPages];
+  // Pan-India RTO Partner Program pages (States, Cities & RTO Offices)
+  const rtoPartnerPages: MetadataRoute.Sitemap = [];
+
+  for (const st of ALL_INDIA_STATES) {
+    rtoPartnerPages.push({
+      url: `${baseUrl}/rto-partner/${st.slug}`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    });
+
+    for (const ct of st.cities) {
+      rtoPartnerPages.push({
+        url: `${baseUrl}/rto-partner/${st.slug}/${ct.slug}`,
+        lastModified: now,
+        changeFrequency: "weekly",
+        priority: 0.85,
+      });
+
+      for (const rto of ct.rtos) {
+        rtoPartnerPages.push({
+          url: `${baseUrl}/rto-partner/${st.slug}/${ct.slug}/${rto.slug}`,
+          lastModified: now,
+          changeFrequency: "weekly",
+          priority: 0.85,
+        });
+      }
+    }
+  }
+
+  return [...staticPages, ...vltdPages, ...rtoPartnerPages];
 }

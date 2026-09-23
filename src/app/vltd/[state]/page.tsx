@@ -183,7 +183,7 @@ export default async function StateDetailPage({ params }: Props) {
               <span>Get WhatsApp Quote</span>
             </a>
             <Link
-              href="/rto-partner/invite"
+              href="/rto-partner"
               className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-sm transition-all"
             >
               <Building2 className="h-4 w-4 text-amber-700" />

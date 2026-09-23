@@ -45,9 +45,9 @@ export const metadata: Metadata = {
     "Commercial vehicle tracking system",
     "Dumper tipper GPS tracker",
   ],
-  authors: [{ name: "NViQ Technologies Pvt. Ltd." }],
+  authors: [{ name: "NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED" }],
   creator: "NViQ Bharat",
-  publisher: "NViQ Technologies Pvt. Ltd.",
+  publisher: "NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED",
   openGraph: {
     title: "NViQ | AIS 140 VLTD & Mines GPS Tracker Platform India",
     description:

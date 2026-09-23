@@ -27,12 +27,12 @@ export default function RtoConsultantBanner({ locationName, rtoCode }: RtoConsul
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-6 text-xs sm:text-sm text-gray-800 font-medium">
             <div className="flex items-center gap-2.5">
-              <Banknote className="h-4 w-4 text-amber-600 shrink-0" />
-              <span><strong>Earn ₹1,500 – ₹3,000</strong> margin per vehicle</span>
+              <Building2 className="h-4 w-4 text-amber-600 shrink-0" />
+              <span><strong>Priority Agency Support</strong> & fast dispatch</span>
             </div>
             <div className="flex items-center gap-2.5">
               <Clock className="h-4 w-4 text-amber-600 shrink-0" />
-              <span><strong>15-Minute Self-Issue:</strong> Generate certs 24/7</span>
+              <span><strong>Mobile App Issuance:</strong> Upon verified fitment</span>
             </div>
             <div className="flex items-center gap-2.5">
               <ShieldCheck className="h-4 w-4 text-amber-600 shrink-0" />
@@ -47,7 +47,7 @@ export default function RtoConsultantBanner({ locationName, rtoCode }: RtoConsul
 
         <div className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full lg:w-auto shrink-0">
           <Link
-            href="/rto-partner/invite"
+            href="/rto-partner"
             className="inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 shadow-md transition-all text-sm"
           >
             <Building2 className="h-4 w-4" />
