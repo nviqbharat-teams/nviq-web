@@ -74,7 +74,7 @@ ${vehicleNumber ? `Vehicle: ${vehicleNumber}` : ""}`;
       setIsSubmitting(false);
       setSubmitSuccess(true);
       const encodedMsg = encodeURIComponent(messageText);
-      const waUrl = `https://wa.me/919313200700?text=${encodedMsg}`;
+      const waUrl = `https://wa.me/919694551326?text=${encodedMsg}`;
       if (typeof window !== "undefined") {
         window.open(waUrl, "_blank");
       }
@@ -106,11 +106,10 @@ ${vehicleNumber ? `Vehicle: ${vehicleNumber}` : ""}`;
           <button
             type="button"
             onClick={() => setUserRole("truck_owner")}
-            className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs md:text-sm font-medium transition-all ${
-              userRole === "truck_owner"
+            className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs md:text-sm font-medium transition-all ${userRole === "truck_owner"
                 ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
                 : "text-gray-400 hover:text-gray-200"
-            }`}
+              }`}
           >
             <Truck className="h-4 w-4" />
             <span>Truck / Mining Fleet Owner</span>
@@ -118,11 +117,10 @@ ${vehicleNumber ? `Vehicle: ${vehicleNumber}` : ""}`;
           <button
             type="button"
             onClick={() => setUserRole("rto_consultant")}
-            className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs md:text-sm font-medium transition-all ${
-              userRole === "rto_consultant"
+            className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs md:text-sm font-medium transition-all ${userRole === "rto_consultant"
                 ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-orange-500/30"
                 : "text-gray-400 hover:text-gray-200"
-            }`}
+              }`}
           >
             <Building2 className="h-4 w-4" />
             <span>RTO Agent / Consultant</span>
@@ -149,11 +147,10 @@ ${vehicleNumber ? `Vehicle: ${vehicleNumber}` : ""}`;
                 key={slab.count}
                 type="button"
                 onClick={() => setSelectedCount(slab.count)}
-                className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all ${
-                  isSelected
+                className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all ${isSelected
                     ? "border-blue-500 bg-blue-500/15 text-white ring-2 ring-blue-500/50 scale-[1.02]"
                     : "border-gray-800 bg-gray-900/60 text-gray-400 hover:border-gray-700 hover:bg-gray-800/60"
-                }`}
+                  }`}
               >
                 <span className="text-lg md:text-xl font-bold text-white">
                   {slab.count}{slab.count === 10 ? "+" : ""}
@@ -287,7 +284,7 @@ ${vehicleNumber ? `Vehicle: ${vehicleNumber}` : ""}`;
           </button>
 
           <a
-            href="tel:+919313200700"
+            href="tel:+919694551326"
             className="inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl font-medium text-gray-300 bg-gray-800 hover:bg-gray-700 border border-gray-700 transition-all text-sm"
           >
             <PhoneCall className="h-4 w-4 text-blue-400" />

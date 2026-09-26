@@ -67,7 +67,7 @@ export default function JsonLdSchema({
     image: "https://naviqbharat.com/logo.jpeg",
     "@id": url,
     url,
-    telephone: "+919313200700",
+    telephone: "+919694551326",
     priceRange: "₹2,699 - ₹3,799",
     address: {
       "@type": "PostalAddress",

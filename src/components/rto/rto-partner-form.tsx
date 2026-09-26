@@ -95,7 +95,7 @@ export default function RtoPartnerForm({
 
         <div className="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3">
           <a
-            href={`https://wa.me/919313200700?text=${encodeURIComponent(`Hi NViQ Team, I just submitted an RTO Partner application for ${form.name} in RTO zone: ${form.rtoCode}. Please expedite my partner portal access.`)}`}
+            href={`https://wa.me/919694551326?text=${encodeURIComponent(`Hi NViQ Team, I just submitted an RTO Partner application for ${form.name} in RTO zone: ${form.rtoCode}. Please expedite my partner portal access.`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition-colors text-sm cursor-pointer"

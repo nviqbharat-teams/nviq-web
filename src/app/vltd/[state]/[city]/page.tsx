@@ -103,7 +103,7 @@ export default async function CityDetailPage({ params }: Props) {
     { name: city.name, item: `https://naviqbharat.com/vltd/${state.slug}/${city.slug}` },
   ];
 
-  const whatsappUrl = `https://wa.me/919313200700?text=${encodeURIComponent(
+  const whatsappUrl = `https://wa.me/919694551326?text=${encodeURIComponent(
     `Hi NViQ, I need AIS 140 & Mines VLTD fitment quotation for ${city.name} (${rtoCodesStr}). Please send quotation.`
   )}`;
 
@@ -170,7 +170,7 @@ export default async function CityDetailPage({ params }: Props) {
               <span>Get WhatsApp Quote</span>
             </a>
             <a
-              href="tel:+919313200700"
+              href="tel:+919694551326"
               className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 text-sm transition-all"
             >
               <PhoneCall className="h-4 w-4 text-blue-600" />

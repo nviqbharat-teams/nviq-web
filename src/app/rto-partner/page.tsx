@@ -299,7 +299,7 @@ export default function RtoPartnerPage() {
                 </a>
 
                 <a
-                  href="https://wa.me/919313200700?text=Hi%20NViQ%20Team%2C%20I%20am%20an%20RTO%20Consultant%20interested%20in%20partnering%20for%20VLTD%20fitments."
+                  href="https://wa.me/919694551326?text=Hi%20NViQ%20Team%2C%20I%20am%20an%20RTO%20Consultant%20interested%20in%20partnering%20for%20VLTD%20fitments."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl font-medium text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 transition-colors text-sm shadow-xs"

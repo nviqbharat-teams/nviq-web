@@ -76,7 +76,7 @@ export default async function StateDetailPage({ params }: Props) {
     { name: state.name, item: `https://naviqbharat.com/vltd/${state.slug}` },
   ];
 
-  const whatsappUrl = `https://wa.me/919313200700?text=${encodeURIComponent(
+  const whatsappUrl = `https://wa.me/919694551326?text=${encodeURIComponent(
     `Hi NViQ, I need AIS 140 & Mines VLTD fitment in ${state.name} (${state.miningPortal.name}). Please share quotation.`
   )}`;
 
