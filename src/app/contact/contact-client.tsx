@@ -114,10 +114,10 @@ export default function ContactClient() {
                       Mon–Sat, 9 AM–7 PM IST
                     </p>
                     <a
-                      href="tel:+918529245390"
+                      href="tel:+919694551326"
                       className="text-sm font-semibold text-white underline underline-offset-4 hover:text-blue-200 transition-colors"
                     >
-                      +91 85292 45390
+                      +91 9694551326
                     </a>
                   </div>
                 </div>

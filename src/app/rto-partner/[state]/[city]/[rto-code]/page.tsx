@@ -137,7 +137,7 @@ export default async function RtoCodePartnerPage({ params }: Props) {
   const whatsappMessage = encodeURIComponent(
     `Hi NViQ Team, I am an RTO Agent/Consultant at ${rto.name} (${rto.code}), ${city.name}. I want to partner with NViQ for instant Parivahan Sewa VLTD certificates and fitness passing.`
   );
-  const whatsappUrl = `https://wa.me/918529245390?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/919694551326?text=${whatsappMessage}`;
 
   const faqs = [
     {
@@ -207,7 +207,7 @@ export default async function RtoCodePartnerPage({ params }: Props) {
         name: `NViQ RTO Partner Network — ${rto.name} (${rto.code})`,
         description: `Official AIS 140 VLTD fitment and certificate generation hub for ${rto.name} (${rto.code}) in ${city.name}, ${state.name}. Certified Parivahan Sewa and Vahan 4.0 sync.`,
         url: `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}/${rto.slug}`,
-        telephone: "+918529245390",
+        telephone: "+919694551326",
         email: "naviqbharat@gmail.com",
         address: {
           "@type": "PostalAddress",
@@ -294,7 +294,7 @@ export default async function RtoCodePartnerPage({ params }: Props) {
               </h1>
 
               <p className="mt-4 text-base sm:text-lg text-gray-600 leading-relaxed max-w-2xl">
-                Partner with NViQ near <strong className="text-gray-900">{rto.name}</strong> ({city.name}). 
+                Partner with NViQ near <strong className="text-gray-900">{rto.name}</strong> ({city.name}).
                 Instant certified fitment certificates for commercial vehicle fitness passing, All India Tourist Permit (AITP), priority doorstep technician dispatch, and highest broker commissions.
               </p>
 
@@ -772,11 +772,10 @@ export default async function RtoCodePartnerPage({ params }: Props) {
               <Link
                 key={neighbor.slug}
                 href={`/rto-partner/${state.slug}/${city.slug}/${neighbor.slug}`}
-                className={`p-3.5 rounded-xl border text-xs transition-all ${
-                  neighbor.slug === rto.slug
+                className={`p-3.5 rounded-xl border text-xs transition-all ${neighbor.slug === rto.slug
                     ? "bg-blue-50 border-blue-300 text-blue-900 font-bold shadow-xs"
                     : "bg-white border-gray-200 text-gray-700 hover:border-blue-400 hover:shadow-2xs"
-                }`}
+                  }`}
               >
                 <span className="block font-mono text-sm text-blue-600 mb-0.5 font-bold">{neighbor.code}</span>
                 <span className="line-clamp-1">{neighbor.name}</span>

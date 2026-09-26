@@ -354,11 +354,11 @@ export default function Home() {
         "alternateName": "NViQ Bharat",
         "url": "https://naviqbharat.com",
         "logo": "https://naviqbharat.com/logo.jpeg",
-        "telephone": "+918529245390",
+        "telephone": "+919694551326",
         "contactPoint": [
           {
             "@type": "ContactPoint",
-            "telephone": "+918529245390",
+            "telephone": "+919694551326",
             "contactType": "customer service",
             "areaServed": "IN",
             "availableLanguage": ["en", "Hindi"],
@@ -638,7 +638,7 @@ export default function Home() {
                 <p className="faq__support-text">
                   Our fleet specialists are available Monday–Saturday, 9 AM – 7 PM IST.
                 </p>
-                <a href="tel:+918529245390" className="faq__support-cta">
+                <a href="tel:+919694551326" className="faq__support-cta">
                   Speak to a specialist
                   <span aria-hidden="true">→</span>
                 </a>

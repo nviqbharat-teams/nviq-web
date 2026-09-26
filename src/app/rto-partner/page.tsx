@@ -174,11 +174,11 @@ export default function RtoPartnerPage() {
         alternateName: "NViQ Bharat",
         url: "https://naviqbharat.com",
         logo: "https://naviqbharat.com/logo.jpeg",
-        telephone: "+918529245390",
+        telephone: "+919694551326",
         contactPoint: [
           {
             "@type": "ContactPoint",
-            telephone: "+918529245390",
+            telephone: "+919694551326",
             contactType: "customer service",
             areaServed: "IN",
             availableLanguage: ["en", "Hindi"],
@@ -751,11 +751,11 @@ export default function RtoPartnerPage() {
               </a>
 
               <a
-                href="tel:+918529245390"
+                href="tel:+919694551326"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-medium text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 transition-colors text-sm cursor-pointer"
               >
                 <PhoneCall className="h-4 w-4 text-blue-600" />
-                <span>Call Desk: +91 85292 45390</span>
+                <span>Call Desk: +91 9694551326</span>
               </a>
             </div>
           </div>

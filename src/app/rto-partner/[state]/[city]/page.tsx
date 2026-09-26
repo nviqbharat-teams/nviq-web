@@ -141,7 +141,7 @@ export default async function RtoCityPartnerPage({ params }: Props) {
   const whatsappMessage = encodeURIComponent(
     `Hi NViQ Team, I am an RTO Agent/Consultant in ${city.name}, ${state.name}. I want to partner with NViQ for commercial vehicle fitness passing and instant VLTD certificates.`
   );
-  const whatsappUrl = `https://wa.me/918529245390?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/919694551326?text=${whatsappMessage}`;
 
   const cityFaqs = [
     {
@@ -201,7 +201,7 @@ export default async function RtoCityPartnerPage({ params }: Props) {
         name: `NViQ RTO Partner Network — ${city.name}, ${state.name}`,
         description: `Official AIS 140 VLTD fitment and certificate generation network for RTO offices in ${city.name}, ${state.name}.`,
         url: `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}`,
-        telephone: "+918529245390",
+        telephone: "+919694551326",
         email: "naviqbharat@gmail.com",
         address: {
           "@type": "PostalAddress",
@@ -279,7 +279,7 @@ export default async function RtoCityPartnerPage({ params }: Props) {
               </h1>
 
               <p className="mt-4 text-base sm:text-lg text-gray-600 leading-relaxed max-w-2xl">
-                Empowering commercial vehicle fitness agents, brokers, and fleet consultants across {city.name}. 
+                Empowering commercial vehicle fitness agents, brokers, and fleet consultants across {city.name}.
                 Get direct wholesale dealer prices, 15-minute Parivahan certificate generation, and doorstep technician dispatch.
               </p>
 
@@ -781,11 +781,10 @@ export default async function RtoCityPartnerPage({ params }: Props) {
               <Link
                 key={c.slug}
                 href={`/rto-partner/${state.slug}/${c.slug}`}
-                className={`p-3 rounded-xl border text-xs transition-all ${
-                  c.slug === city.slug
-                    ? "bg-blue-50 border-blue-300 text-blue-900 font-bold shadow-xs"
-                    : "bg-white border-gray-200 text-gray-700 hover:border-blue-400 hover:shadow-2xs"
-                }`}
+                className={`p-3 rounded-xl border text-xs transition-all ${c.slug === city.slug
+                  ? "bg-blue-50 border-blue-300 text-blue-900 font-bold shadow-xs"
+                  : "bg-white border-gray-200 text-gray-700 hover:border-blue-400 hover:shadow-2xs"
+                  }`}
               >
                 <span className="block font-semibold text-sm mb-0.5">{c.name}</span>
                 <span className="text-gray-500 text-[11px]">
@@ -818,11 +817,11 @@ export default async function RtoCityPartnerPage({ params }: Props) {
               </a>
 
               <a
-                href="tel:+918529245390"
+                href="tel:+919694551326"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-medium text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 transition-colors text-sm cursor-pointer"
               >
                 <PhoneCall className="h-4 w-4 text-blue-600" />
-                <span>Call Desk: +91 85292 45390</span>
+                <span>Call Desk: +91 9694551326</span>
               </a>
             </div>
           </div>

@@ -104,7 +104,7 @@ export default function RtoPartnerForm({
             <ArrowRight className="h-4 w-4" />
           </a>
           <a
-            href="tel:+918529245390"
+            href="tel:+919694551326"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-medium text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200 transition-colors text-sm"
           >
             <PhoneCall className="h-4 w-4 text-gray-500" />

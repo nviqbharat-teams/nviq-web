@@ -104,7 +104,7 @@ export default function ContactPage() {
         alternateName: "NViQ Bharat",
         url: "https://naviqbharat.com",
         logo: "https://naviqbharat.com/logo.jpeg",
-        telephone: "+918529245390",
+        telephone: "+919694551326",
         email: "naviqbharat@gmail.com",
         address: {
           "@type": "PostalAddress",
@@ -125,7 +125,7 @@ export default function ContactPage() {
         contactPoint: [
           {
             "@type": "ContactPoint",
-            telephone: "+918529245390",
+            telephone: "+919694551326",
             contactType: "customer service",
             areaServed: "IN",
             availableLanguage: ["en", "Hindi"],
