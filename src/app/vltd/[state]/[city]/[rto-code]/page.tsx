@@ -55,13 +55,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      url: `https://naviqbharat.com/vltd/${state.slug}/${city.slug}/${rto.slug}`,
+      url: `https://www.naviqbharat.com/vltd/${state.slug}/${city.slug}/${rto.slug}`,
       siteName: "NViQ",
       locale: "en_IN",
       type: "website",
     },
     alternates: {
-      canonical: `https://naviqbharat.com/vltd/${state.slug}/${city.slug}/${rto.slug}`,
+      canonical: `https://www.naviqbharat.com/vltd/${state.slug}/${city.slug}/${rto.slug}`,
     },
   };
 }
@@ -97,11 +97,11 @@ export default async function RtoDetailPage({ params }: Props) {
   ];
 
   const breadcrumbs = [
-    { name: "Home", item: "https://naviqbharat.com" },
-    { name: "VLTD Hub", item: "https://naviqbharat.com/vltd" },
-    { name: state.name, item: `https://naviqbharat.com/vltd/${state.slug}` },
-    { name: city.name, item: `https://naviqbharat.com/vltd/${state.slug}/${city.slug}` },
-    { name: rto.code, item: `https://naviqbharat.com/vltd/${state.slug}/${city.slug}/${rto.slug}` },
+    { name: "Home", item: "https://www.naviqbharat.com" },
+    { name: "VLTD Hub", item: "https://www.naviqbharat.com/vltd" },
+    { name: state.name, item: `https://www.naviqbharat.com/vltd/${state.slug}` },
+    { name: city.name, item: `https://www.naviqbharat.com/vltd/${state.slug}/${city.slug}` },
+    { name: rto.code, item: `https://www.naviqbharat.com/vltd/${state.slug}/${city.slug}/${rto.slug}` },
   ];
 
   const whatsappUrl = `https://wa.me/919694551326?text=${encodeURIComponent(
@@ -113,7 +113,7 @@ export default async function RtoDetailPage({ params }: Props) {
       <JsonLdSchema
         pageTitle={`AIS 140 & Mines VLTD in ${rto.code} - ${city.name}`}
         description={`Government-approved AIS 140 VLTD fitment near ${rto.name}. Same-day fitment & 1-hour passing certificate.`}
-        url={`https://naviqbharat.com/vltd/${state.slug}/${city.slug}/${rto.slug}`}
+        url={`https://www.naviqbharat.com/vltd/${state.slug}/${city.slug}/${rto.slug}`}
         locationName={`${rto.code}, ${city.name}, ${state.name}`}
         faqs={faqs}
         breadcrumbs={breadcrumbs}

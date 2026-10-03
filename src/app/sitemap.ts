@@ -3,7 +3,7 @@ import { getAllStates } from "@/data/vltd-locations";
 import { ALL_INDIA_STATES } from "@/data/india-rto-master";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://naviqbharat.com";
+  const baseUrl = "https://www.naviqbharat.com";
   const now = new Date();
 
   // Core static pages

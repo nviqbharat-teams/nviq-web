@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ...state.cities.slice(0, 8).map((c) => `rto agent in ${c.name.toLowerCase()}`),
   ];
 
-  const canonicalUrl = `https://naviqbharat.com/rto-partner/${state.slug}`;
+  const canonicalUrl = `https://www.naviqbharat.com/rto-partner/${state.slug}`;
 
   return {
     title,
@@ -152,34 +152,34 @@ export default async function RtoStatePartnerPage({ params }: Props) {
     "@graph": [
       {
         "@type": "BreadcrumbList",
-        "@id": `https://naviqbharat.com/rto-partner/${state.slug}#breadcrumb`,
+        "@id": `https://www.naviqbharat.com/rto-partner/${state.slug}#breadcrumb`,
         itemListElement: [
           {
             "@type": "ListItem",
             position: 1,
             name: "Home",
-            item: "https://naviqbharat.com",
+            item: "https://www.naviqbharat.com",
           },
           {
             "@type": "ListItem",
             position: 2,
             name: "RTO Partner Network",
-            item: "https://naviqbharat.com/rto-partner",
+            item: "https://www.naviqbharat.com/rto-partner",
           },
           {
             "@type": "ListItem",
             position: 3,
             name: state.name,
-            item: `https://naviqbharat.com/rto-partner/${state.slug}`,
+            item: `https://www.naviqbharat.com/rto-partner/${state.slug}`,
           },
         ],
       },
       {
         "@type": ["LocalBusiness", "ProfessionalService"],
-        "@id": `https://naviqbharat.com/rto-partner/${state.slug}#service`,
+        "@id": `https://www.naviqbharat.com/rto-partner/${state.slug}#service`,
         name: `NViQ RTO Partner Network — ${state.name}`,
         description: `Official AIS 140 VLTD fitment and certificate generation network across ${state.name}, covering ${state.cities.length} cities and ${totalRtos} RTO offices.`,
-        url: `https://naviqbharat.com/rto-partner/${state.slug}`,
+        url: `https://www.naviqbharat.com/rto-partner/${state.slug}`,
         telephone: "+919694551326",
         email: "naviqbharat@gmail.com",
         address: {
@@ -190,12 +190,12 @@ export default async function RtoStatePartnerPage({ params }: Props) {
         provider: {
           "@type": "Organization",
           name: "NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED",
-          url: "https://naviqbharat.com",
+          url: "https://www.naviqbharat.com",
         },
       },
       {
         "@type": "FAQPage",
-        "@id": `https://naviqbharat.com/rto-partner/${state.slug}#faq`,
+        "@id": `https://www.naviqbharat.com/rto-partner/${state.slug}#faq`,
         mainEntity: stateFaqs.map((faq) => ({
           "@type": "Question",
           name: faq.q,

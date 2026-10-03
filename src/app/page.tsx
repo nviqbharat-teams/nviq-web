@@ -337,23 +337,23 @@ export default function Home() {
     "@graph": [
       {
         "@type": "WebSite",
-        "@id": "https://naviqbharat.com/#website",
-        "url": "https://naviqbharat.com",
+        "@id": "https://www.naviqbharat.com/#website",
+        "url": "https://www.naviqbharat.com",
         "name": "NViQ Bharat",
         "description": "AIS 140 VLTD & Mines GPS Tracker Platform India",
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://naviqbharat.com/vltd?q={search_term_string}",
+          "target": "https://www.naviqbharat.com/vltd?q={search_term_string}",
           "query-input": "required name=search_term_string",
         },
       },
       {
         "@type": "Organization",
-        "@id": "https://naviqbharat.com/#organization",
+        "@id": "https://www.naviqbharat.com/#organization",
         "name": "NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED",
         "alternateName": "NViQ Bharat",
-        "url": "https://naviqbharat.com",
-        "logo": "https://naviqbharat.com/logo.jpeg",
+        "url": "https://www.naviqbharat.com",
+        "logo": "https://www.naviqbharat.com/logo.jpeg",
         "telephone": "+919694551326",
         "contactPoint": [
           {
@@ -367,9 +367,9 @@ export default function Home() {
       },
       {
         "@type": "Product",
-        "@id": "https://naviqbharat.com/#vltd-product",
+        "@id": "https://www.naviqbharat.com/#vltd-product",
         "name": "NViQ AIS 140 VLTD & Mines GPS Tracker",
-        "image": "https://naviqbharat.com/logo.jpeg",
+        "image": "https://www.naviqbharat.com/logo.jpeg",
         "description": "Government-approved AIS 140 GPS tracker for commercial vehicles, mining tippers, and dumpers with emergency panic buttons and Vahan 4.0 sync.",
         "brand": {
           "@type": "Brand",
@@ -386,11 +386,11 @@ export default function Home() {
       },
       {
         "@type": "Service",
-        "@id": "https://naviqbharat.com/#vltd-service",
+        "@id": "https://www.naviqbharat.com/#vltd-service",
         "name": "AIS 140 VLTD Fitment & Mining Portal Whitelist Certification",
         "serviceType": "Automotive GPS Tracking & Compliance Certification",
         "provider": {
-          "@id": "https://naviqbharat.com/#organization",
+          "@id": "https://www.naviqbharat.com/#organization",
         },
         "areaServed": {
           "@type": "Country",
@@ -400,7 +400,7 @@ export default function Home() {
       },
       {
         "@type": "FAQPage",
-        "@id": "https://naviqbharat.com/#faq",
+        "@id": "https://www.naviqbharat.com/#faq",
         "mainEntity": [
           {
             "@type": "Question",

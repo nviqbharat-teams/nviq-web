@@ -25,7 +25,7 @@ import { LeadModalProvider } from "@/context/lead-modal-context";
 import { IsAppProvider } from "@/context/is-app-context";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://naviqbharat.com"),
+  metadataBase: new URL("https://www.naviqbharat.com"),
   title: {
     default: "NViQ | AIS 140 VLTD & Mines GPS Tracker Platform India",
     template: "%s | NViQ",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: "NViQ | AIS 140 VLTD & Mines GPS Tracker Platform India",
     description:
       "Govt-approved AIS 140 VLTD GPS trackers with panic buttons. Instant 1-hour Vahan 4.0 & State Mining Portal certificate upload. Doorstep fitment across Rajasthan, MP, Gujarat, Haryana & Pan-India.",
-    url: "https://naviqbharat.com",
+    url: "https://www.naviqbharat.com",
     siteName: "NViQ Bharat",
     images: [
       {
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     images: ["/logo.jpeg"],
   },
   alternates: {
-    canonical: "https://naviqbharat.com",
+    canonical: "https://www.naviqbharat.com",
   },
   icons: {
     icon: "/logo.jpeg",

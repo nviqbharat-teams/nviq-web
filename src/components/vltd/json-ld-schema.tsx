@@ -34,7 +34,7 @@ export default function JsonLdSchema({
     "@context": "https://schema.org",
     "@type": "Product",
     name: `NViQ AIS 140 VLTD GPS Tracker - ${locationName}`,
-    image: "https://naviqbharat.com/logo.jpeg",
+    image: "https://www.naviqbharat.com/logo.jpeg",
     description,
     brand: {
       "@type": "Brand",
@@ -64,7 +64,7 @@ export default function JsonLdSchema({
     "@context": "https://schema.org",
     "@type": "AutoRepair",
     name: `NViQ AIS 140 VLTD & Mines Fitment Center - ${locationName}`,
-    image: "https://naviqbharat.com/logo.jpeg",
+    image: "https://www.naviqbharat.com/logo.jpeg",
     "@id": url,
     url,
     telephone: "+919694551326",

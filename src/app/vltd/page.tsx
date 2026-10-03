@@ -24,13 +24,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: "AIS 140 & Mines VLTD GPS Tracker India | NViQ",
     description: "Govt-certified AIS 140 GPS with 1-hour certificate issuance and doorstep fitment.",
-    url: "https://naviqbharat.com/vltd",
+    url: "https://www.naviqbharat.com/vltd",
     siteName: "NViQ",
     locale: "en_IN",
     type: "website",
   },
   alternates: {
-    canonical: "https://naviqbharat.com/vltd",
+    canonical: "https://www.naviqbharat.com/vltd",
   },
 };
 
@@ -57,8 +57,8 @@ export default function VltdIndexPage() {
   ];
 
   const breadcrumbs = [
-    { name: "Home", item: "https://naviqbharat.com" },
-    { name: "VLTD & Mining Hub", item: "https://naviqbharat.com/vltd" },
+    { name: "Home", item: "https://www.naviqbharat.com" },
+    { name: "VLTD & Mining Hub", item: "https://www.naviqbharat.com/vltd" },
   ];
 
   const whatsappUrl = `https://wa.me/919694551326?text=${encodeURIComponent(
@@ -70,7 +70,7 @@ export default function VltdIndexPage() {
       <JsonLdSchema
         pageTitle="AIS 140 & Mines VLTD GPS Tracker India"
         description="Government-certified AIS 140 VLTD devices with 1-hour certificate & doorstep fitment."
-        url="https://naviqbharat.com/vltd"
+        url="https://www.naviqbharat.com/vltd"
         locationName="India"
         faqs={generalFaqs}
         breadcrumbs={breadcrumbs}

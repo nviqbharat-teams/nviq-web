@@ -54,13 +54,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      url: `https://naviqbharat.com/vltd/${state.slug}/${city.slug}`,
+      url: `https://www.naviqbharat.com/vltd/${state.slug}/${city.slug}`,
       siteName: "NViQ",
       locale: "en_IN",
       type: "website",
     },
     alternates: {
-      canonical: `https://naviqbharat.com/vltd/${state.slug}/${city.slug}`,
+      canonical: `https://www.naviqbharat.com/vltd/${state.slug}/${city.slug}`,
     },
   };
 }
@@ -97,10 +97,10 @@ export default async function CityDetailPage({ params }: Props) {
   ];
 
   const breadcrumbs = [
-    { name: "Home", item: "https://naviqbharat.com" },
-    { name: "VLTD Hub", item: "https://naviqbharat.com/vltd" },
-    { name: state.name, item: `https://naviqbharat.com/vltd/${state.slug}` },
-    { name: city.name, item: `https://naviqbharat.com/vltd/${state.slug}/${city.slug}` },
+    { name: "Home", item: "https://www.naviqbharat.com" },
+    { name: "VLTD Hub", item: "https://www.naviqbharat.com/vltd" },
+    { name: state.name, item: `https://www.naviqbharat.com/vltd/${state.slug}` },
+    { name: city.name, item: `https://www.naviqbharat.com/vltd/${state.slug}/${city.slug}` },
   ];
 
   const whatsappUrl = `https://wa.me/919694551326?text=${encodeURIComponent(
@@ -112,7 +112,7 @@ export default async function CityDetailPage({ params }: Props) {
       <JsonLdSchema
         pageTitle={`AIS 140 & Mines VLTD Fitment in ${city.name} (${rtoCodesStr})`}
         description={`Government-approved AIS 140 GPS fitment in ${city.name}. 1-hour passing certificate & doorstep fitment.`}
-        url={`https://naviqbharat.com/vltd/${state.slug}/${city.slug}`}
+        url={`https://www.naviqbharat.com/vltd/${state.slug}/${city.slug}`}
         locationName={locationLabel}
         faqs={faqs}
         breadcrumbs={breadcrumbs}

@@ -76,7 +76,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `commercial vehicle fitness passing ${city.name.toLowerCase()}`,
   ];
 
-  const canonicalUrl = `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}/${rto.slug}`;
+  const canonicalUrl = `https://www.naviqbharat.com/rto-partner/${state.slug}/${city.slug}/${rto.slug}`;
 
   return {
     title,
@@ -167,46 +167,46 @@ export default async function RtoCodePartnerPage({ params }: Props) {
     "@graph": [
       {
         "@type": "BreadcrumbList",
-        "@id": `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}/${rto.slug}#breadcrumb`,
+        "@id": `https://www.naviqbharat.com/rto-partner/${state.slug}/${city.slug}/${rto.slug}#breadcrumb`,
         itemListElement: [
           {
             "@type": "ListItem",
             position: 1,
             name: "Home",
-            item: "https://naviqbharat.com",
+            item: "https://www.naviqbharat.com",
           },
           {
             "@type": "ListItem",
             position: 2,
             name: "RTO Partner Network",
-            item: "https://naviqbharat.com/rto-partner",
+            item: "https://www.naviqbharat.com/rto-partner",
           },
           {
             "@type": "ListItem",
             position: 3,
             name: state.name,
-            item: `https://naviqbharat.com/rto-partner/${state.slug}`,
+            item: `https://www.naviqbharat.com/rto-partner/${state.slug}`,
           },
           {
             "@type": "ListItem",
             position: 4,
             name: city.name,
-            item: `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}`,
+            item: `https://www.naviqbharat.com/rto-partner/${state.slug}/${city.slug}`,
           },
           {
             "@type": "ListItem",
             position: 5,
             name: `${rto.code} - ${rto.name}`,
-            item: `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}/${rto.slug}`,
+            item: `https://www.naviqbharat.com/rto-partner/${state.slug}/${city.slug}/${rto.slug}`,
           },
         ],
       },
       {
         "@type": ["LocalBusiness", "ProfessionalService"],
-        "@id": `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}/${rto.slug}#service`,
+        "@id": `https://www.naviqbharat.com/rto-partner/${state.slug}/${city.slug}/${rto.slug}#service`,
         name: `NViQ RTO Partner Network — ${rto.name} (${rto.code})`,
         description: `Official AIS 140 VLTD fitment and certificate generation hub for ${rto.name} (${rto.code}) in ${city.name}, ${state.name}. Certified Parivahan Sewa and Vahan 4.0 sync.`,
-        url: `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}/${rto.slug}`,
+        url: `https://www.naviqbharat.com/rto-partner/${state.slug}/${city.slug}/${rto.slug}`,
         telephone: "+919694551326",
         email: "naviqbharat@gmail.com",
         address: {
@@ -222,12 +222,12 @@ export default async function RtoCodePartnerPage({ params }: Props) {
         provider: {
           "@type": "Organization",
           name: "NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED",
-          url: "https://naviqbharat.com",
+          url: "https://www.naviqbharat.com",
         },
       },
       {
         "@type": "FAQPage",
-        "@id": `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}/${rto.slug}#faq`,
+        "@id": `https://www.naviqbharat.com/rto-partner/${state.slug}/${city.slug}/${rto.slug}#faq`,
         mainEntity: faqs.map((faq) => ({
           "@type": "Question",
           name: faq.q,

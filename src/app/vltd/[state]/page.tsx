@@ -51,13 +51,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      url: `https://naviqbharat.com/vltd/${state.slug}`,
+      url: `https://www.naviqbharat.com/vltd/${state.slug}`,
       siteName: "NViQ",
       locale: "en_IN",
       type: "website",
     },
     alternates: {
-      canonical: `https://naviqbharat.com/vltd/${state.slug}`,
+      canonical: `https://www.naviqbharat.com/vltd/${state.slug}`,
     },
   };
 }
@@ -71,9 +71,9 @@ export default async function StateDetailPage({ params }: Props) {
   }
 
   const breadcrumbs = [
-    { name: "Home", item: "https://naviqbharat.com" },
-    { name: "VLTD Hub", item: "https://naviqbharat.com/vltd" },
-    { name: state.name, item: `https://naviqbharat.com/vltd/${state.slug}` },
+    { name: "Home", item: "https://www.naviqbharat.com" },
+    { name: "VLTD Hub", item: "https://www.naviqbharat.com/vltd" },
+    { name: state.name, item: `https://www.naviqbharat.com/vltd/${state.slug}` },
   ];
 
   const whatsappUrl = `https://wa.me/919694551326?text=${encodeURIComponent(
@@ -85,7 +85,7 @@ export default async function StateDetailPage({ params }: Props) {
       <JsonLdSchema
         pageTitle={`${state.name} AIS 140 & Mines VLTD GPS`}
         description={`Government-approved AIS 140 GPS fitment across ${state.name}. Whitelisted for ${state.miningPortal.name}.`}
-        url={`https://naviqbharat.com/vltd/${state.slug}`}
+        url={`https://www.naviqbharat.com/vltd/${state.slug}`}
         locationName={state.name}
         faqs={state.stateFaqs}
         breadcrumbs={breadcrumbs}

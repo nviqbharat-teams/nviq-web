@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     title: "RTO Partner Program | AIS 140 VLTD for RTO Consultants & Agents",
     description:
       "Empowering RTO agents and consultants near every RTO office with verified AIS 140 devices, instant Parivahan Sewa & Vahan 4.0 certificates, and doorstep fitment.",
-    url: "https://naviqbharat.com/rto-partner",
+    url: "https://www.naviqbharat.com/rto-partner",
     siteName: "NViQ Bharat",
     locale: "en_IN",
     type: "website",
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     images: ["/logo.jpeg"],
   },
   alternates: {
-    canonical: "https://naviqbharat.com/rto-partner",
+    canonical: "https://www.naviqbharat.com/rto-partner",
   },
   robots: {
     index: true,
@@ -131,49 +131,49 @@ export default function RtoPartnerPage() {
     "@graph": [
       {
         "@type": "BreadcrumbList",
-        "@id": "https://naviqbharat.com/rto-partner#breadcrumb",
+        "@id": "https://www.naviqbharat.com/rto-partner#breadcrumb",
         itemListElement: [
           {
             "@type": "ListItem",
             position: 1,
             name: "Home",
-            item: "https://naviqbharat.com",
+            item: "https://www.naviqbharat.com",
           },
           {
             "@type": "ListItem",
             position: 2,
             name: "RTO Consultant Partnership",
-            item: "https://naviqbharat.com/rto-partner",
+            item: "https://www.naviqbharat.com/rto-partner",
           },
         ],
       },
       {
         "@type": "WebPage",
-        "@id": "https://naviqbharat.com/rto-partner#webpage",
-        url: "https://naviqbharat.com/rto-partner",
+        "@id": "https://www.naviqbharat.com/rto-partner#webpage",
+        url: "https://www.naviqbharat.com/rto-partner",
         name: "RTO Partner Program | AIS 140 VLTD for RTO Consultants & Agents",
         description:
           "Join the NViQ RTO Partner Program for RTO consultants, agents, and RTO services near every RTO office in India. Instant Parivahan Sewa & Vahan 4.0 fitness passing certificate generation via mobile app, zero rejections, and doorstep fitment support.",
         breadcrumb: {
-          "@id": "https://naviqbharat.com/rto-partner#breadcrumb",
+          "@id": "https://www.naviqbharat.com/rto-partner#breadcrumb",
         },
         isPartOf: {
           "@type": "WebSite",
-          "@id": "https://naviqbharat.com/#website",
+          "@id": "https://www.naviqbharat.com/#website",
           name: "NViQ Bharat",
-          url: "https://naviqbharat.com",
+          url: "https://www.naviqbharat.com",
         },
         about: {
-          "@id": "https://naviqbharat.com/rto-partner#service",
+          "@id": "https://www.naviqbharat.com/rto-partner#service",
         },
       },
       {
         "@type": "Organization",
-        "@id": "https://naviqbharat.com/#organization",
+        "@id": "https://www.naviqbharat.com/#organization",
         name: "NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED",
         alternateName: "NViQ Bharat",
-        url: "https://naviqbharat.com",
-        logo: "https://naviqbharat.com/logo.jpeg",
+        url: "https://www.naviqbharat.com",
+        logo: "https://www.naviqbharat.com/logo.jpeg",
         telephone: "+919694551326",
         contactPoint: [
           {
@@ -187,11 +187,11 @@ export default function RtoPartnerPage() {
       },
       {
         "@type": "Service",
-        "@id": "https://naviqbharat.com/rto-partner#service",
+        "@id": "https://www.naviqbharat.com/rto-partner#service",
         name: "NViQ RTO Partner Certificate & Compliance Network",
         serviceType: "Automotive Telematics Dealership & Vahan Compliance Certification",
         provider: {
-          "@id": "https://naviqbharat.com/#organization",
+          "@id": "https://www.naviqbharat.com/#organization",
         },
         areaServed: {
           "@type": "Country",
@@ -208,7 +208,7 @@ export default function RtoPartnerPage() {
       },
       {
         "@type": "FAQPage",
-        "@id": "https://naviqbharat.com/rto-partner#faq",
+        "@id": "https://www.naviqbharat.com/rto-partner#faq",
         mainEntity: RTO_FAQS.map((faq) => ({
           "@type": "Question",
           name: faq.q,

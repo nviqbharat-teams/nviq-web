@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `aitp permit gps ${city.name.toLowerCase()}`,
   ];
 
-  const canonicalUrl = `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}`;
+  const canonicalUrl = `https://www.naviqbharat.com/rto-partner/${state.slug}/${city.slug}`;
 
   return {
     title,
@@ -167,40 +167,40 @@ export default async function RtoCityPartnerPage({ params }: Props) {
     "@graph": [
       {
         "@type": "BreadcrumbList",
-        "@id": `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}#breadcrumb`,
+        "@id": `https://www.naviqbharat.com/rto-partner/${state.slug}/${city.slug}#breadcrumb`,
         itemListElement: [
           {
             "@type": "ListItem",
             position: 1,
             name: "Home",
-            item: "https://naviqbharat.com",
+            item: "https://www.naviqbharat.com",
           },
           {
             "@type": "ListItem",
             position: 2,
             name: "RTO Partner Network",
-            item: "https://naviqbharat.com/rto-partner",
+            item: "https://www.naviqbharat.com/rto-partner",
           },
           {
             "@type": "ListItem",
             position: 3,
             name: state.name,
-            item: `https://naviqbharat.com/rto-partner/${state.slug}`,
+            item: `https://www.naviqbharat.com/rto-partner/${state.slug}`,
           },
           {
             "@type": "ListItem",
             position: 4,
             name: city.name,
-            item: `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}`,
+            item: `https://www.naviqbharat.com/rto-partner/${state.slug}/${city.slug}`,
           },
         ],
       },
       {
         "@type": ["LocalBusiness", "ProfessionalService"],
-        "@id": `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}#service`,
+        "@id": `https://www.naviqbharat.com/rto-partner/${state.slug}/${city.slug}#service`,
         name: `NViQ RTO Partner Network — ${city.name}, ${state.name}`,
         description: `Official AIS 140 VLTD fitment and certificate generation network for RTO offices in ${city.name}, ${state.name}.`,
-        url: `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}`,
+        url: `https://www.naviqbharat.com/rto-partner/${state.slug}/${city.slug}`,
         telephone: "+919694551326",
         email: "naviqbharat@gmail.com",
         address: {
@@ -212,12 +212,12 @@ export default async function RtoCityPartnerPage({ params }: Props) {
         provider: {
           "@type": "Organization",
           name: "NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED",
-          url: "https://naviqbharat.com",
+          url: "https://www.naviqbharat.com",
         },
       },
       {
         "@type": "FAQPage",
-        "@id": `https://naviqbharat.com/rto-partner/${state.slug}/${city.slug}#faq`,
+        "@id": `https://www.naviqbharat.com/rto-partner/${state.slug}/${city.slug}#faq`,
         mainEntity: cityFaqs.map((faq) => ({
           "@type": "Question",
           name: faq.q,

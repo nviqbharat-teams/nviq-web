@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     title: "Contact Us | NViQ AIS 140 VLTD & Mines GPS Support India",
     description:
       "Get in touch with NViQ Technologies for AIS 140 VLTD GPS fitment, Mines portal whitelisting, or dealer inquiries.",
-    url: "https://naviqbharat.com/contact",
+    url: "https://www.naviqbharat.com/contact",
     siteName: "NViQ Bharat",
     locale: "en_IN",
     type: "website",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     images: ["/logo.jpeg"],
   },
   alternates: {
-    canonical: "https://naviqbharat.com/contact",
+    canonical: "https://www.naviqbharat.com/contact",
   },
   robots: {
     index: true,
@@ -61,49 +61,49 @@ export default function ContactPage() {
     "@graph": [
       {
         "@type": "BreadcrumbList",
-        "@id": "https://naviqbharat.com/contact#breadcrumb",
+        "@id": "https://www.naviqbharat.com/contact#breadcrumb",
         itemListElement: [
           {
             "@type": "ListItem",
             position: 1,
             name: "Home",
-            item: "https://naviqbharat.com",
+            item: "https://www.naviqbharat.com",
           },
           {
             "@type": "ListItem",
             position: 2,
             name: "Contact Us",
-            item: "https://naviqbharat.com/contact",
+            item: "https://www.naviqbharat.com/contact",
           },
         ],
       },
       {
         "@type": "ContactPage",
-        "@id": "https://naviqbharat.com/contact#webpage",
-        url: "https://naviqbharat.com/contact",
+        "@id": "https://www.naviqbharat.com/contact#webpage",
+        url: "https://www.naviqbharat.com/contact",
         name: "Contact Us | NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED",
         description:
           "Official contact page for NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED AIS 140 VLTD GPS & Mines tracking systems.",
         breadcrumb: {
-          "@id": "https://naviqbharat.com/contact#breadcrumb",
+          "@id": "https://www.naviqbharat.com/contact#breadcrumb",
         },
         isPartOf: {
           "@type": "WebSite",
-          "@id": "https://naviqbharat.com/#website",
+          "@id": "https://www.naviqbharat.com/#website",
           name: "NViQ Bharat",
-          url: "https://naviqbharat.com",
+          url: "https://www.naviqbharat.com",
         },
         mainEntity: {
-          "@id": "https://naviqbharat.com/#organization",
+          "@id": "https://www.naviqbharat.com/#organization",
         },
       },
       {
         "@type": ["Organization", "LocalBusiness"],
-        "@id": "https://naviqbharat.com/#organization",
+        "@id": "https://www.naviqbharat.com/#organization",
         name: "NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED",
         alternateName: "NViQ Bharat",
-        url: "https://naviqbharat.com",
-        logo: "https://naviqbharat.com/logo.jpeg",
+        url: "https://www.naviqbharat.com",
+        logo: "https://www.naviqbharat.com/logo.jpeg",
         telephone: "+919694551326",
         email: "naviqbharat@gmail.com",
         address: {
