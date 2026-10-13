@@ -11,6 +11,8 @@ import { useIsApp } from "@/context/is-app-context";
 const FOOTER_NAV = [
   { href: "/", label: "Home" },
   { href: "/vltd", label: "Mines & VLTD Hub" },
+  { href: "/truck-passing/rajasthan", label: "Rajasthan Truck Passing" },
+  { href: "/trucks", label: "Truck Fleet GPS" },
   { href: "/#pricing", label: "Pricing" },
   { href: "/rto-partner", label: "RTO Partner Portal" },
   { href: "/about", label: "About" },
@@ -58,7 +60,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <Link href="/" className="inline-flex items-center gap-2.5 mb-4">
-              <Image src={logoImg} alt="NViQ Logo" width={30} height={30} className="object-cover rounded-sm" />
+              <Image src={logoImg} alt="NViQ Logo" width={30} height={30} className="object-cover rounded-sm" suppressHydrationWarning />
               <span className="text-[17px] font-black tracking-tight">
                 NV<span className="text-blue-400">i</span>Q
               </span>

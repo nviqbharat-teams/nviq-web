@@ -7,6 +7,7 @@ import VltdComplianceTable from "@/components/vltd/vltd-compliance-table";
 import VltdFaqAccordion from "@/components/vltd/vltd-faq-accordion";
 import JsonLdSchema from "@/components/vltd/json-ld-schema";
 import { StateGrid } from "@/components/vltd/vltd-nav-grids";
+import { TruckCategoryGrid, RajasthanTruckCitiesGrid } from "@/components/trucks/truck-nav-grids";
 import { ShieldCheck, MapPin, Building2, CheckCircle2, ArrowRight, Zap, PhoneCall } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -88,6 +89,12 @@ export default function VltdIndexPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         {/* State Grid Navigation */}
         <StateGrid />
+
+        {/* Commercial Trucks & Rajasthan Passing Corridors */}
+        <div className="my-14 pt-10 border-t border-gray-100">
+          <TruckCategoryGrid />
+          <RajasthanTruckCitiesGrid />
+        </div>
 
         {/* Action Callout */}
         <div className="my-10 p-8 rounded-3xl border border-blue-100 bg-gradient-to-r from-blue-50/70 via-indigo-50/30 to-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">

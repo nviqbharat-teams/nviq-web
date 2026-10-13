@@ -122,14 +122,16 @@ export default function RootLayout({
                     document.documentElement.classList.remove('is-app');
                   } else if (sessionStorage.getItem('isApp') === 'true') {
                     document.documentElement.classList.add('is-app');
-                  }
                 } catch(e) {}
               })();
             `,
           }}
         />
+
+        {/* DarkReader extension hydration lock */}
+        <meta name="darkreader-lock" />
       </head>
-      <body className="min-h-full flex flex-col bg-white">
+      <body className="min-h-full flex flex-col bg-white" suppressHydrationWarning>
         <IsAppProvider>
           <LeadModalProvider>
             <Navbar />

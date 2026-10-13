@@ -193,6 +193,102 @@ export const VLTD_LOCATIONS: StateData[] = [
         ],
       },
       {
+        name: "Kishangarh",
+        slug: "kishangarh",
+        majorIndustries: ["Asia Largest Marble Mandi", "Granite Processing", "Heavy Stone Logistics"],
+        installationTurnaround: "Within 1 to 2 Hours",
+        rtos: [
+          {
+            code: "RJ-42",
+            slug: "rj-42",
+            name: "Kishangarh DTO Office",
+            officeAddress: "RIICO Industrial Area, Ajmer Road, Kishangarh, Rajasthan 305801",
+            majorHubs: ["Marble Mandi Yard", "Harmara Bypass", "Madanganj Industrial Belt"],
+            fitnessPassingFocus: "14-to-22 wheeler marble trollas, flatbed trailers, and stone block carriers",
+          },
+        ],
+      },
+      {
+        name: "Chittorgarh",
+        slug: "chittorgarh",
+        majorIndustries: ["Mega Cement Plants", "Limestone Mining", "Fly-Ash Transport"],
+        installationTurnaround: "Within 2 Hours",
+        rtos: [
+          {
+            code: "RJ-09",
+            slug: "rj-09",
+            name: "Chittorgarh DTO Office",
+            officeAddress: "Near Collectorate, Chittorgarh, Rajasthan 312001",
+            majorHubs: ["Nimbahera Cement Zone", "Chanderiya Smelter Belt", "Bohera Mining Road"],
+            fitnessPassingFocus: "Heavy cement bulkers, fly-ash tankers, and limestone mining dumpers",
+          },
+        ],
+      },
+      {
+        name: "Rajsamand",
+        slug: "rajsamand",
+        majorIndustries: ["White Marble Quarries", "Granite Gangsaw Units", "Zinc Slurry Haulage"],
+        installationTurnaround: "Same-Day Doorstep Fitment",
+        rtos: [
+          {
+            code: "RJ-30",
+            slug: "rj-30",
+            name: "Rajsamand DTO Office",
+            officeAddress: "Near District Courts, Kankroli, Rajsamand, Rajasthan 313324",
+            majorHubs: ["Kelwa Marble Zone", "Kankroli Industrial Belt", "Dariba Mining Corridor"],
+            fitnessPassingFocus: "Heavy dimensional marble block tippers and zinc ore transport trucks",
+          },
+        ],
+      },
+      {
+        name: "Nagaur",
+        slug: "nagaur",
+        majorIndustries: ["Makrana White Marble", "Didwana Salt Production", "Gypsum Mining"],
+        installationTurnaround: "Within 2 to 3 Hours",
+        rtos: [
+          {
+            code: "RJ-21",
+            slug: "rj-21",
+            name: "Nagaur DTO Office",
+            officeAddress: "Opp. Krishi Mandi, Nagaur, Rajasthan 341001",
+            majorHubs: ["Makrana Marble Bypass", "Didwana Salt Belt", "Merta Road Transit Yard"],
+            fitnessPassingFocus: "Makrana marble block trollas, salt bulkers, and gypsum tippers",
+          },
+        ],
+      },
+      {
+        name: "Bikaner",
+        slug: "bikaner",
+        majorIndustries: ["Plaster of Paris (POP) Bulkers", "Ceramic Clay Transport", "Desert Wool Logistics"],
+        installationTurnaround: "Same-Day Fitment",
+        rtos: [
+          {
+            code: "RJ-07",
+            slug: "rj-07",
+            name: "Bikaner RTO Office",
+            officeAddress: "Sagar Road, Bikaner, Rajasthan 334001",
+            majorHubs: ["Karni Industrial Area", "Bichhwal Goods Booking Hub", "Napasar Wool Belt"],
+            fitnessPassingFocus: "POP powder bulkers, clay dumpers, and inter-state logistics fleets",
+          },
+        ],
+      },
+      {
+        name: "Barmer",
+        slug: "barmer",
+        majorIndustries: ["Crude Oil Fields", "HPCL Pachpadra Refinery", "Bentonite Mining"],
+        installationTurnaround: "Same-Day Doorstep Fitment",
+        rtos: [
+          {
+            code: "RJ-04",
+            slug: "rj-04",
+            name: "Barmer DTO Office",
+            officeAddress: "Uttarlai Road, Barmer, Rajasthan 344001",
+            majorHubs: ["Pachpadra Refinery Belt", "Balotra Industrial Area", "Cairn Oilfield Road"],
+            fitnessPassingFocus: "Petroleum & crude oil tankers, Hazchem chemical carriers, and bentonite tippers",
+          },
+        ],
+      },
+      {
         name: "Kota",
         slug: "kota",
         majorIndustries: ["Kota Stone Mining", "Fertilizer & Chemical Fleet", "Student Transit Fleet"],

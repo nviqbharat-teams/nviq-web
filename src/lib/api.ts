@@ -1,12 +1,13 @@
 "use client";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.naviqbharat.com/api";
+// const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
 
 export interface ContactPayload {
   name: string;
-  email: string;
+  email?: string;
   phone: string;
-  message: string;
+  message?: string;
   source?: string;
   fleetSize?: number;
   businessName?: string;
@@ -241,7 +242,7 @@ export interface RtoPartnerLeadPayload {
   email?: string;
   businessName?: string;
   businessType?: "individual_agent" | "registered_agency" | "dealership" | "driving_school" | "other";
-  primaryRtoCode: string;
+  primaryRtoCode?: string;
   primaryRtoName?: string;
   state?: string;
   city?: string;

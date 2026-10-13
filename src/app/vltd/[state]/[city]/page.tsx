@@ -20,6 +20,9 @@ type Props = {
   }>;
 };
 
+export const dynamicParams = true;
+export const revalidate = 604800;
+
 export async function generateStaticParams() {
   return getAllCityParams();
 }
@@ -40,6 +43,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = `AIS 140 & Mines VLTD Fitment Center in ${city.name} (${rtoCodesStr}) | NViQ`;
   const description = `Govt-approved AIS 140 GPS installation in ${city.name}. Same-day fitment across ${city.majorIndustries.join(", ")}, 1-hour Vahan & ${state.miningPortal.name} certificate. RTO Consultant wholesale rates.`;
 
+  const isSingleRto = city.rtos.length === 1;
+  const canonicalUrl = isSingleRto
+    ? `https://www.naviqbharat.com/vltd/${state.slug}/${city.slug}/${city.rtos[0].slug}`
+    : `https://www.naviqbharat.com/vltd/${state.slug}/${city.slug}`;
+
   return {
     title,
     description,
@@ -54,13 +62,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      url: `https://www.naviqbharat.com/vltd/${state.slug}/${city.slug}`,
+      url: canonicalUrl,
       siteName: "NViQ",
       locale: "en_IN",
       type: "website",
     },
     alternates: {
-      canonical: `https://www.naviqbharat.com/vltd/${state.slug}/${city.slug}`,
+      canonical: canonicalUrl,
     },
   };
 }

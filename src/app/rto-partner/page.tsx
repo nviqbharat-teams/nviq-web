@@ -17,7 +17,9 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import RtoPartnerForm from "@/components/rto/rto-partner-form";
+import RtoPartnerPrivileges from "@/components/rto/rto-partner-privileges";
 import RtoSearchSelector from "@/components/rto/rto-search-selector";
+import { TruckCategoryGrid, RajasthanTruckCitiesGrid } from "@/components/trucks/truck-nav-grids";
 
 export const metadata: Metadata = {
   title: "RTO Partner Program | AIS 140 VLTD for RTO Consultants & Agents | Parivahan Vahan 4.0",
@@ -93,11 +95,11 @@ const RTO_FAQS = [
   },
   {
     q: "Are NViQ certificates instantly approved on the Parivahan Sewa (parivahan.gov.in) and Vahan portal?",
-    a: "Yes. All NViQ AIS 140 VLTD devices are ARAI and ICAT certified and pre-whitelisted on the central Ministry of Road Transport and Highways (MoRTH) Parivahan portal (parivahan.gov.in / Vahan 4.0). Fitment certificates sync in under 15 minutes, guaranteeing zero rejection on RTO fitness passing inspection lanes.",
+    a: "Yes. All NViQ AIS 140 VLTD devices are ARAI and ICAT certified and pre-whitelisted on the central Ministry of Road Transport and Highways (MoRTH) Parivahan portal (parivahan.gov.in / Vahan 4.0). Fitment certificates sync within 1 hour, guaranteeing 100% approval on RTO fitness passing inspection lanes.",
   },
   {
     q: "Can I generate fitment certificates from my mobile phone, and what are the conditions?",
-    a: "Yes, authorized NViQ RTO partners can generate and download certified fitment certificates directly through their mobile phone or laptop. To ensure 100% compliance with MoRTH and Vahan 4.0 regulations, generation is completed once specific verification conditions are met: (1) physical device fitment with emergency panic buttons is completed, and (2) live GPS and SOS telemetry are successfully validated on the central server. Once verified, the certificate is generated and synced to the Vahan portal in 15 minutes.",
+    a: "Yes, authorized NViQ RTO partners can generate and download certified fitment certificates directly through their mobile phone or laptop. To ensure 100% compliance with MoRTH and Vahan 4.0 regulations, generation is completed once specific verification conditions are met: (1) physical device fitment with emergency panic buttons is completed, and (2) live GPS and SOS telemetry are successfully validated on the central server. Once verified, the certificate is generated and synced to the Vahan portal within 1 hour.",
   },
   {
     q: "Can local RTO service providers and driving school consultants near me join the program?",
@@ -251,39 +253,39 @@ export default function RtoPartnerPage() {
 
             {/* Left Column: Value Prop */}
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100 mb-5">
-                <Award className="h-3.5 w-3.5 text-blue-600" />
-                <span>Parivahan Sewa & Vahan 4.0 Whitelisted • Nearest RTO Office Fitment Network</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 mb-5">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                <span>Govt Approved AIS 140 VLTD • Parivahan Sewa Ready</span>
               </div>
 
               <h1 className="text-3xl sm:text-5xl font-black text-gray-900 tracking-tight leading-[1.08]">
-                AIS 140 VLTD Network for{" "}
+                Authorized AIS 140 GPS Partner for{" "}
                 <span className="text-blue-600">
-                  RTO Consultants & Agents
+                  RTO Agents &amp; Consultants
                 </span>
               </h1>
 
               <p className="mt-4 text-base sm:text-lg text-gray-600 leading-relaxed max-w-2xl">
-                Supporting RTO consultants, agents, and RTO services near every RTO office across India. Generate verified Parivahan Sewa & Vahan 4.0 passing certificates directly from your mobile app, backed by our 100% zero-rejection guarantee and priority doorstep technician fitment.
+                Get instant commercial vehicle passing certificates, direct wholesale dealer rates, and fast doorstep technician fitting across India.
               </p>
 
-              {/* Minimal Operational Badges */}
+              {/* 4 Simple, Clear Benefits */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-7">
                 <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-3 text-center">
-                  <span className="block text-base font-bold text-gray-900">ARAI & ICAT</span>
-                  <span className="text-[11px] text-gray-500 font-medium">Govt Certified</span>
+                  <span className="block text-sm sm:text-base font-bold text-gray-900">15-Min Sync</span>
+                  <span className="text-[11px] text-gray-500 font-medium">Fast Parivahan Certificate</span>
                 </div>
                 <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-3 text-center">
-                  <span className="block text-base font-bold text-gray-900">15 Mins</span>
-                  <span className="text-[11px] text-gray-500 font-medium">Vahan 4.0 Sync</span>
+                  <span className="block text-sm sm:text-base font-bold text-gray-900">Wholesale Rates</span>
+                  <span className="text-[11px] text-gray-500 font-medium">Best Agent Margins</span>
                 </div>
                 <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-3 text-center">
-                  <span className="block text-base font-bold text-gray-900">0 Rejection</span>
-                  <span className="text-[11px] text-gray-500 font-medium">Passing Guarantee</span>
+                  <span className="block text-sm sm:text-base font-bold text-gray-900">Doorstep Fitment</span>
+                  <span className="text-[11px] text-gray-500 font-medium">Fitting at Client Yards</span>
                 </div>
                 <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-3 text-center">
-                  <span className="block text-base font-bold text-gray-900">Mobile App</span>
-                  <span className="text-[11px] text-gray-500 font-medium">Digital Issuance</span>
+                  <span className="block text-sm sm:text-base font-bold text-gray-900">Zero Rejections</span>
+                  <span className="text-[11px] text-gray-500 font-medium">100% Passing Guarantee</span>
                 </div>
               </div>
 
@@ -319,146 +321,8 @@ export default function RtoPartnerPage() {
         </div>
       </section>
 
-      {/* ── PARTNER TIERS & BENEFITS ─────────────────────────── */}
-      <section className="py-16 bg-gray-50/60 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left max-w-2xl mb-12">
-            <span className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-              Agency Tiers
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mt-1">
-              Partner Privileges & Growth Tiers
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Structured operational benefits designed to support your agency whether you pass 5 vehicles or manage large transport fleets.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Tier 1 */}
-            <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-xs flex flex-col justify-between">
-              <div>
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Tier 1</span>
-                <h3 className="text-lg font-bold text-gray-900 mt-1">Starter Consultant</h3>
-                <p className="text-xs text-gray-500 mt-1">Ideal for individual agents handling routine vehicle passing.</p>
-
-                <div className="my-5 space-y-2.5 pt-4 border-t border-gray-100 text-xs sm:text-sm text-gray-700">
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Mobile App Certificate Generation</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>15-Minute Instant Vahan 4.0 Sync</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Zero Minimum Order Quantity (0 MOQ)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Priority Dispatch & Hub Stock Access</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Standard Doorstep Technician Fitment</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-gray-100">
-                <span className="text-xs font-medium text-gray-500">Volume:</span>
-                <div className="text-sm font-bold text-gray-900 mt-0.5">1 – 10 Vehicles / month</div>
-              </div>
-            </div>
-
-            {/* Tier 2 - Highlighted */}
-            <div className="rounded-2xl bg-white border-2 border-blue-600 p-6 shadow-sm relative flex flex-col justify-between">
-              <div className="absolute -top-3 left-6 bg-blue-600 text-white text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full">
-                Most Popular
-              </div>
-              <div>
-                <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">Tier 2</span>
-                <h3 className="text-lg font-bold text-gray-900 mt-1">Preferred Agency</h3>
-                <p className="text-xs text-gray-500 mt-1">Established consultancies managing commercial trucks and buses.</p>
-
-                <div className="my-5 space-y-2.5 pt-4 border-t border-gray-100 text-xs sm:text-sm text-gray-700">
-                  <div className="flex items-center gap-2 font-medium text-gray-900">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Everything in Tier 1 Included</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Dedicated Fast-Track Hardware Allocation</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Dedicated Regional Key Account Manager</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Co-branded Fitment Certificates</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Automated Client Fleet Renewal Management</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Priority Technician Scheduling</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-gray-100">
-                <span className="text-xs font-medium text-gray-500">Volume:</span>
-                <div className="text-sm font-bold text-blue-600 mt-0.5">11 – 30 Vehicles / month</div>
-              </div>
-            </div>
-
-            {/* Tier 3 */}
-            <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-xs flex flex-col justify-between">
-              <div>
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Tier 3</span>
-                <h3 className="text-lg font-bold text-gray-900 mt-1">Super Distributor</h3>
-                <p className="text-xs text-gray-500 mt-1">High-volume contractors, mining consultants, and fleet hubs.</p>
-
-                <div className="my-5 space-y-2.5 pt-4 border-t border-gray-100 text-xs sm:text-sm text-gray-700">
-                  <div className="flex items-center gap-2 font-medium text-gray-900">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Everything in Tier 2 Included</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Direct Factory Supply Priority</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Regional Territory Referral Priority</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Dedicated Camps for Fleet Yards</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Bulk CSV & API Vehicle Uploads</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Dedicated VIP Support Line</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-gray-100">
-                <span className="text-xs font-medium text-gray-500">Volume:</span>
-                <div className="text-sm font-bold text-gray-900 mt-0.5">30+ Vehicles / month</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ── 1-HOUR CERTIFICATES & DUAL MOBILE APPS ECOSYSTEM ───── */}
+      <RtoPartnerPrivileges />
 
       {/* ── THE 6 ADVANTAGES ──────────────────────────────────── */}
       <section className="py-16 bg-white border-b border-gray-100">
@@ -696,6 +560,24 @@ export default function RtoPartnerPage() {
           </div>
 
           <RtoSearchSelector />
+
+          {/* ── COMMERCIAL FLEET & TRUCK PASSING INTERNAL LINKING ── */}
+          <div className="mt-20 pt-16 border-t border-gray-200">
+            <div className="text-center max-w-3xl mx-auto mb-10">
+              <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600 mb-2 block">
+                Commercial Vehicles • Mining &amp; Freight Corridors
+              </span>
+              <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+                Commercial Truck Passing &amp; Fleet Compliance Directory
+              </h2>
+              <p className="mt-2 text-sm text-gray-600">
+                Explore government-approved AIS 140 VLTD fitment specifications by vehicle category and major Rajasthan transport nagars.
+              </p>
+            </div>
+
+            <TruckCategoryGrid />
+            <RajasthanTruckCitiesGrid />
+          </div>
         </div>
       </section>
 

@@ -21,6 +21,9 @@ type Props = {
   }>;
 };
 
+export const dynamicParams = true;
+export const revalidate = 604800;
+
 export async function generateStaticParams() {
   return getAllRtoParams();
 }

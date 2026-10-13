@@ -4,9 +4,13 @@ import Link from "next/link";
 import {
   getStateBySlug,
   getAllStateParams,
+  getRtoFullSlug,
+  getRtoRegionName,
   ALL_INDIA_STATES,
 } from "@/data/india-rto-master";
 import RtoPartnerForm from "@/components/rto/rto-partner-form";
+import RtoPartnerPrivileges from "@/components/rto/rto-partner-privileges";
+import { TruckCategoryGrid, RajasthanTruckCitiesGrid } from "@/components/trucks/truck-nav-grids";
 import {
   ShieldCheck,
   PhoneCall,
@@ -26,6 +30,7 @@ import {
 } from "lucide-react";
 
 export const dynamicParams = true;
+export const revalidate = 604800;
 
 type Props = {
   params: Promise<{
@@ -49,7 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const totalRtos = state.cities.reduce((acc, c) => acc + c.rtos.length, 0);
-  const title = `RTO Agent & AIS 140 VLTD Partner Network in ${state.name} (${totalRtos} RTO Hubs) | NViQ`;
+  const title = `RTO Agent & AIS 140 VLTD Partner Network in ${state.name} (${totalRtos} RTO Hubs) | Parivahan Sewa Certified`;
   const description = `Join NViQ authorized RTO consultant and dealer network across ${state.name}. Covering ${state.cities.length} cities and ${totalRtos} RTO offices. Instant 15-minute Parivahan Sewa / Vahan 4.0 certificates, doorstep fitment, and wholesale agent margins.`;
 
   const keywords = [
@@ -144,6 +149,22 @@ export default async function RtoStatePartnerPage({ params }: Props) {
     {
       q: `Does NViQ provide doorstep technician support across ${state.name}'s transport hubs?`,
       a: `Yes. NViQ operates mobile technician support covering major transport nagars, industrial areas, and depot yards in ${state.cities.slice(0, 5).map((c) => c.name).join(", ")}, and surrounding districts.`,
+    },
+    {
+      q: `What is the wholesale dealer pricing and margin for RTO agents across ${state.name}?`,
+      a: `Registered RTO agents receive exclusive bulk dealer pricing starting at ₹2,699–₹3,299 per unit (depending on monthly volume), zero upfront inventory lock-in, and recurring annual renewal commissions.`,
+    },
+    {
+      q: `Are NViQ devices approved for state mining portals and e-transit passes in ${state.name}?`,
+      a: `Yes. In addition to Parivahan Sewa and Vahan 4.0, NViQ devices integrate with state mineral transport portals (such as e-Ravanna, Khanij Online, i-Khanij) for automated transit pass generation and mining clearance.`,
+    },
+    {
+      q: `How do commercial fleet operators in ${state.name} complete annual fitness renewals?`,
+      a: `Renewal takes under 5 minutes on the mobile partner app. Agents re-validate live telemetry, recharge cellular data, and generate an updated certified passing certificate on the spot.`,
+    },
+    {
+      q: `Does NViQ provide emergency panic button wiring and calibration assistance in ${state.name}?`,
+      a: `Yes. Every device kit includes ARAI-certified SOS buttons. Our certified technicians handle concealed wiring, ignition cut-off, and tamper-proof calibration required by ${state.name} fitness test lanes.`,
     },
   ];
 
@@ -240,40 +261,39 @@ export default async function RtoStatePartnerPage({ params }: Props) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100 mb-5">
-                <ShieldCheck className="h-3.5 w-3.5 text-blue-600" />
-                <span>{totalRtos} RTO Offices in {state.name} • Parivahan Sewa Whitelisted</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 mb-5">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                <span>Govt Approved AIS 140 VLTD • Parivahan Sewa Ready</span>
               </div>
 
               <h1 className="text-3xl sm:text-5xl font-black text-gray-900 tracking-tight leading-[1.08]">
-                RTO Consultant &amp; AIS 140 VLTD Partner Network in{" "}
+                Authorized AIS 140 GPS Partner in{" "}
                 <span className="text-blue-600">
                   {state.name}
                 </span>
               </h1>
 
               <p className="mt-4 text-base sm:text-lg text-gray-600 leading-relaxed max-w-2xl">
-                Join India&apos;s leading AIS 140 VLTD partner network across {state.name}.
-                Equipping RTO agents and commercial vehicle consultants in {state.cities.length} cities with instant Parivahan Sewa certificate generation, doorstep yard fitment, and wholesale profit margins.
+                Get instant commercial vehicle passing certificates, direct wholesale dealer rates, and fast doorstep technician fitting across all {state.cities.length} cities in {state.name}.
               </p>
 
-              {/* Minimal Operational Badges */}
+              {/* 4 Simple, Clear Benefits */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-7">
                 <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-3 text-center">
-                  <span className="block text-base font-bold text-gray-900">ARAI &amp; ICAT</span>
-                  <span className="text-[11px] text-gray-500 font-medium">Govt Certified</span>
+                  <span className="block text-sm sm:text-base font-bold text-gray-900">15-Min Sync</span>
+                  <span className="text-[11px] text-gray-500 font-medium">Fast Parivahan Certificate</span>
                 </div>
                 <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-3 text-center">
-                  <span className="block text-base font-bold text-gray-900">&lt; 15 Mins</span>
-                  <span className="text-[11px] text-gray-500 font-medium">Vahan 4.0 Sync</span>
+                  <span className="block text-sm sm:text-base font-bold text-gray-900">Wholesale Rates</span>
+                  <span className="text-[11px] text-gray-500 font-medium">Best Agent Margins</span>
                 </div>
                 <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-3 text-center">
-                  <span className="block text-base font-bold text-gray-900">0 Rejection</span>
-                  <span className="text-[11px] text-gray-500 font-medium">Passing Guarantee</span>
+                  <span className="block text-sm sm:text-base font-bold text-gray-900">Doorstep Fitment</span>
+                  <span className="text-[11px] text-gray-500 font-medium">Fitting at Your Yard</span>
                 </div>
                 <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-3 text-center">
-                  <span className="block text-base font-bold text-gray-900">{state.capital}</span>
-                  <span className="text-[11px] text-gray-500 font-medium">HQ &amp; Regional Desks</span>
+                  <span className="block text-sm sm:text-base font-bold text-gray-900">Zero Rejections</span>
+                  <span className="text-[11px] text-gray-500 font-medium">100% Passing Guarantee</span>
                 </div>
               </div>
 
@@ -301,166 +321,14 @@ export default async function RtoStatePartnerPage({ params }: Props) {
             </div>
 
             <div id="apply" className="lg:col-span-5 scroll-mt-24">
-              <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-xs">
-                <div className="mb-6">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-blue-600 mb-1 block">
-                    Fast Onboarding
-                  </span>
-                  <h3 className="text-xl font-bold text-gray-900">
-                    Apply for {state.name} Dealership
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Receive your broker portal credentials within 30 minutes.
-                  </p>
-                </div>
-
-                <RtoPartnerForm defaultLocationName={state.name} />
-              </div>
+              <RtoPartnerForm defaultLocationName={state.name} />
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── PARTNER TIERS & BENEFITS ─────────────────────────── */}
-      <section className="py-16 bg-gray-50/60 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left max-w-2xl mb-12">
-            <span className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-              Agency Tiers in {state.name}
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mt-1">
-              Partner Privileges &amp; Growth Tiers
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Structured operational benefits designed to support your agency whether you pass 5 vehicles or manage large transport fleets across {state.name}.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Tier 1 */}
-            <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-xs flex flex-col justify-between">
-              <div>
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Tier 1</span>
-                <h3 className="text-lg font-bold text-gray-900 mt-1">Starter Consultant</h3>
-                <p className="text-xs text-gray-500 mt-1">Ideal for individual agents handling routine vehicle passing in {state.name}.</p>
-
-                <div className="my-5 space-y-2.5 pt-4 border-t border-gray-100 text-xs sm:text-sm text-gray-700">
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Mobile App Certificate Generation</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>15-Minute Instant Vahan 4.0 Sync</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Zero Minimum Order Quantity (0 MOQ)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Priority Dispatch &amp; Hub Stock Access</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Doorstep Technician Fitment in {state.capital}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-gray-100">
-                <span className="text-xs font-medium text-gray-500">Volume:</span>
-                <div className="text-sm font-bold text-gray-900 mt-0.5">1 – 10 Vehicles / month</div>
-              </div>
-            </div>
-
-            {/* Tier 2 - Highlighted */}
-            <div className="rounded-2xl bg-white border-2 border-blue-600 p-6 shadow-sm relative flex flex-col justify-between">
-              <div className="absolute -top-3 left-6 bg-blue-600 text-white text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full">
-                Most Popular
-              </div>
-              <div>
-                <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">Tier 2</span>
-                <h3 className="text-lg font-bold text-gray-900 mt-1">Preferred Agency</h3>
-                <p className="text-xs text-gray-500 mt-1">Established consultancies managing commercial trucks &amp; buses across {state.name}.</p>
-
-                <div className="my-5 space-y-2.5 pt-4 border-t border-gray-100 text-xs sm:text-sm text-gray-700">
-                  <div className="flex items-center gap-2 font-medium text-gray-900">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Everything in Tier 1 Included</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Dedicated Fast-Track Hardware Allocation</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Dedicated Regional Account Manager for {state.name}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Co-branded Fitment Certificates</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Automated Client Fleet Renewal Management</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Priority Doorstep Technician Scheduling</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-gray-100">
-                <span className="text-xs font-medium text-gray-500">Volume:</span>
-                <div className="text-sm font-bold text-blue-600 mt-0.5">11 – 30 Vehicles / month</div>
-              </div>
-            </div>
-
-            {/* Tier 3 */}
-            <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-xs flex flex-col justify-between">
-              <div>
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Tier 3</span>
-                <h3 className="text-lg font-bold text-gray-900 mt-1">Super Distributor</h3>
-                <p className="text-xs text-gray-500 mt-1">High-volume contractors, mining consultants, and transport fleet hubs.</p>
-
-                <div className="my-5 space-y-2.5 pt-4 border-t border-gray-100 text-xs sm:text-sm text-gray-700">
-                  <div className="flex items-center gap-2 font-medium text-gray-900">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Everything in Tier 2 Included</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Direct Factory Supply Priority</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>{state.name} Regional Territory Referral Priority</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Dedicated Camps for Fleet Yards</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Bulk CSV &amp; API Vehicle Uploads</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                    <span>Dedicated VIP Support Line</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-gray-100">
-                <span className="text-xs font-medium text-gray-500">Volume:</span>
-                <div className="text-sm font-bold text-gray-900 mt-0.5">30+ Vehicles / month</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ── 1-HOUR CERTIFICATES & DUAL MOBILE APPS ECOSYSTEM ───── */}
+      <RtoPartnerPrivileges locationName={state.name} />
 
       {/* ── THE 6 ADVANTAGES ──────────────────────────────────── */}
       <section className="py-16 bg-white border-b border-gray-100">
@@ -691,48 +559,78 @@ export default async function RtoStatePartnerPage({ params }: Props) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {state.cities.map((city) => (
-              <div
-                key={city.slug}
-                className="bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-xs transition-all flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <Link
-                      href={`/rto-partner/${state.slug}/${city.slug}`}
-                      className="font-bold text-base text-gray-900 hover:text-blue-600 transition-colors"
-                    >
-                      {city.name}
-                    </Link>
-                    <span className="text-[11px] font-semibold text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
-                      {city.rtos.length} {city.rtos.length > 1 ? "RTOs" : "RTO"}
-                    </span>
-                  </div>
+            {state.cities.map((city) => {
+              const cityHref =
+                city.rtos.length === 1
+                  ? `/rto-partner/${state.slug}/${city.slug}/${city.rtos[0].slug}`
+                  : `/rto-partner/${state.slug}/${city.slug}`;
 
-                  <div className="flex flex-wrap gap-1.5 mt-3">
-                    {city.rtos.map((rto) => (
+              return (
+                <div
+                  key={city.slug}
+                  className="bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-xs transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-2">
                       <Link
-                        key={rto.slug}
-                        href={`/rto-partner/${state.slug}/${city.slug}/${rto.slug}`}
-                        className="px-2.5 py-1 rounded-lg bg-gray-50 hover:bg-blue-600 text-xs font-mono text-gray-700 hover:text-white transition-colors border border-gray-200 hover:border-blue-600"
+                        href={cityHref}
+                        className="font-bold text-base text-gray-900 hover:text-blue-600 transition-colors"
                       >
-                        {rto.code}
+                        {city.name}
                       </Link>
-                    ))}
+                      <span className="text-[11px] font-semibold text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
+                        {city.rtos.length} {city.rtos.length > 1 ? "RTOs" : "RTO"}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1.5 mt-3">
+                      {city.rtos.map((rto) => {
+                        const regionName = getRtoRegionName(rto.name, city.name);
+                        const fullSlug = getRtoFullSlug(rto, city.name);
+                        return (
+                          <Link
+                            key={rto.slug}
+                            href={`/rto-partner/${state.slug}/${city.slug}/${fullSlug}`}
+                            className="px-2 py-1 rounded-lg bg-gray-50 hover:bg-blue-600 text-xs text-gray-700 hover:text-white transition-colors border border-gray-200 hover:border-blue-600 flex items-center gap-1"
+                          >
+                            <span className="font-medium text-[11px]">{regionName}</span>
+                            <span className="font-mono font-bold text-[11px] opacity-80">({rto.code})</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+                    <Link
+                      href={cityHref}
+                      className="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1"
+                    >
+                      <span>Explore {city.name}</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
                   </div>
                 </div>
+              );
+            })}
+          </div>
 
-                <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
-                  <Link
-                    href={`/rto-partner/${state.slug}/${city.slug}`}
-                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1"
-                  >
-                    <span>Explore {city.name}</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </div>
-              </div>
-            ))}
+          {/* ── COMMERCIAL FLEET & TRUCK PASSING INTERNAL LINKING ── */}
+          <div className="mt-16 pt-12 border-t border-gray-200">
+            <div className="text-center max-w-3xl mx-auto mb-8">
+              <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600 mb-2 block">
+                {state.name} Commercial Fleet Compliance
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+                Commercial Truck Passing &amp; Mining Fleet Directory
+              </h2>
+              <p className="mt-2 text-sm text-gray-600">
+                Explore government-approved AIS 140 VLTD fitment specifications for heavy commercial vehicles and mining tippers.
+              </p>
+            </div>
+
+            <TruckCategoryGrid />
+            {state.slug === "rajasthan" && <RajasthanTruckCitiesGrid />}
           </div>
         </div>
       </section>

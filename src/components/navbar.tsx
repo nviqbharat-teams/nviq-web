@@ -12,7 +12,6 @@ import { useIsApp } from "@/context/is-app-context";
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/vltd", label: "Mines & VLTD" },
-  // { href: "/#pricing", label: "Pricing" },
   { href: "/rto-partner", label: "RTO Partner" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact Us" },
@@ -100,7 +99,7 @@ export default function Navbar({ fixed = true }: NavbarProps) {
 
               {/* Logo */}
               <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
-                <Image src={logoImg} alt="NViQ Logo" width={32} height={32} className="object-cover rounded-sm" priority />
+                <Image src={logoImg} alt="NViQ Logo" width={32} height={32} className="object-cover rounded-sm" priority suppressHydrationWarning />
                 <span className="text-[17px] font-black tracking-tight text-gray-900">
                   NV<span className="text-blue-600">i</span>Q
                 </span>

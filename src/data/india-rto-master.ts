@@ -24521,6 +24521,45 @@ export function searchAllIndiaRtos(query: string, limit = 20): FlattenedRto[] {
 }
 
 /**
+ * Extract clean region or office name from full RTO name
+ * e.g. "Kotputli RTO" -> "Kotputli", "Alwar DTO" -> "Alwar", "Bhiwadi Industrial Hub DTO" -> "Bhiwadi Industrial Hub"
+ */
+export function getRtoRegionName(rtoName: string, cityName?: string): string {
+  const cleaned = rtoName
+    .replace(/\b(RTO|DTO|ARTO|Sub-DTO|Regional Transport Office|District Transport Office)\b/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return cleaned || cityName || rtoName;
+}
+
+/**
+ * Generate full SEO slug placing city/region before the code
+ * e.g. "kotputli-rj-32", "alwar-rj-02", "bhiwadi-industrial-hub-rj-40"
+ */
+export function getRtoFullSlug(
+  rto: MasterRtoOffice | { code: string; name: string; slug?: string },
+  cityName?: string
+): string {
+  const region = getRtoRegionName(rto.name, cityName);
+  const regionSlug = region
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  const codeSlug = rto.code.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+  if (!regionSlug || regionSlug === codeSlug) {
+    return codeSlug;
+  }
+
+  if (regionSlug.endsWith(`-${codeSlug}`)) {
+    return regionSlug;
+  }
+
+  return `${regionSlug}-${codeSlug}`;
+}
+
+/**
  * Find complete RTO detail with state, city and flattened data
  */
 export function getRtoDetail(stateSlug: string, citySlug: string, rtoSlug: string): {
@@ -24528,17 +24567,35 @@ export function getRtoDetail(stateSlug: string, citySlug: string, rtoSlug: strin
   city: MasterCity;
   rto: MasterRtoOffice;
   flat: FlattenedRto;
+  canonicalSlug: string;
+  regionName: string;
 } | undefined {
   const cityMatch = getCityBySlug(stateSlug, citySlug);
   if (!cityMatch) return undefined;
   const cleanRto = rtoSlug.toLowerCase().trim();
-  const rto = cityMatch.city.rtos.find(
-    (r) => r.slug === cleanRto || r.code.toLowerCase() === cleanRto
-  );
+
+  // Matches either full SEO slug ("kotputli-rj-32"), code slug ("rj-32"), or any suffix ending with code
+  const rto = cityMatch.city.rtos.find((r) => {
+    const fullSlug = getRtoFullSlug(r, cityMatch.city.name);
+    const codeSlug = r.code.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const rawSlug = r.slug.toLowerCase().trim();
+    return (
+      fullSlug === cleanRto ||
+      rawSlug === cleanRto ||
+      codeSlug === cleanRto ||
+      cleanRto.endsWith(`-${codeSlug}`) ||
+      cleanRto.endsWith(`-${rawSlug}`) ||
+      cleanRto.includes(codeSlug)
+    );
+  });
   if (!rto) return undefined;
+
+  const canonicalSlug = getRtoFullSlug(rto, cityMatch.city.name);
+  const regionName = getRtoRegionName(rto.name, cityMatch.city.name);
+
   const flat = getRtoByCode(rto.code) || {
     code: rto.code,
-    slug: rto.slug,
+    slug: canonicalSlug,
     rtoName: rto.name,
     cityName: cityMatch.city.name,
     citySlug: cityMatch.city.slug,
@@ -24552,6 +24609,8 @@ export function getRtoDetail(stateSlug: string, citySlug: string, rtoSlug: strin
     city: cityMatch.city,
     rto,
     flat,
+    canonicalSlug,
+    regionName,
   };
 }
 
@@ -24578,7 +24637,7 @@ export function getPriorityRtoParams(limit = 100): { state: string; city: string
           params.push({
             state: s.slug,
             city: c.slug,
-            "rto-code": r.slug,
+            "rto-code": getRtoFullSlug(r, c.name),
           });
           if (params.length >= limit) return params;
         }

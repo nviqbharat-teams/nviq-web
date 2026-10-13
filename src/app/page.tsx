@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import logoImg from "./logo.jpeg";
 import { type LeadPlan } from "@/components/lead-modal";
 import { useLeadModal } from "@/context/lead-modal-context";
@@ -695,10 +696,118 @@ export default function Home() {
         </div>
       </section> */}
 
+      {/* DIRECTORY SECTION FOR CRAWLERS & USERS */}
+      <section className="py-14 bg-slate-900 text-white border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+            <div>
+              <span className="text-xs font-bold tracking-widest uppercase text-blue-400 block mb-1">
+                Regional Hubs &amp; RTO Desks
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Pan-India AIS 140 VLTD &amp; Fitness Passing Network
+              </h2>
+            </div>
+            <Link
+              href="/rto-partner"
+              className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-1.5"
+            >
+              <span>Explore All 36 States &amp; UTs</span>
+              <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-xs">
+            {/* Priority Commercial States */}
+            <div>
+              <h3 className="font-bold text-slate-300 uppercase tracking-wider text-[11px] mb-3">
+                Top Commercial Transport States
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { name: "Rajasthan RTO", href: "/rto-partner/rajasthan" },
+                  { name: "Gujarat VLTD", href: "/vltd/gujarat" },
+                  { name: "Maharashtra RTO", href: "/rto-partner/maharashtra" },
+                  { name: "Delhi NCR Hubs", href: "/rto-partner/delhi" },
+                  { name: "Haryana e-Ravanna", href: "/vltd/haryana" },
+                  { name: "MP Khanij Portals", href: "/vltd/madhya-pradesh" },
+                  { name: "Uttar Pradesh", href: "/rto-partner/uttar-pradesh" },
+                  { name: "Punjab Passing", href: "/rto-partner/punjab" },
+                  { name: "Karnataka RTO", href: "/rto-partner/karnataka" },
+                  { name: "Tamil Nadu", href: "/rto-partner/tamil-nadu" },
+                ].map((s) => (
+                  <Link
+                    key={s.name}
+                    href={s.href}
+                    className="px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-blue-600 text-slate-200 hover:text-white transition-colors border border-slate-700/60"
+                  >
+                    {s.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Mining & Passing Hubs */}
+            <div>
+              <h3 className="font-bold text-slate-300 uppercase tracking-wider text-[11px] mb-3">
+                Key Industrial &amp; Mining Desks
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { name: "Jaipur (RJ-14 / RJ-45)", href: "/truck-passing/rajasthan/jaipur" },
+                  { name: "Kishangarh Marble (RJ-42)", href: "/truck-passing/rajasthan/kishangarh" },
+                  { name: "Chittorgarh Cement (RJ-09)", href: "/truck-passing/rajasthan/chittorgarh" },
+                  { name: "Bhilwara Mining (RJ-06)", href: "/truck-passing/rajasthan/bhilwara" },
+                  { name: "Jodhpur Stone (RJ-19)", href: "/truck-passing/rajasthan/jodhpur" },
+                  { name: "Kota Freight (RJ-20)", href: "/truck-passing/rajasthan/kota" },
+                  { name: "Alwar Transport (RJ-02)", href: "/truck-passing/rajasthan/alwar" },
+                  { name: "Ahmedabad Hub (GJ-01)", href: "/vltd/gujarat/ahmedabad" },
+                  { name: "Morbi Ceramic (GJ-36)", href: "/vltd/gujarat/morbi/gj-36" },
+                  { name: "Gurugram Depot (HR-26)", href: "/vltd/haryana/gurugram/hr-26" },
+                ].map((hub) => (
+                  <Link
+                    key={hub.name}
+                    href={hub.href}
+                    className="px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-amber-600 text-slate-200 hover:text-white transition-colors border border-slate-700/60"
+                  >
+                    {hub.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Commercial Truck Categories */}
+            <div>
+              <h3 className="font-bold text-slate-300 uppercase tracking-wider text-[11px] mb-3">
+                Commercial Fleet Fitment Categories
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { name: "Marble Trolla Passing", href: "/trucks/marble-trolla" },
+                  { name: "Mining Dumper GPS", href: "/trucks/mining-dumper" },
+                  { name: "Bajri Tipper Fitment", href: "/trucks/bajri-truck" },
+                  { name: "Cement Bulker AIS 140", href: "/trucks/cement-bulker" },
+                  { name: "Rajasthan Truck Passing", href: "/truck-passing/rajasthan" },
+                  { name: "RTO Partner Dealership", href: "/rto-partner" },
+                ].map((cat) => (
+                  <Link
+                    key={cat.name}
+                    href={cat.href}
+                    className="px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-emerald-600 text-slate-200 hover:text-white transition-colors border border-slate-700/60"
+                  >
+                    {cat.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Mobile Sticky CTA */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 p-3.5 bg-background/95 backdrop-blur-md border-t border-border z-50 flex items-center justify-between shadow-2xl">
         <div className="flex items-center gap-2">
-          <Image src={logoImg} alt="NViQ Logo" width={24} height={24} className="object-cover" />
+          <Image src={logoImg} alt="NViQ Logo" width={24} height={24} className="object-cover" suppressHydrationWarning />
           <span className="text-xs font-black text-foreground">NV<span className="text-primary">i</span>Q</span>
         </div>
         <button type="button" className="group inline-flex h-9 items-center justify-center overflow-hidden text-xs font-bold" onClick={() => openLeadModal("starter")}>

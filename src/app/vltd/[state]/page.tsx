@@ -11,6 +11,7 @@ import VltdComplianceTable from "@/components/vltd/vltd-compliance-table";
 import VltdFaqAccordion from "@/components/vltd/vltd-faq-accordion";
 import JsonLdSchema from "@/components/vltd/json-ld-schema";
 import { CityGrid, StateGrid } from "@/components/vltd/vltd-nav-grids";
+import { TruckCategoryGrid, RajasthanTruckCitiesGrid } from "@/components/trucks/truck-nav-grids";
 import { ChevronRight, ShieldCheck, CheckCircle2, Building2, Zap, PhoneCall } from "lucide-react";
 
 type Props = {
@@ -158,6 +159,12 @@ export default async function StateDetailPage({ params }: Props) {
 
         {/* Cities Grid within State */}
         <CityGrid state={state} />
+
+        {/* Commercial Trucks & Fleet Corridors */}
+        <div className="my-14 pt-10 border-t border-gray-100">
+          <TruckCategoryGrid />
+          {state.slug === "rajasthan" && <RajasthanTruckCitiesGrid />}
+        </div>
 
         {/* State Fitment Assistance Callout */}
         <div className="my-10 p-8 rounded-3xl border border-emerald-200 bg-gradient-to-r from-emerald-50/60 via-green-50/20 to-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
