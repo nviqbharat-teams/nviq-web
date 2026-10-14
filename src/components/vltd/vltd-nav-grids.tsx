@@ -84,10 +84,14 @@ export function CityGrid({ state, currentCitySlug }: CityGridProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {state.cities.map((city) => {
           const isCurrent = city.slug === currentCitySlug;
+          const href =
+            city.rtos.length === 1
+              ? `/vltd/${state.slug}/${city.slug}/${city.rtos[0].slug}`
+              : `/vltd/${state.slug}/${city.slug}`;
           return (
             <Link
               key={city.slug}
-              href={`/vltd/${state.slug}/${city.slug}`}
+              href={href}
               className={`p-5 rounded-2xl border transition-all ${
                 isCurrent
                   ? "border-blue-500 bg-blue-50/60 ring-2 ring-blue-500/30 shadow-sm"
@@ -121,7 +125,11 @@ export function CityGrid({ state, currentCitySlug }: CityGridProps) {
               </div>
 
               <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-blue-600 font-bold">
-                <span>View {city.name} RTOs</span>
+                <span>
+                  {city.rtos.length === 1
+                    ? `View ${city.name} (${city.rtos[0].code}) Fitment`
+                    : `View ${city.name} RTOs`}
+                </span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </div>
             </Link>

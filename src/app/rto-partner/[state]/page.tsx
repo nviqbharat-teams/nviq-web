@@ -562,7 +562,7 @@ export default async function RtoStatePartnerPage({ params }: Props) {
             {state.cities.map((city) => {
               const cityHref =
                 city.rtos.length === 1
-                  ? `/rto-partner/${state.slug}/${city.slug}/${city.rtos[0].slug}`
+                  ? `/rto-partner/${state.slug}/${city.slug}/${getRtoFullSlug(city.rtos[0], city.name)}`
                   : `/rto-partner/${state.slug}/${city.slug}`;
 
               return (

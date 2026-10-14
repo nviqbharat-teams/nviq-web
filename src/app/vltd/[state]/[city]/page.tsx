@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import {
   getCityBySlug,
@@ -82,6 +82,11 @@ export default async function CityDetailPage({ params }: Props) {
   }
 
   const { state, city } = match;
+
+  // Single-RTO towns redirect directly to primary fitment page, eliminating duplicate sibling indexing
+  if (city.rtos.length === 1) {
+    permanentRedirect(`/vltd/${state.slug}/${city.slug}/${city.rtos[0].slug}`);
+  }
   const rtoCodesStr = city.rtos.map((r) => r.code).join(", ");
   const locationLabel = `${city.name}, ${state.name}`;
 

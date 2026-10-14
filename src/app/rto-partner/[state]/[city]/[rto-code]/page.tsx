@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import {
   getRtoDetail,
@@ -146,6 +146,11 @@ export default async function RtoCodePartnerPage({ params }: Props) {
   }
 
   const { state, city, rto, canonicalSlug, regionName } = detail;
+
+  // 301 Permanent Redirect old/alternate slugs (e.g. raw code "an-02" or "rj-32") to authoritative canonical SEO slug
+  if (resolved["rto-code"] !== canonicalSlug) {
+    permanentRedirect(`/rto-partner/${state.slug}/${city.slug}/${canonicalSlug}`);
+  }
 
   const whatsappMessage = encodeURIComponent(
     `Hi NViQ Team, I am an RTO Agent/Consultant at ${regionName} (${rto.code} - ${rto.name}), ${city.name}. I want to partner with NViQ for instant Parivahan Sewa VLTD certificates and fitness passing.`

@@ -98,7 +98,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Pan-India RTO Partner Program pages (States, Multi-RTO Cities & RTO Offices)
   const rtoPartnerPages: MetadataRoute.Sitemap = [];
 
-  for (const st of ALL_INDIA_STATES) {
+  // Sort states so priority high-volume commercial transport states appear first in the sitemap for crawl efficiency
+  const prioritizedStates = [...ALL_INDIA_STATES].sort((a, b) => {
+    const aP = PRIORITY_COMMERCIAL_STATE_CODES.has(a.code) ? 1 : 0;
+    const bP = PRIORITY_COMMERCIAL_STATE_CODES.has(b.code) ? 1 : 0;
+    return bP - aP;
+  });
+
+  for (const st of prioritizedStates) {
     const isPriorityState = PRIORITY_COMMERCIAL_STATE_CODES.has(st.code);
 
     rtoPartnerPages.push({

@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import {
   getCityBySlug,
@@ -150,6 +150,12 @@ export default async function RtoCityPartnerPage({ params }: Props) {
   }
 
   const { state, city } = match;
+
+  // Single-RTO towns redirect directly to the authoritative RTO page to prevent duplicate sibling indexing
+  if (city.rtos.length === 1) {
+    const fullSlug = getRtoFullSlug(city.rtos[0], city.name);
+    permanentRedirect(`/rto-partner/${state.slug}/${city.slug}/${fullSlug}`);
+  }
 
   const whatsappMessage = encodeURIComponent(
     `Hi NViQ Team, I am an RTO Agent/Consultant in ${city.name}, ${state.name}. I want to partner with NViQ for commercial vehicle fitness passing and instant VLTD certificates.`
@@ -682,21 +688,27 @@ export default async function RtoCityPartnerPage({ params }: Props) {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {state.cities.map((c) => (
-              <Link
-                key={c.slug}
-                href={`/rto-partner/${state.slug}/${c.slug}`}
-                className={`p-3 rounded-xl border text-xs transition-all ${c.slug === city.slug
-                  ? "bg-blue-50 border-blue-300 text-blue-900 font-bold shadow-xs"
-                  : "bg-white border-gray-200 text-gray-700 hover:border-blue-400 hover:shadow-2xs"
-                  }`}
-              >
-                <span className="block font-semibold text-sm mb-0.5">{c.name}</span>
-                <span className="text-gray-500 text-[11px]">
-                  {c.rtos.map((r) => r.code).join(", ")}
-                </span>
-              </Link>
-            ))}
+            {state.cities.map((c) => {
+              const href =
+                c.rtos.length === 1
+                  ? `/rto-partner/${state.slug}/${c.slug}/${getRtoFullSlug(c.rtos[0], c.name)}`
+                  : `/rto-partner/${state.slug}/${c.slug}`;
+              return (
+                <Link
+                  key={c.slug}
+                  href={href}
+                  className={`p-3 rounded-xl border text-xs transition-all ${c.slug === city.slug
+                    ? "bg-blue-50 border-blue-300 text-blue-900 font-bold shadow-xs"
+                    : "bg-white border-gray-200 text-gray-700 hover:border-blue-400 hover:shadow-2xs"
+                    }`}
+                >
+                  <span className="block font-semibold text-sm mb-0.5">{c.name}</span>
+                  <span className="text-gray-500 text-[11px]">
+                    {c.rtos.map((r) => r.code).join(", ")}
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
