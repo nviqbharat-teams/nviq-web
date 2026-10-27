@@ -50,7 +50,7 @@ export default function Footer() {
     }
   };
 
-  if (isApp) return null;
+  if (isApp || pathname.startsWith("/live/")) return null;
 
   return (
     <footer data-app-hide="true" className={`bg-gray-950 text-white${isContactPage ? " hidden md:block" : ""}`}>
