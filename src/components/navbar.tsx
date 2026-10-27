@@ -58,7 +58,7 @@ export default function Navbar({ fixed = true }: NavbarProps) {
   const isContactPage = pathname === "/contact";
   const isApp = useIsApp();
 
-  if (isApp) return null;
+  if (isApp || pathname.startsWith("/live/")) return null;
 
   return (
     <div data-app-hide="true" className={isContactPage ? "hidden md:block" : undefined}>
