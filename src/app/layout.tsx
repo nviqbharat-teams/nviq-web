@@ -122,6 +122,7 @@ export default function RootLayout({
                     document.documentElement.classList.remove('is-app');
                   } else if (sessionStorage.getItem('isApp') === 'true') {
                     document.documentElement.classList.add('is-app');
+                  }
                 } catch(e) {}
               })();
             `,
