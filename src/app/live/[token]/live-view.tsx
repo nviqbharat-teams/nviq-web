@@ -3,24 +3,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { io, Socket } from "socket.io-client";
+import "leaflet/dist/leaflet.css";
 import logoImg from "@/app/logo.jpeg";
 import {
   SOCKET_URL,
-  GOOGLE_MAPS_KEY,
   fetchShare,
-  loadGoogleMaps,
   googleMapsUrl,
   googleDirectionsUrl,
   type ShareLocation,
   type ShareSnapshot,
   type ShareEndReason,
 } from "@/lib/live-share";
+import { createLiveMap, movement, styleFor, type LiveMap } from "./live-map";
 
 type ConnState = "connecting" | "live" | "reconnecting";
 
 const END_CODES: ShareEndReason[] = ["expired", "revoked", "invalid"];
 const ANIMATE_MS = 1000;
-const MAX_TRAIL = 2000;
 
 const hasCoords = (l: ShareLocation | null): l is ShareLocation & { lat: number; lng: number } =>
   !!l && l.lat != null && l.lng != null;
@@ -44,41 +43,18 @@ function formatAgo(iso: string | null, now: number) {
   return `${Math.floor(s / 86400)}d ago`;
 }
 
-function movement(l: ShareLocation | null): { label: string; color: string } {
-  if (!l || !l.isOnline) return { label: "Offline", color: "#6b7280" };
-  if (l.speed > 2) return { label: "Moving", color: "#16a34a" };
-  if (l.ignition) return { label: "Idle", color: "#d97706" };
-  return { label: "Stopped", color: "#dc2626" };
-}
-
-function markerIcon(l: ShareLocation): google.maps.Symbol {
-  const { color } = movement(l);
-  const moving = l.isOnline && l.speed > 2;
-  return {
-    path: moving ? google.maps.SymbolPath.FORWARD_CLOSED_ARROW : google.maps.SymbolPath.CIRCLE,
-    scale: moving ? 6 : 9,
-    rotation: l.heading || 0,
-    fillColor: color,
-    fillOpacity: 1,
-    strokeColor: "#ffffff",
-    strokeWeight: 3,
-  };
-}
-
 export default function LiveView({ token }: { token: string }) {
   const [snapshot, setSnapshot] = useState<Omit<ShareSnapshot, "location"> | null>(null);
   const [location, setLocation] = useState<ShareLocation | null>(null);
   const [ended, setEnded] = useState<ShareEndReason | null>(null);
   const [conn, setConn] = useState<ConnState>("connecting");
   const [loadError, setLoadError] = useState(false);
-  const [mapError, setMapError] = useState(!GOOGLE_MAPS_KEY);
+  const [mapError, setMapError] = useState(false);
   const [follow, setFollow] = useState(true);
   const [now, setNow] = useState(() => Date.now());
 
   const mapDiv = useRef<HTMLDivElement>(null);
-  const map = useRef<google.maps.Map | null>(null);
-  const marker = useRef<google.maps.Marker | null>(null);
-  const trail = useRef<google.maps.Polyline | null>(null);
+  const map = useRef<LiveMap | null>(null);
   const anim = useRef<number | null>(null);
   const followRef = useRef(follow);
   useEffect(() => {
@@ -150,64 +126,43 @@ export default function LiveView({ token }: { token: string }) {
   // ── Map: create once we have a first fix ──────────────────────────────────
   const firstFix = hasCoords(location);
   useEffect(() => {
-    if (!firstFix || map.current || !mapDiv.current || !GOOGLE_MAPS_KEY) return;
-    let cancelled = false;
-    loadGoogleMaps()
-      .then((maps) => {
-        if (cancelled || !mapDiv.current || !location || !hasCoords(location)) return;
-        const pos = { lat: location.lat, lng: location.lng };
-        map.current = new maps.Map(mapDiv.current, {
-          center: pos,
-          zoom: 16,
-          disableDefaultUI: true,
-          zoomControl: true,
-          fullscreenControl: false,
-          gestureHandling: "greedy",
-          clickableIcons: false,
-        });
-        map.current.addListener("dragstart", () => setFollow(false));
-        trail.current = new maps.Polyline({
-          map: map.current,
-          path: [pos],
-          strokeColor: "#2563eb",
-          strokeOpacity: 0.8,
-          strokeWeight: 4,
-        });
-        marker.current = new maps.Marker({ map: map.current, position: pos, icon: markerIcon(location), zIndex: 10 });
+    if (!firstFix || map.current || !mapDiv.current || !location || !hasCoords(location)) return;
+    const abort = new AbortController();
+    let created: LiveMap | null = null;
+    createLiveMap(mapDiv.current, { lat: location.lat, lng: location.lng }, styleFor(location), abort.signal)
+      .then((m) => {
+        if (!m) return;
+        created = m;
+        map.current = m;
+        m.onUserDrag(() => setFollow(false));
       })
       .catch(() => setMapError(true));
     return () => {
-      cancelled = true;
+      abort.abort();
+      created?.destroy();
+      map.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- create once, on the first fix
   }, [firstFix]);
 
   // ── Map: glide the marker to each new fix ─────────────────────────────────
   useEffect(() => {
-    const m = marker.current;
+    const m = map.current;
     if (!m || !hasCoords(location)) return;
-    m.setIcon(markerIcon(location));
+    m.setStyle(location);
 
     const from = m.getPosition();
-    const to = new google.maps.LatLng(location.lat, location.lng);
-    if (!from || from.equals(to)) return;
-
-    const path = trail.current?.getPath();
-    if (path) {
-      path.push(to);
-      if (path.getLength() > MAX_TRAIL) path.removeAt(0);
-    }
+    const to = { lat: location.lat, lng: location.lng };
+    if (from.lat === to.lat && from.lng === to.lng) return;
+    m.addTrailPoint(to);
 
     if (anim.current) cancelAnimationFrame(anim.current);
     const start = performance.now();
     const step = (t: number) => {
       const k = Math.min(1, (t - start) / ANIMATE_MS);
-      const p = new google.maps.LatLng(
-        from.lat() + (to.lat() - from.lat()) * k,
-        from.lng() + (to.lng() - from.lng()) * k
-      );
+      const p = { lat: from.lat + (to.lat - from.lat) * k, lng: from.lng + (to.lng - from.lng) * k };
       m.setPosition(p);
-      if (followRef.current) map.current?.panTo(p);
+      if (followRef.current) m.panTo(p);
       if (k < 1) anim.current = requestAnimationFrame(step);
     };
     anim.current = requestAnimationFrame(step);
@@ -219,8 +174,8 @@ export default function LiveView({ token }: { token: string }) {
 
   const recenter = () => {
     setFollow(true);
-    const p = marker.current?.getPosition();
-    if (p) map.current?.panTo(p);
+    const m = map.current;
+    if (m) m.panTo(m.getPosition());
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -232,7 +187,8 @@ export default function LiveView({ token }: { token: string }) {
   return (
     <div className="fixed inset-0 bg-gray-100 text-gray-900">
       {/* Map */}
-      <div ref={mapDiv} className="absolute inset-0" />
+      {/* z-0 = own stacking context, so Leaflet's z-index 400+ panes stay under the cards */}
+      <div ref={mapDiv} className="absolute inset-0 z-0" />
 
       {(!firstFix || mapError) && (
         <div className="absolute inset-0 flex items-center justify-center p-6">
