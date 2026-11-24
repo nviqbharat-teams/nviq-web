@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useEffect, useId, useState } from "react";
 import { SALES_PHONE_DISPLAY } from "@/lib/contact";
 import { submitInquiry, trackEvent } from "@/lib/api";
+import { Select } from "@/components/ui/select";
 
 export type LeadPlan = "starter" | "professional" | "enterprise";
 
@@ -40,102 +41,6 @@ type LeadModalProps = {
   plan: LeadPlan;
   onClose: () => void;
 };
-
-type FleetSizeSelectProps = {
-  id: string;
-  value: string;
-  onChange: (value: string) => void;
-};
-
-function FleetSizeSelect({ id, value, onChange }: FleetSizeSelectProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const selectedLabel = FLEET_SIZE_OPTIONS.find((option) => option.value === value)?.label;
-
-  useEffect(() => {
-    if (!menuOpen) return;
-
-    const handlePointerDown = (event: MouseEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
-    };
-
-    document.addEventListener("mousedown", handlePointerDown);
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [menuOpen]);
-
-  return (
-    <div
-      ref={rootRef}
-      className={`lead-modal__dropdown${menuOpen ? " lead-modal__dropdown--open" : ""}`}
-    >
-      <button
-        type="button"
-        id={id}
-        className={`lead-modal__dropdown-trigger${!value ? " lead-modal__dropdown-trigger--placeholder" : ""}`}
-        aria-haspopup="listbox"
-        aria-expanded={menuOpen}
-        onClick={() => setMenuOpen((open) => !open)}
-      >
-        <span>{selectedLabel ?? "Select fleet size"}</span>
-        <span className="lead-modal__dropdown-chevron" aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M4 6l4 4 4-4" />
-          </svg>
-        </span>
-      </button>
-
-      {menuOpen && (
-        <ul className="lead-modal__dropdown-menu" role="listbox" aria-labelledby={id}>
-          {FLEET_SIZE_OPTIONS.map((option) => (
-            <li key={option.value} role="presentation">
-              <button
-                type="button"
-                role="option"
-                aria-selected={value === option.value}
-                className={`lead-modal__dropdown-option${value === option.value ? " lead-modal__dropdown-option--active" : ""}`}
-                onClick={() => {
-                  onChange(option.value);
-                  setMenuOpen(false);
-                }}
-              >
-                {option.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <select
-        className="lead-modal__select-native"
-        tabIndex={-1}
-        aria-hidden="true"
-        value={value}
-        required
-        onChange={(event) => onChange(event.target.value)}
-      >
-        <option value="" disabled>
-          Select fleet size
-        </option>
-        {FLEET_SIZE_OPTIONS.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-}
 
 export function LeadModal({ open, plan, onClose }: LeadModalProps) {
   const titleId = useId();
@@ -303,10 +208,15 @@ export function LeadModal({ open, plan, onClose }: LeadModalProps) {
 
               <div className="lead-modal__field lead-modal__field--full">
                 <label htmlFor="lead-fleet-size" className="lead-modal__label">Number of Vehicles</label>
-                <FleetSizeSelect
+                <Select
                   id="lead-fleet-size"
+                  name="fleetSize"
+                  required
+                  options={FLEET_SIZE_OPTIONS}
+                  placeholder="Select fleet size"
                   value={form.fleetSize}
-                  onChange={(value) => updateField("fleetSize", value)}
+                  onValueChange={(value) => updateField("fleetSize", value)}
+                  className="h-11 rounded-none border-[#d4d4dc]"
                 />
               </div>
 

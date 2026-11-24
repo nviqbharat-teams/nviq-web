@@ -3,6 +3,18 @@
 import React, { useState } from "react";
 import { submitInquiry, trackEvent } from "@/lib/api";
 import { Smartphone, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
+import { Select } from "@/components/ui/select";
+
+const VEHICLE_OPTIONS = [
+  { value: "Marble Trolla / Trailer", label: "Marble Trolla / Trailer (मार्बल ट्रॉला)" },
+  { value: "Mining Dumper / Tipper", label: "Mining Dumper / Tipper (डंपर)" },
+  { value: "Bajri Sand Truck", label: "Bajri / Sand Truck (बजरी ट्रक)" },
+  { value: "Cement Bulker", label: "Cement Bulker (सीमेंट बल्कर)" },
+  { value: "Stone Crusher Tipper", label: "Stone Crusher Tipper (गिट्टी डंपर)" },
+  { value: "Petroleum / Chemical Tanker", label: "Petroleum / Chemical Tanker" },
+  { value: "Commercial Bus / Sleeper Coach", label: "Commercial Bus / Coach" },
+  { value: "Other Commercial Vehicle", label: "Other Commercial Vehicle" },
+];
 
 interface TruckQuoteFormProps {
   defaultLocation?: string;
@@ -119,20 +131,13 @@ export default function TruckQuoteForm({
           <label className="block text-xs font-medium text-gray-700 mb-1">
             Vehicle Type
           </label>
-          <select
+          <Select
+            aria-label="Vehicle Type"
             value={vehicleType}
-            onChange={(e) => setVehicleType(e.target.value)}
-            className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-gray-900 bg-white"
-          >
-            <option value="Marble Trolla / Trailer">Marble Trolla / Trailer (मार्बल ट्रॉला)</option>
-            <option value="Mining Dumper / Tipper">Mining Dumper / Tipper (डंपर)</option>
-            <option value="Bajri Sand Truck">Bajri / Sand Truck (बजरी ट्रक)</option>
-            <option value="Cement Bulker">Cement Bulker (सीमेंट बल्कर)</option>
-            <option value="Stone Crusher Tipper">Stone Crusher Tipper (गिट्टी डंपर)</option>
-            <option value="Petroleum / Chemical Tanker">Petroleum / Chemical Tanker</option>
-            <option value="Commercial Bus / Sleeper Coach">Commercial Bus / Coach</option>
-            <option value="Other Commercial Vehicle">Other Commercial Vehicle</option>
-          </select>
+            onValueChange={setVehicleType}
+            options={VEHICLE_OPTIONS}
+            className="h-10 border-gray-200 text-gray-900"
+          />
         </div>
 
         <button

@@ -4,6 +4,7 @@
 // Every embed = one relevant backlink with local keyword anchor text.
 import React, { useMemo, useState } from "react";
 import { Copy, Check } from "lucide-react";
+import { Select } from "@/components/ui/select";
 
 export interface BadgeRto {
   s: string; // state slug
@@ -39,26 +40,28 @@ export default function PartnerBadgeBuilder({ rtos }: { rtos: BadgeRto[] }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <label className="block">
           <span className="text-xs font-semibold text-gray-700">Your state</span>
-          <select
+          <Select
+            aria-label="Your state"
             value={stateSlug}
-            onChange={(e) => {
-              setStateSlug(e.target.value);
-              setRtoSlug(rtos.find((x) => x.s === e.target.value)?.r || "");
+            onValueChange={(v) => {
+              setStateSlug(v);
+              setRtoSlug(rtos.find((x) => x.s === v)?.r || "");
             }}
-            className="mt-1 w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm"
-          >
-            {states.map(([slug, name]) => (
-              <option key={slug} value={slug}>{name}</option>
-            ))}
-          </select>
+            options={states.map(([slug, name]) => ({ value: slug, label: name }))}
+            searchPlaceholder="Search state…"
+            className="mt-1"
+          />
         </label>
         <label className="block">
           <span className="text-xs font-semibold text-gray-700">Your RTO</span>
-          <select value={sel?.r || ""} onChange={(e) => setRtoSlug(e.target.value)} className="mt-1 w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm">
-            {inState.map((x) => (
-              <option key={`${x.c}-${x.r}`} value={x.r}>{x.code} · {x.cn}</option>
-            ))}
-          </select>
+          <Select
+            aria-label="Your RTO"
+            value={sel?.r || ""}
+            onValueChange={setRtoSlug}
+            options={inState.map((x) => ({ value: x.r, label: `${x.code} · ${x.cn}` }))}
+            searchPlaceholder="Search RTO code or city…"
+            className="mt-1"
+          />
         </label>
       </div>
 

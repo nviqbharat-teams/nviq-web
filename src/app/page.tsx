@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { Barlow_Semi_Condensed } from "next/font/google";
 import { Check, MessageCircle, PhoneCall, X } from "lucide-react";
-import PlateLeadForm from "@/components/home/plate-lead-form";
+import TravelHero from "@/components/home/travel-hero";
 import AppPreview from "@/components/home/app-preview";
-import { HeroEyebrow, HeroHeadline, HeroIntro, HeroPoints } from "@/components/hero/hero-text";
 import { SEGMENTS } from "@/data/segments";
 import { TOOLS } from "@/components/tools/tool-page";
 import { SALES_PHONE_DISPLAY, SALES_TEL_HREF, whatsappHref } from "@/lib/contact";
@@ -212,33 +211,8 @@ export default function Home() {
     <div className={`${display.variable} bg-white text-[#18202E]`}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
 
-      {/* HERO: say it plainly, then ask for the vehicle number */}
-      <section className="bg-[#18202E] pt-16 text-white">
-        <div className={`${wrap} grid grid-cols-[minmax(0,1fr)] gap-8 py-8 sm:gap-10 sm:py-16 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-center lg:gap-16 lg:py-24`}>
-          <div>
-            <HeroEyebrow>AIS 140 VLTD and GPS tracking, across India</HeroEyebrow>
-            <HeroHeadline
-              title="Tracker fitted at your door. Vahan updated in about an hour."
-              highlight="Vahan updated in about an hour."
-              className="mt-4 font-display text-[34px] font-bold leading-[1.05] sm:text-6xl sm:leading-[1.02] lg:text-[68px]"
-            />
-            <HeroIntro className="mt-4 sm:mt-5">
-              NViQ fits government-approved GPS trackers on trucks, buses, taxis and school vans, links them to Vahan so your
-              fitness or permit can go ahead, and gives you an app to watch every vehicle live.
-            </HeroIntro>
-            <HeroPoints
-              className="mt-6 sm:mt-8"
-              points={[
-                "ARAI / ICAT certified devices",
-                "Technician comes to you",
-                "Lifetime replacement warranty",
-                "10,000+ vehicles already on NViQ",
-              ]}
-            />
-          </div>
-          <PlateLeadForm />
-        </div>
-      </section>
+      {/* HERO: travel-style banner with one search-style bar to start */}
+      <TravelHero />
 
       {/* SELF-SELECTION: find your own problem in one glance */}
       <section className="py-16 sm:py-24" aria-labelledby="needs-title">

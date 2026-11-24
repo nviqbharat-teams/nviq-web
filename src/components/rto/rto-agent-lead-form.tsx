@@ -10,6 +10,7 @@
 import { useState } from "react";
 import { ArrowRight, PhoneCall } from "lucide-react";
 import { submitInquiry } from "@/lib/api";
+import { Select } from "@/components/ui/select";
 import { getRefCode, trackLead } from "@/lib/lead-attribution";
 import { SALES_TEL_HREF, SALES_PHONE_DISPLAY, whatsappHref } from "@/lib/contact";
 
@@ -149,13 +150,7 @@ export default function RtoAgentLeadForm({
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="block">
               <span className="text-sm font-semibold">How soon?</span>
-              <select value={urgency} onChange={(e) => setUrgency(e.target.value)} className={field}>
-                {URGENCY.map((u) => (
-                  <option key={u.value} value={u.value}>
-                    {u.label}
-                  </option>
-                ))}
-              </select>
+              <Select aria-label="How soon?" value={urgency} onValueChange={setUrgency} options={URGENCY} className={field} />
             </label>
             <label className="block">
               <span className="text-sm font-semibold">Mobile / WhatsApp *</span>
