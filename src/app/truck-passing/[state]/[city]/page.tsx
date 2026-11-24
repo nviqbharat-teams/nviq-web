@@ -1,18 +1,10 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import {
-  getTruckCityBySlug,
-  getAllTruckPassingCityParams,
-  TRUCK_CATEGORIES,
-} from "@/data/rajasthan-trucks-master";
-import TruckHero from "@/components/trucks/truck-hero";
-import TruckComplianceBox from "@/components/trucks/truck-compliance-box";
-import { AreaPassingGrid, TruckCategoryGrid, RajasthanTruckCitiesGrid } from "@/components/trucks/truck-nav-grids";
-import RtoConsultantBanner from "@/components/vltd/rto-consultant-banner";
-import VltdFaqAccordion from "@/components/vltd/vltd-faq-accordion";
+import { getTruckCityBySlug, getAllTruckPassingCityParams, TRUCK_CATEGORIES } from "@/data/rajasthan-trucks-master";
 import JsonLdSchema from "@/components/vltd/json-ld-schema";
-import { ChevronRight, Shield, MapPin, Truck, CheckCircle2, PhoneCall } from "lucide-react";
+import { KitPage, Section, SectionHead, LinkRows, FaqSection, FinalCta, DirectoryBand } from "@/components/landing/kit";
+import { VltdPartnerSection } from "@/components/vltd/vltd-kit-sections";
+import { TruckPageHero, TruckComplianceSection, AreaRows, rajasthanCityItems } from "@/components/trucks/truck-kit";
 
 type Props = {
   params: Promise<{
@@ -82,8 +74,10 @@ export default async function TruckPassingCityPage({ params }: Props) {
 
   const cityCategories = TRUCK_CATEGORIES.filter((c) => city.dominantCategories.includes(c.slug));
 
+  const waMessage = `Hi NViQ, I need truck AIS 140 GPS fitment & fitness certificate in ${city.name} (${rtoCodesStr}).`;
+
   return (
-    <main className="min-h-screen bg-white text-gray-900">
+    <KitPage>
       <JsonLdSchema
         pageTitle={`${city.name} (${rtoCodesStr}) Truck Passing & AIS 140 VLTD Fitment`}
         description={`Doorstep AIS 140 fitment across ${city.name} (${rtoCodesStr}) for commercial trucks, trailers, and dumpers.`}
@@ -93,84 +87,62 @@ export default async function TruckPassingCityPage({ params }: Props) {
         breadcrumbs={breadcrumbs}
       />
 
-      {/* Breadcrumb Bar */}
-      <nav aria-label="Breadcrumb" className="border-b border-gray-100 bg-white pt-20 pb-3">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-xs text-gray-500 flex items-center gap-1.5 overflow-x-auto whitespace-nowrap">
-          <Link href="/" className="hover:text-gray-900 transition-colors">Home</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <Link href={`/truck-passing/${resolved.state}`} className="hover:text-gray-900 transition-colors">Rajasthan</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <span className="text-gray-900 font-medium">{city.name}</span>
-        </div>
-      </nav>
-
-      {/* Hero */}
-      <TruckHero
-        badge={rtoCodesStr}
-        title={`${city.name} Truck Passing & GPS Fitment`}
-        subtitle={city.citySummary}
-        highlights={[
-          `Doorstep visit across ${city.areas.length} transport yards in ${city.name}`,
-          `60-minute Parivahan Vahan 4.0 certificate upload`,
-          `Whitelisted for Rajasthan DMG Khanij e-Ravanna transit passes`,
+      <TruckPageHero
+        crumbs={[
+          { name: "Home", href: "/" },
+          { name: "Rajasthan", href: `/truck-passing/${resolved.state}` },
+          { name: city.name },
         ]}
-        locationTag={`${city.name} • ${rtoCodesStr}`}
-        truckTypeTag="Commercial Fleets"
-        whatsappMessage={`Hi NViQ, I need truck AIS 140 GPS fitment & fitness certificate in ${city.name} (${rtoCodesStr}).`}
+        eyebrow={`Serving ${rtoCodesStr}`}
+        title={`${city.name} truck passing & GPS fitment`}
+        highlight={city.name}
+        intro={city.citySummary}
+        points={[`${city.areas.length} transport yards covered`, "Certificate in ~60 minutes", "DMG Khanij e-Ravanna ready", "2 emergency panic buttons"]}
+        waMessage={waMessage}
+        topic={`Truck passing & AIS 140 fitment (${city.name})`}
+        source={`truck_passing_${city.slug}`}
+        track="truck_passing_city"
       />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        {/* Compliance Box */}
-        <TruckComplianceBox locationOrCategoryName={city.name} rtoCode={rtoCodesStr} />
+      <AreaRows city={city} tone="white" />
 
-        {/* Transport Areas Grid */}
-        <AreaPassingGrid city={city} />
+      <TruckComplianceSection name={city.name} rtoCode={rtoCodesStr} tone="grey" />
 
-        {/* Dominant Truck Categories in this City */}
-        <div className="my-10 bg-gray-50/70 border border-gray-200 rounded-2xl p-6 sm:p-8">
-          <div className="max-w-2xl mb-6">
-            <h3 className="text-xl font-bold text-gray-900">
-              High-Density Fleets Operating in {city.name}
-            </h3>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1">
-              Vehicle-specific AIS 140 configuration and panic button installation protocols
-            </p>
+      {cityCategories.length > 0 && (
+        <Section labelledBy="fleets-title">
+          <SectionHead
+            id="fleets-title"
+            title={`Fleets we fit most in ${city.name}`}
+            sub="Vehicle-specific AIS 140 setup and panic button installation."
+          />
+          <div className="mt-10">
+            <LinkRows
+              cols={3}
+              items={cityCategories.map((cat) => ({
+                href: `/trucks/${cat.slug}/${resolved.state}/${resolved.city}`,
+                name: cat.title,
+                tag: cat.wheelAxle,
+                text: cat.shortDesc,
+              }))}
+            />
           </div>
+        </Section>
+      )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {cityCategories.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={`/trucks/${cat.slug}/${resolved.state}/${resolved.city}`}
-                className="p-4 rounded-xl bg-white border border-gray-200 hover:border-emerald-400 hover:shadow-md transition-all text-left flex flex-col justify-between"
-              >
-                <div>
-                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                    {cat.wheelAxle}
-                  </span>
-                  <h4 className="font-bold text-sm text-gray-900 mt-2">{cat.title}</h4>
-                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">{cat.shortDesc}</p>
-                </div>
-                <div className="mt-3 pt-2 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-emerald-600">
-                  <span>View {city.name} Passing Specs</span>
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
+      <VltdPartnerSection locationName={city.name} />
 
-        {/* Wholesale Banner */}
-        <RtoConsultantBanner locationName={`${city.name}, Rajasthan`} rtoCode={rtoCodesStr} />
+      <FaqSection faqs={city.cityFaqs} title={`${city.name} truck passing questions`} track="truck_passing_city_faq_call" />
 
-        {/* Other Cities in Rajasthan */}
-        <RajasthanTruckCitiesGrid currentCitySlug={city.slug} />
+      <FinalCta
+        title={`Need same-day fitment in ${city.name}?`}
+        sub="Send your vehicle number on WhatsApp and we confirm the slot and price right away."
+        whatsappMessage={waMessage}
+        track="truck_passing_city_final"
+      />
 
-        {/* City FAQs */}
-        <div className="my-12">
-          <VltdFaqAccordion faqs={city.cityFaqs} locationName={`${city.name}, Rajasthan`} />
-        </div>
-      </div>
-    </main>
+      <DirectoryBand title="Other Rajasthan trucking hubs">
+        <LinkRows cols={4} items={rajasthanCityItems(city.slug)} />
+      </DirectoryBand>
+    </KitPage>
   );
 }

@@ -1,18 +1,10 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import {
-  getTruckCategoryBySlug,
-  getAllTruckCategoryParams,
-  RAJASTHAN_TRUCK_CITIES,
-} from "@/data/rajasthan-trucks-master";
-import TruckHero from "@/components/trucks/truck-hero";
-import TruckComplianceBox from "@/components/trucks/truck-compliance-box";
-import { TruckCategoryGrid, RajasthanTruckCitiesGrid } from "@/components/trucks/truck-nav-grids";
-import RtoConsultantBanner from "@/components/vltd/rto-consultant-banner";
-import VltdFaqAccordion from "@/components/vltd/vltd-faq-accordion";
+import { getTruckCategoryBySlug, getAllTruckCategoryParams, RAJASTHAN_TRUCK_CITIES, TRUCK_CATEGORIES } from "@/data/rajasthan-trucks-master";
 import JsonLdSchema from "@/components/vltd/json-ld-schema";
-import { ChevronRight, Shield, Truck, CheckCircle2, ArrowRight, MapPin } from "lucide-react";
+import { KitPage, Section, SectionHead, LinkRows, FaqSection, FinalCta, DirectoryBand } from "@/components/landing/kit";
+import { VltdPartnerSection } from "@/components/vltd/vltd-kit-sections";
+import { TruckPageHero, TruckComplianceSection } from "@/components/trucks/truck-kit";
 
 type Props = {
   params: Promise<{
@@ -90,8 +82,10 @@ export default async function TruckCategoryDetailPage({ params }: Props) {
     c.dominantCategories.includes(cat.slug)
   );
 
+  const waMessage = `Hi NViQ, I need AIS 140 VLTD fitment & certificate for ${cat.title}. Please share quotation.`;
+
   return (
-    <main className="min-h-screen bg-white text-gray-900">
+    <KitPage>
       <JsonLdSchema
         pageTitle={`${cat.title} AIS 140 VLTD GPS Fitment`}
         description={cat.shortDesc}
@@ -101,112 +95,90 @@ export default async function TruckCategoryDetailPage({ params }: Props) {
         breadcrumbs={breadcrumbs}
       />
 
-      {/* Breadcrumb Bar */}
-      <nav aria-label="Breadcrumb" className="border-b border-gray-100 bg-white pt-20 pb-3">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-xs text-gray-500 flex items-center gap-1.5 overflow-x-auto whitespace-nowrap">
-          <Link href="/" className="hover:text-gray-900 transition-colors">Home</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <Link href="/rto-partner" className="hover:text-gray-900 transition-colors">RTO Partner Network</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <span className="text-gray-900 font-medium">{cat.title}</span>
-        </div>
-      </nav>
-
-      {/* Hero */}
-      <TruckHero
-        badge={cat.wheelAxle}
-        title={`${cat.title} GPS Fitment & Passing`}
-        subtitle={cat.shortDesc}
-        highlights={cat.compliancePoints.slice(0, 3)}
-        locationTag={cat.wheelAxle}
-        truckTypeTag={cat.title}
-        whatsappMessage={`Hi NViQ, I need AIS 140 VLTD fitment & certificate for ${cat.title}. Please share quotation.`}
+      <TruckPageHero
+        crumbs={[
+          { name: "Home", href: "/" },
+          { name: "Truck Categories", href: "/trucks" },
+          { name: cat.title },
+        ]}
+        eyebrow={cat.wheelAxle}
+        title={`${cat.title} GPS fitment & passing`}
+        highlight={cat.title}
+        intro={cat.shortDesc}
+        points={cat.compliancePoints.slice(0, 4)}
+        waMessage={waMessage}
+        topic={`AIS 140 VLTD fitment for ${cat.title}`}
+        source={`trucks_category_${cat.slug}`}
+        track="trucks_category"
       />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        {/* Compliance Box */}
-        <TruckComplianceBox locationOrCategoryName={cat.title} />
+      <TruckComplianceSection name={cat.title} />
 
-        {/* Technical Specs & Common Models */}
-        <div className="my-10 bg-gray-50/70 border border-gray-200 rounded-2xl p-6 sm:p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Supported Vehicle Models & Chassis</h3>
-              <p className="text-xs text-gray-500 mb-4">
-                Pre-tested wiring harness with zero battery drain guarantee for major commercial brands:
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {cat.commonBrands.map((brand, idx) => (
-                  <span
-                    key={idx}
-                    className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-xs font-semibold text-gray-800 shadow-xs"
-                  >
-                    {brand}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Typical High-Volume Freight Routes</h3>
-              <p className="text-xs text-gray-500 mb-4">
-                Continuous 4G dual-SIM tracking coverage across key inter-state highways:
-              </p>
-              <ul className="text-xs text-gray-700 space-y-1.5 font-medium">
-                {cat.typicalRoutes.map((route, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    {route}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* City-Specific Landing Pages for This Truck Category */}
-        {dominantCities.length > 0 && (
-          <div className="my-10">
-            <h3 className="text-xl font-bold text-gray-900 mb-1">
-              Top Rajasthan Cities for {cat.title} Fitment
-            </h3>
-            <p className="text-xs sm:text-sm text-gray-500 mb-4">
-              Explore doorstep fitment centers and RTO passing guidelines in each high-density mining hub
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {dominantCities.map((city) => (
-                <Link
-                  key={city.slug}
-                  href={`/trucks/${cat.slug}/rajasthan/${city.slug}`}
-                  className="p-4 rounded-xl border border-gray-200 bg-white hover:border-emerald-400 hover:shadow-md transition-all text-left flex items-center justify-between"
-                >
-                  <div>
-                    <h4 className="font-bold text-sm text-gray-900">
-                      {city.name} {cat.title}
-                    </h4>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      {city.areas.length} Transport Nagars & Yards
-                    </p>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-emerald-600" />
-                </Link>
+      <Section tone="grey" labelledBy="specs-title">
+        <SectionHead id="specs-title" title={`${cat.title}: models and routes we cover`} />
+        <div className="mt-10 grid gap-12 lg:grid-cols-2 lg:gap-20">
+          <div>
+            <h3 className="font-display text-xl font-semibold">Supported models and chassis</h3>
+            <p className="mt-2 text-slate-600">Pre-tested wiring harness with a zero battery drain guarantee for major commercial brands.</p>
+            <ul className="mt-5 flex flex-wrap gap-2">
+              {cat.commonBrands.map((brand) => (
+                <li key={brand} className="border border-[#C9D0DB] bg-white px-3.5 py-1.5 text-sm font-semibold">
+                  {brand}
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
-        )}
-
-        {/* Other Truck Categories */}
-        <TruckCategoryGrid currentCategorySlug={cat.slug} />
-
-        {/* Wholesale Partner Banner */}
-        <RtoConsultantBanner locationName={`Rajasthan ${cat.title} Corridors`} />
-
-        {/* Category FAQs */}
-        <div className="my-12">
-          <VltdFaqAccordion faqs={catFaqs} locationName={cat.title} />
+          <div>
+            <h3 className="font-display text-xl font-semibold">Typical freight routes</h3>
+            <p className="mt-2 text-slate-600">Continuous 4G dual-SIM tracking coverage across key inter-state highways.</p>
+            <ul className="mt-5 border-t border-[#D9DEE6]">
+              {cat.typicalRoutes.map((route) => (
+                <li key={route} className="border-b border-[#D9DEE6] py-3 font-medium">
+                  {route}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-      </div>
-    </main>
+      </Section>
+
+      {dominantCities.length > 0 && (
+        <Section labelledBy="cities-title">
+          <SectionHead
+            id="cities-title"
+            title={`Top Rajasthan cities for ${cat.title} fitment`}
+            sub="Doorstep fitment and RTO passing details in each high-density hub."
+          />
+          <div className="mt-10">
+            <LinkRows
+              cols={3}
+              items={dominantCities.map((city) => ({
+                href: `/trucks/${cat.slug}/rajasthan/${city.slug}`,
+                name: `${city.name} ${cat.title}`,
+                tag: `${city.areas.length} yards`,
+              }))}
+            />
+          </div>
+        </Section>
+      )}
+
+      <VltdPartnerSection locationName="Rajasthan" />
+
+      <FaqSection faqs={catFaqs} title={`${cat.title} questions`} track="trucks_category_faq_call" />
+
+      <FinalCta
+        title={`Get your ${cat.title} passed`}
+        sub="Send your vehicle number on WhatsApp and we confirm the slot and price right away."
+        whatsappMessage={waMessage}
+        track="trucks_category_final"
+      />
+
+      <DirectoryBand title="Other truck categories">
+        <LinkRows
+          cols={4}
+          items={TRUCK_CATEGORIES.map((c) => ({ href: `/trucks/${c.slug}`, name: c.title, tag: c.wheelAxle, current: c.slug === cat.slug }))}
+        />
+      </DirectoryBand>
+    </KitPage>
   );
 }

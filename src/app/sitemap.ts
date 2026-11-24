@@ -3,7 +3,7 @@ import { getAllStates, getPriorityTier, getStateCode, MAIN_STATE_CODES, FOCUS_ST
 import { SEGMENTS } from "@/data/segments";
 import { RTO_SERVICES } from "@/data/rto-services";
 import { CASE_STUDIES } from "@/data/case-studies";
-import { ALL_INDIA_STATES, getRtoFullSlug } from "@/data/india-rto-master";
+import { ALL_INDIA_STATES, ALL_INDIA_RTOS, getRtoFullSlug } from "@/data/india-rto-master";
 import { TRUCK_CATEGORIES, RAJASTHAN_TRUCK_CITIES } from "@/data/rajasthan-trucks-master";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -30,6 +30,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: masterDataLastUpdated,
       changeFrequency: "weekly",
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/faq`,
+      lastModified: masterDataLastUpdated,
+      changeFrequency: "weekly",
+      priority: 0.85,
     },
     {
       url: `${baseUrl}/about`,
@@ -267,6 +273,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const city of state.cities) for (const rto of city.rtos) pushHi(`/vltd/${state.slug}/${city.slug}/${rto.slug}`, 0.8);
   }
 
-  return [...staticPages, ...landingPages, ...hindiPages, ...vltdPages, ...rtoPartnerPages, ...truckPages];
+  // RTO code lookup pages ("TN 57 which district")
+  const rtoCodePages: MetadataRoute.Sitemap = [
+    { url: `${baseUrl}/rto-code`, lastModified: masterDataLastUpdated, changeFrequency: "monthly", priority: 0.7 },
+    ...ALL_INDIA_RTOS.map((r) => ({
+      url: `${baseUrl}/rto-code/${r.code.toLowerCase()}`,
+      lastModified: masterDataLastUpdated,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
+  ];
+
+  // Customer-facing RTO agent pages ("<city> rto agent contact number")
+  const rtoAgentPages: MetadataRoute.Sitemap = [
+    { url: `${baseUrl}/rto-agent`, lastModified: masterDataLastUpdated, changeFrequency: "monthly", priority: 0.8 },
+    ...ALL_INDIA_STATES.flatMap((st) =>
+      st.cities.map((ct) => ({
+        url: `${baseUrl}/rto-agent/${st.slug}/${ct.slug}`,
+        lastModified: masterDataLastUpdated,
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      }))
+    ),
+  ];
+
+  return [...staticPages, ...rtoAgentPages, ...landingPages, ...hindiPages, ...vltdPages, ...rtoPartnerPages, ...rtoCodePages, ...truckPages];
 }
 

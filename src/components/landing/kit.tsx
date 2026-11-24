@@ -97,7 +97,10 @@ export function PageHero({
   actions,
   children,
   formId = "quick-lead",
+  notice,
 }: {
+  /** Optional strip above the breadcrumbs, e.g. "Looking for X instead?" */
+  notice?: React.ReactNode;
   crumbs?: Crumb[];
   eyebrow: string;
   title: string;
@@ -112,6 +115,7 @@ export function PageHero({
   return (
     <section className="bg-[#18202E] pt-16 text-white">
       <div className={`${wrap} pb-10 pt-5 sm:pb-16 sm:pt-6 lg:pb-20`}>
+        {notice && <div className="mb-5">{notice}</div>}
         {crumbs && <HeroCrumbs items={crumbs} />}
         <div className="mt-5 grid grid-cols-[minmax(0,1fr)] gap-8 sm:mt-8 sm:gap-10 lg:mt-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-center lg:gap-16">
           <div>

@@ -1,19 +1,10 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import {
-  getTruckCityBySlug,
-  getTruckCategoryBySlug,
-  getAllCityTruckCategoryParams,
-  TRUCK_CATEGORIES,
-} from "@/data/rajasthan-trucks-master";
-import TruckHero from "@/components/trucks/truck-hero";
-import TruckComplianceBox from "@/components/trucks/truck-compliance-box";
-import { TruckCategoryGrid, RajasthanTruckCitiesGrid } from "@/components/trucks/truck-nav-grids";
-import RtoConsultantBanner from "@/components/vltd/rto-consultant-banner";
-import VltdFaqAccordion from "@/components/vltd/vltd-faq-accordion";
+import { getTruckCityBySlug, getTruckCategoryBySlug, getAllCityTruckCategoryParams, TRUCK_CATEGORIES } from "@/data/rajasthan-trucks-master";
 import JsonLdSchema from "@/components/vltd/json-ld-schema";
-import { ChevronRight, ArrowRight, MapPin, Truck, CheckCircle2, ShieldCheck, Wrench } from "lucide-react";
+import { KitPage, Section, SectionHead, LinkRows, FaqSection, FinalCta, DirectoryBand } from "@/components/landing/kit";
+import { VltdPartnerSection } from "@/components/vltd/vltd-kit-sections";
+import { TruckPageHero, TruckComplianceSection, rajasthanCityItems } from "@/components/trucks/truck-kit";
 
 type Props = {
   params: Promise<{
@@ -101,8 +92,11 @@ export default async function CityTruckCategoryPage({ params }: Props) {
     },
   ];
 
+  const waMessage = `Hi NViQ, I need AIS 140 fitment for ${cat.title} in ${city.name} (${rtoCodesStr}).`;
+  const otherCats = TRUCK_CATEGORIES.filter((tc) => tc.slug !== cat.slug && city.dominantCategories.includes(tc.slug));
+
   return (
-    <main className="min-h-screen bg-white text-gray-900">
+    <KitPage>
       <JsonLdSchema
         pageTitle={`${city.name} ${cat.title} AIS 140 VLTD Fitment (${rtoCodesStr})`}
         description={`Doorstep AIS 140 fitment for ${cat.title} in ${city.name} (${rtoCodesStr}).`}
@@ -112,108 +106,73 @@ export default async function CityTruckCategoryPage({ params }: Props) {
         breadcrumbs={breadcrumbs}
       />
 
-      {/* Breadcrumb Bar */}
-      <nav aria-label="Breadcrumb" className="border-b border-gray-100 bg-white pt-20 pb-3">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-xs text-gray-500 flex items-center gap-1.5 overflow-x-auto whitespace-nowrap">
-          <Link href="/" className="hover:text-gray-900 transition-colors">Home</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <Link href="/rto-partner" className="hover:text-gray-900 transition-colors">RTO Partner Network</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <Link href={`/trucks/${resolved.category}`} className="hover:text-gray-900 transition-colors">{cat.title}</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <span className="text-gray-900 font-medium">{city.name}</span>
-        </div>
-      </nav>
-
-      {/* Hero */}
-      <TruckHero
-        badge={rtoCodesStr}
-        title={`${city.name} ${cat.title} GPS Fitment`}
-        subtitle={`Doorstep AIS 140 VLTD fitment for ${cat.title} in ${city.name} (${rtoCodesStr}). 60-minute Vahan 4.0 certificate and Rajasthan DMG Khanij e-Ravanna whitelist.`}
-        highlights={[
-          `Doorstep fitment across ${city.name} transport yards`,
-          `Guaranteed 60-minute Vahan 4.0 certificate upload`,
-          `Pre-whitelisted for Rajasthan DMG Khanij e-Transit pass`,
+      <TruckPageHero
+        crumbs={[
+          { name: "Home", href: "/" },
+          { name: "Truck Categories", href: "/trucks" },
+          { name: cat.title, href: `/trucks/${resolved.category}` },
+          { name: "Rajasthan", href: `/trucks/${resolved.category}/${resolved.state}` },
+          { name: city.name },
         ]}
-        locationTag={`${city.name} • ${rtoCodesStr}`}
-        truckTypeTag={cat.title}
-        whatsappMessage={`Hi NViQ, I need AIS 140 fitment for ${cat.title} in ${city.name} (${rtoCodesStr}).`}
+        eyebrow={`Serving ${rtoCodesStr}`}
+        title={`${city.name} ${cat.title} GPS fitment`}
+        highlight={city.name}
+        intro={`Doorstep AIS 140 VLTD fitment for ${cat.title} in ${city.name}. Vahan 4.0 certificate in about an hour and Rajasthan DMG Khanij e-Ravanna whitelisted.`}
+        points={[`Fitment at ${city.name} yards`, "Certificate in ~60 minutes", "DMG Khanij e-Ravanna ready", "2 emergency panic buttons"]}
+        waMessage={waMessage}
+        topic={`AIS 140 VLTD fitment for ${cat.title} (${city.name})`}
+        source={`trucks_${cat.slug}_${city.slug}`}
+        track="trucks_city"
       />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        {/* Compliance Box */}
-        <TruckComplianceBox locationOrCategoryName={`${city.name} ${cat.title}`} rtoCode={rtoCodesStr} />
+      <TruckComplianceSection name={`${city.name} ${cat.title}`} rtoCode={rtoCodesStr} />
 
-        {/* Local Areas in this City */}
-        <div className="my-10 bg-gray-50/70 border border-gray-200 rounded-2xl p-6 sm:p-8">
-          <h3 className="text-xl font-bold text-gray-900 mb-2">
-            Doorstep Fitment Locations in {city.name} for {cat.title}
-          </h3>
-          <p className="text-xs sm:text-sm text-gray-600 mb-6">
-            Our technicians reach your parking yard, loading point, or dhaba across these major areas:
-          </p>
+      <Section tone="grey" labelledBy="areas-title">
+        <SectionHead
+          id="areas-title"
+          title={`Where we fit ${cat.title} in ${city.name}`}
+          sub="Our technician reaches your parking yard, loading point or dhaba in these areas."
+        />
+        <div className="mt-10">
+          <LinkRows
+            cols={3}
+            items={city.areas.map((area) => ({
+              href: `/truck-passing/${resolved.state}/${resolved.city}/${area.slug}`,
+              name: area.name,
+              tag: `${area.rtoCode} · ${area.doorstepFitmentTime}`,
+              strong: true,
+              text: `${area.landmark}. Yards: ${area.truckYards.slice(0, 2).join(", ")}`,
+            }))}
+          />
+        </div>
+      </Section>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {city.areas.map((area) => (
-              <div key={area.slug} className="p-4 rounded-xl bg-white border border-gray-200 shadow-xs">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-blue-800 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
-                    {area.rtoCode} Passing
-                  </span>
-                  <span className="text-[11px] font-semibold text-emerald-600">
-                    {area.doorstepFitmentTime}
-                  </span>
-                </div>
-                <h4 className="font-bold text-sm text-gray-900">{area.name}</h4>
-                <p className="text-xs text-gray-500 mt-1">{area.landmark}</p>
-                <div className="mt-3 pt-2 border-t border-gray-100 text-xs text-gray-600">
-                  <span className="font-medium text-gray-900">Yards:</span> {area.truckYards.slice(0, 2).join(", ")}
-                </div>
-              </div>
-            ))}
+      {otherCats.length > 0 && (
+        <Section labelledBy="other-title">
+          <SectionHead id="other-title" title={`Other fleets in ${city.name}`} sub={`Compliance for other vehicle types under ${rtoCodesStr}.`} />
+          <div className="mt-10">
+            <LinkRows
+              cols={3}
+              items={otherCats.map((c) => ({ href: `/trucks/${c.slug}/${resolved.state}/${resolved.city}`, name: c.title, tag: c.wheelAxle }))}
+            />
           </div>
-        </div>
+        </Section>
+      )}
 
-        {/* Other Truck Categories in this City */}
-        <div className="my-10">
-          <h3 className="text-xl font-bold text-gray-900 mb-1">
-            Other High-Density Fleets in {city.name}
-          </h3>
-          <p className="text-xs sm:text-sm text-gray-500 mb-4">
-            Explore compliance standards for other vehicle types operating under {rtoCodesStr}
-          </p>
+      <VltdPartnerSection locationName={city.name} />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {city.dominantCategories
-              .filter((c) => c !== cat.slug)
-              .map((catSlug) => {
-                const otherCat = TRUCK_CATEGORIES.find((tc) => tc.slug === catSlug);
-                if (!otherCat) return null;
-                return (
-                  <Link
-                    key={otherCat.slug}
-                    href={`/trucks/${otherCat.slug}/${resolved.state}/${resolved.city}`}
-                    className="p-4 rounded-xl border border-gray-200 bg-white hover:border-emerald-400 hover:shadow-md transition-all text-left flex items-center justify-between"
-                  >
-                    <div>
-                      <h4 className="font-bold text-sm text-gray-900">{otherCat.title}</h4>
-                      <p className="text-xs text-gray-500 mt-0.5">{otherCat.wheelAxle}</p>
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-emerald-600" />
-                  </Link>
-                );
-              })}
-          </div>
-        </div>
+      <FaqSection faqs={cityCatFaqs} title={`${city.name} ${cat.title} questions`} track="trucks_city_faq_call" />
 
-        {/* Wholesale Partner Banner */}
-        <RtoConsultantBanner locationName={`${city.name} (${cat.title})`} rtoCode={rtoCodesStr} />
+      <FinalCta
+        title={`Need same-day fitment in ${city.name}?`}
+        sub="Send your vehicle number on WhatsApp and we confirm the slot and price right away."
+        whatsappMessage={waMessage}
+        track="trucks_city_final"
+      />
 
-        {/* FAQs */}
-        <div className="my-12">
-          <VltdFaqAccordion faqs={cityCatFaqs} locationName={`${city.name} ${cat.title}`} />
-        </div>
-      </div>
-    </main>
+      <DirectoryBand title="Other Rajasthan trucking hubs">
+        <LinkRows cols={4} items={rajasthanCityItems(city.slug)} />
+      </DirectoryBand>
+    </KitPage>
   );
 }

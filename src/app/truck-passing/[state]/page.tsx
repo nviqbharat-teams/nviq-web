@@ -1,18 +1,10 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import {
-  getAllTruckCities,
-  getAllTruckStateParams,
-  TRUCK_CATEGORIES,
-} from "@/data/rajasthan-trucks-master";
-import TruckHero from "@/components/trucks/truck-hero";
-import TruckComplianceBox from "@/components/trucks/truck-compliance-box";
-import { TruckCategoryGrid, RajasthanTruckCitiesGrid } from "@/components/trucks/truck-nav-grids";
-import RtoConsultantBanner from "@/components/vltd/rto-consultant-banner";
-import VltdFaqAccordion from "@/components/vltd/vltd-faq-accordion";
+import { getAllTruckCities, getAllTruckStateParams } from "@/data/rajasthan-trucks-master";
 import JsonLdSchema from "@/components/vltd/json-ld-schema";
-import { ChevronRight, Shield, MapPin, Truck, CheckCircle2 } from "lucide-react";
+import { KitPage, FaqSection, FinalCta } from "@/components/landing/kit";
+import { VltdPartnerSection } from "@/components/vltd/vltd-kit-sections";
+import { TruckPageHero, TruckComplianceSection, TruckCategoryRows, RajasthanCityRows } from "@/components/trucks/truck-kit";
 
 type Props = {
   params: Promise<{
@@ -96,7 +88,7 @@ export default async function TruckPassingStatePage({ params }: Props) {
   ];
 
   return (
-    <main className="min-h-screen bg-white text-gray-900">
+    <KitPage>
       <JsonLdSchema
         pageTitle="Rajasthan Truck Passing & AIS 140 VLTD Fitment"
         description="Doorstep AIS 140 fitment for commercial trucks, marble trollas, bajri dumpers, and bulkers across Rajasthan."
@@ -106,52 +98,35 @@ export default async function TruckPassingStatePage({ params }: Props) {
         breadcrumbs={breadcrumbs}
       />
 
-      {/* Breadcrumb Bar */}
-      <nav aria-label="Breadcrumb" className="border-b border-gray-100 bg-white pt-20 pb-3">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-xs text-gray-500 flex items-center gap-1.5 overflow-x-auto whitespace-nowrap">
-          <Link href="/" className="hover:text-gray-900 transition-colors">Home</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <Link href="/rto-partner" className="hover:text-gray-900 transition-colors">RTO Partner Network</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <span className="text-gray-900 font-medium">Rajasthan Truck Passing</span>
-        </div>
-      </nav>
-
-      {/* Hero */}
-      <TruckHero
-        badge="Rajasthan Fleet Passing"
-        title="Rajasthan Truck Passing & AIS 140 GPS Fitment"
-        subtitle="Doorstep fitment for Marble Trollas, Bajri Tippers, Bulkers & Freight Fleets across Rajasthan. 60-minute Vahan 4.0 certificate and DMG Khanij e-Ravanna whitelist."
-        highlights={[
-          "Doorstep technician service at Transport Nagars & parking yards",
-          "Guaranteed 60-minute certificate sync to Vahan 4.0",
-          "Whitelisted for Rajasthan DMG Khanij e-Ravanna transit passes",
-        ]}
-        locationTag="Rajasthan"
-        truckTypeTag="Heavy Commercial Fleets"
+      <TruckPageHero
+        crumbs={[{ name: "Home", href: "/" }, { name: "Truck Categories", href: "/trucks" }, { name: "Rajasthan Truck Passing" }]}
+        eyebrow="Rajasthan fleet passing"
+        title="Rajasthan truck passing & AIS 140 GPS fitment"
+        highlight="truck passing"
+        intro="Doorstep fitment for marble trollas, bajri tippers, bulkers and freight fleets across Rajasthan. Vahan 4.0 certificate in about an hour and DMG Khanij e-Ravanna whitelisted."
+        points={["Fitment at transport nagars", "Certificate in ~60 minutes", "DMG Khanij e-Ravanna ready", `${cities.length} cities covered`]}
+        waMessage="Hi NViQ, I need truck AIS 140 GPS fitment & fitness certificate in Rajasthan."
+        topic="Truck passing & AIS 140 fitment (Rajasthan)"
+        source="truck_passing_rajasthan"
+        track="truck_passing_state"
       />
 
-      {/* Body Content Container */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        {/* Compliance Box */}
-        <TruckComplianceBox locationOrCategoryName="Rajasthan" />
+      <TruckComplianceSection name="Rajasthan" />
 
-        {/* Truck Cities Grid */}
-        <RajasthanTruckCitiesGrid />
+      <RajasthanCityRows title="Pick your city" sub="Transport nagars, RTO codes and doorstep fitment times for each Rajasthan hub." />
 
-        {/* Truck Categories Grid */}
-        <TruckCategoryGrid />
+      <TruckCategoryRows />
 
-        {/* Wholesale Banner */}
-        <div className="my-10">
-          <RtoConsultantBanner locationName="Rajasthan Transport Corridors" />
-        </div>
+      <VltdPartnerSection locationName="Rajasthan" />
 
-        {/* FAQ Accordion */}
-        <div className="my-12">
-          <VltdFaqAccordion faqs={stateFaqs} locationName="Rajasthan" />
-        </div>
-      </div>
-    </main>
+      <FaqSection faqs={stateFaqs} title="Rajasthan truck passing questions" track="truck_passing_state_faq_call" />
+
+      <FinalCta
+        title="Need your truck passed this week?"
+        sub="Send your vehicle number on WhatsApp and we confirm the slot and price right away."
+        whatsappMessage="Hi NViQ, I need truck AIS 140 GPS fitment & fitness certificate in Rajasthan."
+        track="truck_passing_state_final"
+      />
+    </KitPage>
   );
 }

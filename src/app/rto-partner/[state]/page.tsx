@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import {
   getStateBySlug,
   getAllStateParams,
@@ -8,27 +7,7 @@ import {
   getRtoRegionName,
   ALL_INDIA_STATES,
 } from "@/data/india-rto-master";
-import RtoPartnerForm from "@/components/rto/rto-partner-form";
-import RtoPartnerPrivileges from "@/components/rto/rto-partner-privileges";
-import { TruckCategoryGrid, RajasthanTruckCitiesGrid } from "@/components/trucks/truck-nav-grids";
-import {
-  ShieldCheck,
-  PhoneCall,
-  CheckCircle2,
-  Building2,
-  ChevronRight,
-  ArrowRight,
-  Smartphone,
-  Check,
-  HelpCircle,
-  Clock,
-  Laptop,
-  Award,
-  Users,
-  TrendingUp,
-  FileCheck2,
-} from "lucide-react";
-import { HeroEyebrow } from "@/components/hero/hero-text";
+import { RtoPartnerLocalView } from "@/components/rto/rto-partner-local-view";
 
 export const dynamicParams = true;
 export const revalidate = 604800;
@@ -55,14 +34,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const totalRtos = state.cities.reduce((acc, c) => acc + c.rtos.length, 0);
-  const title = `RTO Agent & AIS 140 VLTD Partner Network in ${state.name} (${totalRtos} RTO Hubs) | Parivahan Sewa Certified`;
-  const description = `Join NViQ authorized RTO consultant and dealer network across ${state.name}. Covering ${state.cities.length} cities and ${totalRtos} RTO offices. Instant 15-minute Parivahan Sewa / Vahan 4.0 certificates, doorstep fitment, and wholesale agent margins.`;
+  const title = `Become an RTO Partner in ${state.name}: AIS 140 Dealer Rates for RTO Agents & Consultants`;
+  const description = `For RTO agents and consultants: join NViQ authorized RTO consultant and dealer network across ${state.name}. Covering ${state.cities.length} cities and ${totalRtos} RTO offices. Instant 15-minute Parivahan Sewa / Vahan 4.0 certificates, doorstep fitment, and wholesale agent margins.`;
 
   const keywords = [
-    `rto agent near me ${state.name.toLowerCase()}`,
-    `rto consultant near me ${state.name.toLowerCase()}`,
     `rto office in ${state.name.toLowerCase()}`,
-    `nearest rto office near me ${state.name.toLowerCase()}`,
     `parivahan seva ${state.name.toLowerCase()}`,
     `vltd certificate ${state.name.toLowerCase()}`,
     `vltd device price ${state.name.toLowerCase()}`,
@@ -129,10 +105,7 @@ export default async function RtoStatePartnerPage({ params }: Props) {
 
   const totalRtos = state.cities.reduce((acc, c) => acc + c.rtos.length, 0);
 
-  const whatsappMessage = encodeURIComponent(
-    `Hi NViQ Team, I am an RTO Agent/Consultant in ${state.name}. I want to partner with NViQ for vehicle fitness passing and instant VLTD certificates across ${state.name}.`
-  );
-  const whatsappUrl = `https://wa.me/919257038711?text=${whatsappMessage}`;
+  const waMessage = `Hi NViQ Team, I am an RTO Agent/Consultant in ${state.name}. I want to partner with NViQ for vehicle fitness passing and instant VLTD certificates across ${state.name}.`;
 
   const stateFaqs = [
     {
@@ -231,508 +204,39 @@ export default async function RtoStatePartnerPage({ params }: Props) {
   };
 
   return (
-    <div className="bg-white text-gray-900 min-h-screen font-sans">
-      {/* Schema */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
-      {/* ── BREADCRUMB ────────────────────────────────────────── */}
-      <nav aria-label="Breadcrumb" className="border-b border-gray-100 bg-white pt-20 pb-3.5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ol className="flex items-center gap-2 text-xs text-gray-500 overflow-x-auto whitespace-nowrap scrollbar-none py-1">
-            <li>
-              <Link href="/" className="hover:text-gray-900 transition-colors">Home</Link>
-            </li>
-            <li><ChevronRight className="h-3.5 w-3.5 text-gray-400 shrink-0" aria-hidden="true" /></li>
-            <li>
-              <Link href="/rto-partner" className="hover:text-gray-900 transition-colors">RTO Partner Network</Link>
-            </li>
-            <li><ChevronRight className="h-3.5 w-3.5 text-gray-400 shrink-0" aria-hidden="true" /></li>
-            <li>
-              <span className="text-gray-900 font-bold" aria-current="page">{state.name}</span>
-            </li>
-          </ol>
-        </div>
-      </nav>
-
-      {/* ── HERO SECTION ──────────────────────────────────────── */}
-      <section className="bg-white pt-6 pb-12 sm:pt-12 sm:pb-20 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
-            <div className="lg:col-span-7">
-              <HeroEyebrow tone="light" className="mb-4 sm:mb-5">Govt Approved AIS 140 VLTD • Parivahan Sewa Ready</HeroEyebrow>
-
-              <h1 className="text-balance text-[28px] sm:text-5xl font-extrabold sm:font-black text-gray-900 tracking-tight leading-[1.15] sm:leading-[1.08]">
-                Authorized AIS 140 GPS Partner in{" "}
-                <span className="text-blue-600">
-                  {state.name}
-                </span>
-              </h1>
-
-              <p className="mt-3 sm:mt-4 line-clamp-3 sm:line-clamp-none text-[15px] sm:text-lg text-gray-600 leading-relaxed max-w-2xl">
-                Get instant commercial vehicle passing certificates, direct wholesale dealer rates, and fast doorstep technician fitting across all {state.cities.length} cities in {state.name}.
-              </p>
-
-              {/* 4 Simple, Clear Benefits */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-5 sm:mt-7">
-                <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-3 text-center">
-                  <span className="block text-sm sm:text-base font-bold text-gray-900">15-Min Sync</span>
-                  <span className="text-[11px] text-gray-500 font-medium">Fast Parivahan Certificate</span>
-                </div>
-                <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-3 text-center">
-                  <span className="block text-sm sm:text-base font-bold text-gray-900">Wholesale Rates</span>
-                  <span className="text-[11px] text-gray-500 font-medium">Best Agent Margins</span>
-                </div>
-                <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-3 text-center">
-                  <span className="block text-sm sm:text-base font-bold text-gray-900">Doorstep Fitment</span>
-                  <span className="text-[11px] text-gray-500 font-medium">Fitting at Your Yard</span>
-                </div>
-                <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-3 text-center">
-                  <span className="block text-sm sm:text-base font-bold text-gray-900">Zero Rejections</span>
-                  <span className="text-[11px] text-gray-500 font-medium">100% Passing Guarantee</span>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="mt-7 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                <a
-                  href="#apply"
-                  className="inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-colors text-sm"
-                >
-                  <Building2 className="h-4 w-4" />
-                  <span>Apply for {state.name} Dealership</span>
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl font-medium text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 transition-colors text-sm shadow-xs"
-                >
-                  <Smartphone className="h-4 w-4 text-emerald-600" />
-                  <span>WhatsApp {state.name} Desk</span>
-                </a>
-              </div>
-            </div>
-
-            <div id="apply" className="lg:col-span-5 scroll-mt-24">
-              <RtoPartnerForm defaultLocationName={state.name} />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 1-HOUR CERTIFICATES & DUAL MOBILE APPS ECOSYSTEM ───── */}
-      <RtoPartnerPrivileges locationName={state.name} />
-
-      {/* ── THE 6 ADVANTAGES ──────────────────────────────────── */}
-      <section className="py-16 bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left max-w-2xl mb-12">
-            <span className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-              Why Partner With NViQ
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mt-1">
-              Built for Seamless RTO Operations in {state.name}
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              No delays, zero certification rejections on inspection lanes, and no working capital lock-in.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="rounded-xl bg-white border border-gray-200 p-6 shadow-xs hover:border-blue-300 transition-colors">
-              <div className="h-10 w-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
-                <Laptop className="h-5 w-5" />
-              </div>
-              <h3 className="text-base font-bold text-gray-900">Mobile Fitment Certificate Portal</h3>
-              <p className="text-xs sm:text-sm text-gray-600 mt-2 leading-relaxed">
-                Generate and download certified fitment certificates directly from your mobile phone or laptop once vehicle installation is completed.
-              </p>
-              <div className="mt-3 pt-2.5 border-t border-gray-100 flex items-center gap-1.5 text-[11px] text-gray-500 font-medium">
-                <CheckCircle2 className="h-3.5 w-3.5 text-blue-600 shrink-0" />
-                <span>Generated upon fitment &amp; telemetry validation</span>
-              </div>
-            </div>
-
-            <div className="rounded-xl bg-white border border-gray-200 p-6 shadow-xs hover:border-blue-300 transition-colors">
-              <div className="h-10 w-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
-              <h3 className="text-base font-bold text-gray-900">Guaranteed Vahan 4.0 Whitelisting</h3>
-              <p className="text-xs sm:text-sm text-gray-600 mt-2 leading-relaxed">
-                Zero rejections on fitness test lanes across all {totalRtos} RTO offices in {state.name}. ARAI &amp; ICAT certified AIS 140 devices.
-              </p>
-            </div>
-
-            <div className="rounded-xl bg-white border border-gray-200 p-6 shadow-xs hover:border-blue-300 transition-colors">
-              <div className="h-10 w-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center mb-4">
-                <Award className="h-5 w-5" />
-              </div>
-              <h3 className="text-base font-bold text-gray-900">AITP &amp; Mining Compliant</h3>
-              <p className="text-xs sm:text-sm text-gray-600 mt-2 leading-relaxed">
-                Pre-approved for All India Tourist Permit (AITP) and state mining portals (e-Ravanna, Khanij Online, i-Khanij).
-              </p>
-            </div>
-
-            <div className="rounded-xl bg-white border border-gray-200 p-6 shadow-xs hover:border-blue-300 transition-colors">
-              <div className="h-10 w-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
-                <CheckCircle2 className="h-5 w-5" />
-              </div>
-              <h3 className="text-base font-bold text-gray-900">Zero Minimum Inventory Lock-in</h3>
-              <p className="text-xs sm:text-sm text-gray-600 mt-2 leading-relaxed">
-                Never tie up working capital in unsold stock. Request devices as fitness passing orders arrive, with express dispatch to {state.name}.
-              </p>
-            </div>
-
-            <div className="rounded-xl bg-white border border-gray-200 p-6 shadow-xs hover:border-blue-300 transition-colors">
-              <div className="h-10 w-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
-                <Users className="h-5 w-5" />
-              </div>
-              <h3 className="text-base font-bold text-gray-900">Doorstep Mobile Technicians</h3>
-              <p className="text-xs sm:text-sm text-gray-600 mt-2 leading-relaxed">
-                Request our certified fitment technicians to complete panic button wiring and device testing at your client&apos;s yard across {state.name}.
-              </p>
-            </div>
-
-            <div className="rounded-xl bg-white border border-gray-200 p-6 shadow-xs hover:border-blue-300 transition-colors">
-              <div className="h-10 w-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center mb-4">
-                <TrendingUp className="h-5 w-5" />
-              </div>
-              <h3 className="text-base font-bold text-gray-900">Automated Annual Fleet Management</h3>
-              <p className="text-xs sm:text-sm text-gray-600 mt-2 leading-relaxed">
-                Vehicles return annually for fitness passing. We provide automated renewal tracking and alert management for all your registered clients.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── VEHICLES & PORTALS ────────────────────────────────── */}
-      <section className="py-16 bg-gray-50/60 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-            <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-                Compliance Matrix
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mt-1">
-                Supported Vehicles &amp; Portals in {state.name}
-              </h2>
-              <p className="mt-3 text-sm text-gray-600 leading-relaxed">
-                Whether your client is passing a national permit commercial truck, a private school bus, or 20 mining tippers, NViQ provides complete end-to-end compliance across {state.name}.
-              </p>
-
-              <div className="mt-6 grid grid-cols-2 gap-3 text-xs sm:text-sm text-gray-700">
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span>Mining Tippers &amp; Dumpers</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span>Petroleum &amp; Chemical Tankers</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span>School &amp; Commercial Buses</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span>Tempo Travellers &amp; Maxi Cabs</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span>Multi-Axle Cargo Trucks</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span>Transit Mixers &amp; Cranes</span>
-                </div>
-              </div>
-
-              <div className="mt-7 pt-5 border-t border-gray-200">
-                <Link
-                  href="/vltd"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700"
-                >
-                  <span>Explore State Mining Portals Hub</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              <div className="rounded-xl bg-white border border-gray-200 p-4 shadow-xs">
-                <span className="text-[11px] font-semibold text-blue-600 uppercase">MoRTH National Portal</span>
-                <h3 className="text-sm font-bold text-gray-900 mt-1">Parivahan Sewa &amp; Vahan 4.0</h3>
-                <p className="text-xs text-gray-500 mt-1">Direct parivahan.gov.in backend sync for commercial vehicle fitness test clearance.</p>
-              </div>
-              <div className="rounded-xl bg-white border border-gray-200 p-4 shadow-xs">
-                <span className="text-[11px] font-semibold text-blue-600 uppercase">State Transport</span>
-                <h3 className="text-sm font-bold text-gray-900 mt-1">{state.name} Transport Dept</h3>
-                <p className="text-xs text-gray-500 mt-1">Full compliance with state motor vehicle rules across all {state.cities.length} districts.</p>
-              </div>
-              <div className="rounded-xl bg-white border border-gray-200 p-4 shadow-xs">
-                <span className="text-[11px] font-semibold text-blue-600 uppercase">Tourist Permit</span>
-                <h3 className="text-sm font-bold text-gray-900 mt-1">AITP National Permit</h3>
-                <p className="text-xs text-gray-500 mt-1">Instant vehicle mapping for luxury buses, maxi-cabs, and tourist coaches.</p>
-              </div>
-              <div className="rounded-xl bg-white border border-gray-200 p-4 shadow-xs">
-                <span className="text-[11px] font-semibold text-blue-600 uppercase">Mining Transit</span>
-                <h3 className="text-sm font-bold text-gray-900 mt-1">State Mining Portals</h3>
-                <p className="text-xs text-gray-500 mt-1">Whitelisted for e-Ravanna and electronic mining transit permits.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── SIMPLE ONBOARDING STEPS ───────────────────────────── */}
-      <section className="py-16 bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left max-w-2xl mb-12">
-            <span className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-              Simple Onboarding
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mt-1">
-              Start Issuing in 4 Simple Steps
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Get your {state.name} RTO partner dealership setup in less than 2 hours without complex paperwork.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <div className="rounded-xl bg-gray-50 border border-gray-200 p-5">
-              <span className="text-2xl font-bold text-blue-600">01</span>
-              <h3 className="text-sm font-bold text-gray-900 mt-2">Submit Details</h3>
-              <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-                Fill the partner form or send your {state.name} RTO agency details via WhatsApp to our team.
-              </p>
-            </div>
-
-            <div className="rounded-xl bg-gray-50 border border-gray-200 p-5">
-              <span className="text-2xl font-bold text-blue-600">02</span>
-              <h3 className="text-sm font-bold text-gray-900 mt-2">Get Portal Access</h3>
-              <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-                Receive authorized dealer credentials for the mobile certificate issuance app.
-              </p>
-            </div>
-
-            <div className="rounded-xl bg-gray-50 border border-gray-200 p-5">
-              <span className="text-2xl font-bold text-blue-600">03</span>
-              <h3 className="text-sm font-bold text-gray-900 mt-2">Order Devices</h3>
-              <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-                Receive AIS 140 VLTD units with express delivery and zero inventory lock-in.
-              </p>
-            </div>
-
-            <div className="rounded-xl bg-gray-50 border border-gray-200 p-5">
-              <span className="text-2xl font-bold text-blue-600">04</span>
-              <h3 className="text-sm font-bold text-gray-900 mt-2">Verified Certificate Issuance</h3>
-              <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-                Complete fitment, verify telemetry via mobile app, and download certified Vahan passing certificates.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── CITIES & RTO DIRECTORY ───────────────────────────── */}
-      <section className="py-16 bg-gray-50/60 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left mb-10">
-            <span className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-              District Jurisdiction
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mt-1">
-              All Cities &amp; RTO Passing Lanes in {state.name}
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Select your city to view exact RTO office locations, doorstep fitting coverage, and local passing lanes.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {state.cities.map((city) => {
-              const cityHref =
-                city.rtos.length === 1
-                  ? `/rto-partner/${state.slug}/${city.slug}/${getRtoFullSlug(city.rtos[0], city.name)}`
-                  : `/rto-partner/${state.slug}/${city.slug}`;
-
-              return (
-                <div
-                  key={city.slug}
-                  className="bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-xs transition-all flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <Link
-                        href={cityHref}
-                        className="font-bold text-base text-gray-900 hover:text-blue-600 transition-colors"
-                      >
-                        {city.name}
-                      </Link>
-                      <span className="text-[11px] font-semibold text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
-                        {city.rtos.length} {city.rtos.length > 1 ? "RTOs" : "RTO"}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-wrap gap-1.5 mt-3">
-                      {city.rtos.map((rto) => {
-                        const regionName = getRtoRegionName(rto.name, city.name);
-                        const fullSlug = getRtoFullSlug(rto, city.name);
-                        return (
-                          <Link
-                            key={rto.slug}
-                            href={`/rto-partner/${state.slug}/${city.slug}/${fullSlug}`}
-                            className="px-2 py-1 rounded-lg bg-gray-50 hover:bg-blue-600 text-xs text-gray-700 hover:text-white transition-colors border border-gray-200 hover:border-blue-600 flex items-center gap-1"
-                          >
-                            <span className="font-medium text-[11px]">{regionName}</span>
-                            <span className="font-mono font-bold text-[11px] opacity-80">({rto.code})</span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
-                    <Link
-                      href={cityHref}
-                      className="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1"
-                    >
-                      <span>Explore {city.name}</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* ── COMMERCIAL FLEET & TRUCK PASSING INTERNAL LINKING ── */}
-          <div className="mt-16 pt-12 border-t border-gray-200">
-            <div className="text-center max-w-3xl mx-auto mb-8">
-              <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600 mb-2 block">
-                {state.name} Commercial Fleet Compliance
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
-                Commercial Truck Passing &amp; Mining Fleet Directory
-              </h2>
-              <p className="mt-2 text-sm text-gray-600">
-                Explore government-approved AIS 140 VLTD fitment specifications for heavy commercial vehicles and mining tippers.
-              </p>
-            </div>
-
-            <TruckCategoryGrid />
-            {state.slug === "rajasthan" && <RajasthanTruckCitiesGrid />}
-          </div>
-        </div>
-      </section>
-
-      {/* ── FREQUENTLY ASKED QUESTIONS ───────────────────────── */}
-      <section className="py-16 bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left mb-10">
-            <span className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-              Partner FAQs
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mt-1">
-              RTO Consultant &amp; Agent FAQs in {state.name}
-            </h2>
-          </div>
-
-          <div className="space-y-3.5">
-            {stateFaqs.map((faq, idx) => (
-              <div
-                key={idx}
-                className="rounded-xl bg-white border border-gray-200 p-5 sm:p-6 shadow-xs"
-              >
-                <h3 className="text-sm sm:text-base font-bold text-gray-900 flex items-start gap-2.5">
-                  <HelpCircle className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
-                  <span>{faq.q}</span>
-                </h3>
-                <p className="mt-2 text-xs sm:text-sm text-gray-600 leading-relaxed pl-6.5">
-                  {faq.a}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── OTHER STATES IN INDIA ─────────────────────────────── */}
-      <section className="py-16 bg-gray-50/60 text-center">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-4 mb-6">
-            <div className="text-left">
-              <span className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-                National Network
-              </span>
-              <h2 className="text-xl font-bold text-gray-900 tracking-tight mt-1">
-                Explore RTO Partner Networks in Other States
-              </h2>
-            </div>
-            <Link
-              href="/rto-partner"
-              className="text-xs font-semibold text-blue-600 hover:text-blue-700"
-            >
-              All India Overview →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {ALL_INDIA_STATES.slice(0, 18).map((st) => (
-              <Link
-                key={st.slug}
-                href={`/rto-partner/${st.slug}`}
-                className={`p-3.5 rounded-xl border text-xs transition-all ${st.slug === state.slug
-                  ? "bg-blue-50 border-blue-300 text-blue-900 font-bold shadow-xs"
-                  : "bg-white border-gray-200 text-gray-700 hover:border-blue-400 hover:shadow-2xs"
-                  }`}
-              >
-                <span className="block font-semibold text-sm mb-0.5">{st.name}</span>
-                <span className="text-gray-500 text-[11px] font-mono">{st.code}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── BOTTOM CALL TO ACTION ─────────────────────────────── */}
-      <section className="py-16 bg-white border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-8 sm:p-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
-              Ready to Expand Your RTO Passing Business in {state.name}?
-            </h2>
-            <p className="mt-2 text-sm text-gray-600 max-w-lg mx-auto">
-              Join leading RTO agents across {state.cities.length} cities who trust NViQ for zero-rejection AIS 140 VLTD fitments.
-            </p>
-
-            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <a
-                href="#apply"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-colors text-sm cursor-pointer"
-              >
-                <span>Apply for {state.name} Dealership</span>
-                <ArrowRight className="h-4 w-4" />
-              </a>
-
-              <a
-                href="tel:+919257038711"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-medium text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 transition-colors text-sm cursor-pointer"
-              >
-                <PhoneCall className="h-4 w-4 text-blue-600" />
-                <span>Call Desk: +91 92570 38711</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+    <RtoPartnerLocalView
+      jsonLd={jsonLd}
+      crumbs={[{ name: "Home", href: "/" }, { name: "RTO Partner Network", href: "/rto-partner" }, { name: state.name }]}
+      eyebrow="Govt approved AIS 140 VLTD · Parivahan Sewa ready"
+      title={`Authorised AIS 140 GPS partner in ${state.name}`}
+      highlight={state.name}
+      intro={`Get commercial vehicle passing certificates fast, direct wholesale dealer rates, and doorstep technician fitting across all ${state.cities.length} cities in ${state.name}.`}
+      points={["15-min Parivahan certificate sync", "Wholesale rates, best agent margins", "Fitting at your client's yard", `${totalRtos} RTO offices covered`]}
+      place={state.name}
+      stateName={state.name}
+      waMessage={waMessage}
+      track="rto_state"
+      form={{ defaultLocationName: state.name }}
+      rtoSection={{
+        title: `All cities and RTO passing lanes in ${state.name}`,
+        sub: "Pick your city to see the RTO offices, doorstep fitting coverage and local passing lanes.",
+        cols: 3,
+        items: state.cities.map((city) => ({
+          href:
+            city.rtos.length === 1
+              ? `/rto-partner/${state.slug}/${city.slug}/${getRtoFullSlug(city.rtos[0], city.name)}`
+              : `/rto-partner/${state.slug}/${city.slug}`,
+          name: city.name,
+          tag: `${city.rtos.length} ${city.rtos.length > 1 ? "RTOs" : "RTO"}`,
+          text: city.rtos.map((r) => `${getRtoRegionName(r.name, city.name)} (${r.code})`).join(", "),
+        })),
+      }}
+      faqs={stateFaqs}
+      faqTitle={`RTO agent questions in ${state.name}`}
+      directoryTitle="RTO partner networks in other states"
+      directoryChips={ALL_INDIA_STATES.map((st) => ({ href: `/rto-partner/${st.slug}`, name: st.name, current: st.slug === state.slug }))}
+      showRajasthanHubs={state.slug === "rajasthan"}
+      customerHref={`/rto-agent#${state.slug}`}
+    />
   );
 }
