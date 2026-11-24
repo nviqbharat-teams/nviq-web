@@ -1729,7 +1729,7 @@ export const ALL_INDIA_STATES: MasterState[] = [
           {
             "code": "GJ-38",
             "slug": "gj-38",
-            "name": "Bavla RTO"
+            "name": "Bavla ARTO"
           }
         ],
         "slug": "ahmedabad"
@@ -12576,7 +12576,7 @@ export const ALL_INDIA_RTOS: FlattenedRto[] = [
   {
     "code": "GJ-38",
     "slug": "gj-38",
-    "rtoName": "Bavla RTO",
+    "rtoName": "Bavla ARTO",
     "cityName": "Ahmedabad",
     "citySlug": "ahmedabad",
     "stateName": "Gujarat",

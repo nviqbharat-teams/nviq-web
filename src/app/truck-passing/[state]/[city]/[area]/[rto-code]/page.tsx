@@ -1,17 +1,10 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import {
-  getTruckAreaRtoDetail,
-  getAllTruckPassingAreaRtoParams,
-} from "@/data/rajasthan-trucks-master";
-import TruckHero from "@/components/trucks/truck-hero";
-import TruckComplianceBox from "@/components/trucks/truck-compliance-box";
-import { TruckCategoryGrid, RajasthanTruckCitiesGrid } from "@/components/trucks/truck-nav-grids";
-import RtoConsultantBanner from "@/components/vltd/rto-consultant-banner";
-import VltdFaqAccordion from "@/components/vltd/vltd-faq-accordion";
+import { getTruckAreaRtoDetail, getAllTruckPassingAreaRtoParams } from "@/data/rajasthan-trucks-master";
 import JsonLdSchema from "@/components/vltd/json-ld-schema";
-import { ChevronRight, ShieldCheck, MapPin, CheckCircle2, Clock, FileCheck2, Building2 } from "lucide-react";
+import { KitPage, Section, SectionHead, LinkRows, FaqSection, FinalCta, DirectoryBand, Steps } from "@/components/landing/kit";
+import { VltdPartnerSection } from "@/components/vltd/vltd-kit-sections";
+import { TruckPageHero, TruckComplianceSection, TruckCategoryRows, rajasthanCityItems } from "@/components/trucks/truck-kit";
 
 type Props = {
   params: Promise<{
@@ -109,8 +102,10 @@ export default async function TruckPassingAreaRtoPage({ params }: Props) {
     },
   ];
 
+  const waMessage = `Hi NViQ, I need AIS 140 VLTD fitment certificate for ${area.rtoCode} passing at ${area.name}.`;
+
   return (
-    <main className="min-h-screen bg-white text-gray-900">
+    <KitPage>
       <JsonLdSchema
         pageTitle={`${area.rtoCode} (${area.rtoName}) Truck Passing & AIS 140 VLTD Fitment`}
         description={`Approved AIS 140 fitment for ${area.rtoCode} commercial fitness passing at ${area.name}, ${city.name}.`}
@@ -120,90 +115,59 @@ export default async function TruckPassingAreaRtoPage({ params }: Props) {
         breadcrumbs={breadcrumbs}
       />
 
-      {/* Breadcrumb Bar */}
-      <nav aria-label="Breadcrumb" className="border-b border-gray-100 bg-white pt-20 pb-3">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-xs text-gray-500 flex items-center gap-1.5 overflow-x-auto whitespace-nowrap">
-          <Link href="/" className="hover:text-gray-900 transition-colors">Home</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <Link href={`/truck-passing/${resolved.state}`} className="hover:text-gray-900 transition-colors">Rajasthan</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <Link href={`/truck-passing/${resolved.state}/${resolved.city}`} className="hover:text-gray-900 transition-colors">{city.name}</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <Link href={`/truck-passing/${resolved.state}/${resolved.city}/${resolved.area}`} className="hover:text-gray-900 transition-colors">{area.name}</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <span className="text-gray-900 font-medium">{area.rtoCode} Passing</span>
-        </div>
-      </nav>
-
-      {/* Hero */}
-      <TruckHero
-        badge={area.rtoCode}
-        title={`${area.rtoCode} (${area.rtoName}) Truck Passing & GPS Fitment`}
-        subtitle={`Doorstep AIS 140 VLTD fitment at ${area.name}. Fast 60-minute Parivahan Vahan 4.0 certificate sync and Rajasthan DMG Khanij e-Ravanna whitelist.`}
-        highlights={[
-          `Doorstep installation at ${area.name} within ${area.doorstepFitmentTime}`,
-          `60-minute Parivahan Vahan 4.0 certificate upload`,
-          `Whitelisted for Rajasthan DMG Khanij e-Ravanna transit passes`,
+      <TruckPageHero
+        crumbs={[
+          { name: "Home", href: "/" },
+          { name: "Rajasthan", href: `/truck-passing/${resolved.state}` },
+          { name: city.name, href: `/truck-passing/${resolved.state}/${resolved.city}` },
+          { name: area.name, href: `/truck-passing/${resolved.state}/${resolved.city}/${resolved.area}` },
+          { name: `${area.rtoCode} Passing` },
         ]}
-        locationTag={`${area.rtoCode} • ${area.name}`}
-        truckTypeTag={area.dominantFleets[0]}
-        whatsappMessage={`Hi NViQ, I need AIS 140 VLTD fitment certificate for ${area.rtoCode} passing at ${area.name}.`}
+        eyebrow={`${area.rtoCode} · ${area.name}`}
+        title={`${area.rtoCode} (${area.rtoName}) truck passing & GPS fitment`}
+        highlight={area.rtoCode}
+        intro={`Doorstep AIS 140 VLTD fitment at ${area.name}. Vahan 4.0 certificate in about an hour and Rajasthan DMG Khanij e-Ravanna whitelisted.`}
+        points={[`Technician in ${area.doorstepFitmentTime}`, "Certificate in ~60 minutes", "DMG Khanij e-Ravanna ready", "2 emergency panic buttons"]}
+        waMessage={waMessage}
+        topic={`${area.rtoCode} truck passing AIS 140 fitment (${area.name})`}
+        source={`truck_passing_${city.slug}_${area.slug}_rto`}
+        track="truck_passing_rto"
       />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        {/* Compliance Box */}
-        <TruckComplianceBox locationOrCategoryName={`${area.rtoName} (${area.rtoCode})`} rtoCode={area.rtoCode} />
+      <Section labelledBy="steps-title">
+        <SectionHead
+          id="steps-title"
+          title={`How ${area.rtoCode} fitness passing works`}
+          sub={`How NViQ gets your vehicle passed at ${area.rtoName} without re-inspection delays.`}
+        />
+        <Steps
+          steps={[
+            { title: "Doorstep fitment", text: `Technician reaches your ${area.name} yard within ${area.doorstepFitmentTime} to wire the AIS 140 unit and 2 panic buttons.` },
+            { title: "Live SOS ping test", text: "Panic buttons are triggered to verify alert delivery to police and transport emergency servers." },
+            { title: "Vahan 4.0 sync in ~1 hour", text: `The fitment certificate is pushed to Parivahan Sewa under ${area.rtoCode}.` },
+            { title: "Fitness clearance", text: `The ${area.rtoName} inspector sees the active certificate online and your passing goes ahead.` },
+          ]}
+        />
+      </Section>
 
-        {/* Passing Process Checklist */}
-        <div className="my-10 bg-gray-50/70 border border-gray-200 rounded-2xl p-6 sm:p-8">
-          <h3 className="text-xl font-bold text-gray-900 mb-2">
-            Step-by-Step {area.rtoCode} Commercial Vehicle Fitness Passing Protocol
-          </h3>
-          <p className="text-xs sm:text-sm text-gray-600 mb-6">
-            How NViQ ensures seamless vehicle passing without physical re-inspection delays at {area.rtoName}
-          </p>
+      <TruckComplianceSection name={`${area.rtoName} (${area.rtoCode})`} rtoCode={area.rtoCode} tone="grey" />
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs">
-              <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Step 1</span>
-              <h4 className="font-bold text-sm text-gray-900 mt-2">Doorstep Fitment</h4>
-              <p className="text-xs text-gray-500 mt-1">Technician reaches {area.name} yard within {area.doorstepFitmentTime} to wire the AIS 140 unit and 2 panic buttons.</p>
-            </div>
+      <TruckCategoryRows />
 
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs">
-              <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Step 2</span>
-              <h4 className="font-bold text-sm text-gray-900 mt-2">Live SOS Ping Test</h4>
-              <p className="text-xs text-gray-500 mt-1">Panic buttons are triggered to verify immediate alert packet delivery to Rajasthan police and transport emergency servers.</p>
-            </div>
+      <VltdPartnerSection locationName={area.name} />
 
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs">
-              <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Step 3</span>
-              <h4 className="font-bold text-sm text-gray-900 mt-2">1-Hour Vahan 4.0 Sync</h4>
-              <p className="text-xs text-gray-500 mt-1">Fitment certificate is automatically pushed to the Parivahan Sewa database under {area.rtoCode} jurisdiction.</p>
-            </div>
+      <FaqSection faqs={rtoFaqs} title={`${area.rtoCode} passing questions`} track="truck_passing_rto_faq_call" />
 
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs">
-              <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Step 4</span>
-              <h4 className="font-bold text-sm text-gray-900 mt-2">Fitness Clearance</h4>
-              <p className="text-xs text-gray-500 mt-1">{area.rtoName} inspector verifies the active Vahan online certificate, and your fitness passing is stamped without delay.</p>
-            </div>
-          </div>
-        </div>
+      <FinalCta
+        title={`Get your truck passed at ${area.rtoCode}`}
+        sub="Send your vehicle number on WhatsApp and we confirm the slot and price right away."
+        whatsappMessage={waMessage}
+        track="truck_passing_rto_final"
+      />
 
-        {/* Truck Categories Grid */}
-        <TruckCategoryGrid />
-
-        {/* Wholesale Banner */}
-        <RtoConsultantBanner locationName={`${area.name}, ${city.name}`} rtoCode={area.rtoCode} />
-
-        {/* Other Cities */}
-        <RajasthanTruckCitiesGrid currentCitySlug={city.slug} />
-
-        {/* FAQs */}
-        <div className="my-12">
-          <VltdFaqAccordion faqs={rtoFaqs} locationName={`${area.rtoCode} (${area.rtoName})`} />
-        </div>
-      </div>
-    </main>
+      <DirectoryBand title="Other Rajasthan trucking hubs">
+        <LinkRows cols={4} items={rajasthanCityItems(city.slug)} />
+      </DirectoryBand>
+    </KitPage>
   );
 }

@@ -302,6 +302,16 @@ export default function RtoPartnerPage() {
 
       {/* HERO */}
       <PageHero
+        notice={
+          <Link
+            href="/rto-agent"
+            data-track="rto_partner_customer_switch"
+            className="group flex flex-col gap-1 border-l-4 border-[#0F8A4B] bg-white/[0.07] px-4 py-3 text-sm hover:bg-white/[0.12] focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:flex-row sm:items-center sm:gap-3"
+          >
+            <span className="text-slate-200">Need RTO work done for your vehicle? This page is for agents joining NViQ.</span>
+            <span className="font-bold text-white underline underline-offset-4">Find an RTO agent in your city →</span>
+          </Link>
+        }
         crumbs={[{ name: "Home", href: "/" }, { name: "RTO Consultant Partnership" }]}
         eyebrow="Govt approved AIS 140 VLTD · Parivahan Sewa ready"
         title="Authorised AIS 140 GPS partner for RTO agents & consultants"

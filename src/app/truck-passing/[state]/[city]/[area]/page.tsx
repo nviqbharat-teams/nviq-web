@@ -1,18 +1,11 @@
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
 import Link from "next/link";
-import {
-  getTruckAreaBySlug,
-  getAllTruckPassingAreaParams,
-  TRUCK_CATEGORIES,
-} from "@/data/rajasthan-trucks-master";
-import TruckHero from "@/components/trucks/truck-hero";
-import TruckComplianceBox from "@/components/trucks/truck-compliance-box";
-import { TruckCategoryGrid } from "@/components/trucks/truck-nav-grids";
-import RtoConsultantBanner from "@/components/vltd/rto-consultant-banner";
-import VltdFaqAccordion from "@/components/vltd/vltd-faq-accordion";
+import { notFound } from "next/navigation";
+import { getTruckAreaBySlug, getAllTruckPassingAreaParams } from "@/data/rajasthan-trucks-master";
 import JsonLdSchema from "@/components/vltd/json-ld-schema";
-import { ChevronRight, MapPin, Wrench, Shield, ArrowRight, CheckCircle2, PhoneCall } from "lucide-react";
+import { KitPage, Section, SectionHead, LinkRows, FaqSection, FinalCta, DirectoryBand } from "@/components/landing/kit";
+import { VltdPartnerSection } from "@/components/vltd/vltd-kit-sections";
+import { TruckPageHero, TruckComplianceSection, TruckCategoryRows } from "@/components/trucks/truck-kit";
 
 type Props = {
   params: Promise<{
@@ -98,8 +91,10 @@ export default async function TruckPassingAreaPage({ params }: Props) {
     },
   ];
 
+  const waMessage = `Hi NViQ, I need doorstep AIS 140 GPS fitment at ${area.name}, ${city.name} for ${area.rtoCode} passing.`;
+
   return (
-    <main className="min-h-screen bg-white text-gray-900">
+    <KitPage>
       <JsonLdSchema
         pageTitle={`${area.name} (${area.rtoCode}) Truck Passing & AIS 140 Fitment Center`}
         description={`Doorstep AIS 140 fitment at ${area.name}, ${city.name} under ${area.rtoCode} jurisdiction.`}
@@ -109,108 +104,94 @@ export default async function TruckPassingAreaPage({ params }: Props) {
         breadcrumbs={breadcrumbs}
       />
 
-      {/* Breadcrumb Bar */}
-      <nav aria-label="Breadcrumb" className="border-b border-gray-100 bg-white pt-20 pb-3">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-xs text-gray-500 flex items-center gap-1.5 overflow-x-auto whitespace-nowrap">
-          <Link href="/" className="hover:text-gray-900 transition-colors">Home</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <Link href={`/truck-passing/${resolved.state}`} className="hover:text-gray-900 transition-colors">Rajasthan</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <Link href={`/truck-passing/${resolved.state}/${resolved.city}`} className="hover:text-gray-900 transition-colors">{city.name}</Link>
-          <ChevronRight className="h-3 w-3 shrink-0 text-gray-400" />
-          <span className="text-gray-900 font-medium">{area.name}</span>
-        </div>
-      </nav>
-
-      {/* Hero */}
-      <TruckHero
-        badge={area.rtoCode}
-        title={`${area.name} Truck Passing & GPS Fitment`}
-        subtitle={`Doorstep AIS 140 VLTD fitment at ${area.name}, ${city.name}. 60-minute Vahan 4.0 certificate sync and Rajasthan DMG Khanij e-Ravanna whitelist.`}
-        highlights={[
-          `Doorstep technician visit across ${area.name} within ${area.doorstepFitmentTime}`,
-          `60-minute sync to ${area.rtoCode} Parivahan records`,
-          `Dual SOS panic buttons with zero battery drain guarantee`,
+      <TruckPageHero
+        crumbs={[
+          { name: "Home", href: "/" },
+          { name: "Rajasthan", href: `/truck-passing/${resolved.state}` },
+          { name: city.name, href: `/truck-passing/${resolved.state}/${resolved.city}` },
+          { name: area.name },
         ]}
-        locationTag={`${area.rtoCode} • ${area.name}`}
-        truckTypeTag={area.dominantFleets[0]}
-        whatsappMessage={`Hi NViQ, I need doorstep AIS 140 GPS fitment at ${area.name}, ${city.name} for ${area.rtoCode} passing.`}
+        eyebrow={`${area.rtoCode} · ${area.name}`}
+        title={`${area.name} truck passing & GPS fitment`}
+        highlight={area.name}
+        intro={`Doorstep AIS 140 VLTD fitment at ${area.name}, ${city.name}. Vahan 4.0 certificate in about an hour and Rajasthan DMG Khanij e-Ravanna whitelisted.`}
+        points={[`Technician in ${area.doorstepFitmentTime}`, `Synced to ${area.rtoCode} records`, "2 emergency panic buttons", "Zero battery drain"]}
+        waMessage={waMessage}
+        topic={`Truck AIS 140 fitment (${area.name}, ${city.name})`}
+        source={`truck_passing_${city.slug}_${area.slug}`}
+        track="truck_passing_area"
       />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        {/* Compliance Box */}
-        <TruckComplianceBox locationOrCategoryName={area.name} rtoCode={area.rtoCode} />
-
-        {/* Local Area Hub Details Card */}
-        <div className="my-10 bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-xs">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-100">
-            <div>
-              <span className="text-xs font-bold text-blue-800 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-md">
-                Official RTO Office: {area.rtoCode}
-              </span>
-              <h3 className="text-2xl font-bold text-gray-900 mt-2">{area.name} Local Fitment Details</h3>
-              <p className="text-sm text-gray-500 mt-1">{area.address}</p>
-            </div>
-
-            <Link
-              href={`/truck-passing/${resolved.state}/${resolved.city}/${resolved.area}/${area.rtoSlug}`}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-all shadow-xs shrink-0"
-            >
-              <span>View {area.rtoCode} Passing Specs</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-            <div className="p-4 rounded-xl bg-gray-50 border border-gray-200/80">
-              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-                Serviced Truck Yards & Staging Points
-              </div>
-              <ul className="text-sm text-gray-800 space-y-1.5 font-medium">
-                {area.truckYards.map((yard, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    {yard}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="p-4 rounded-xl bg-gray-50 border border-gray-200/80">
-              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-                Dominant Fleets In Area
-              </div>
-              <ul className="text-sm text-gray-800 space-y-1.5 font-medium">
-                {area.dominantFleets.map((fleet, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />
-                    {fleet}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="p-4 rounded-xl bg-gray-50 border border-gray-200/80">
-              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-                Fitment & Passing Turnaround
-              </div>
-              <div className="text-lg font-bold text-emerald-700">{area.doorstepFitmentTime}</div>
-              <p className="text-xs text-gray-500 mt-1">{area.passingDetails}</p>
+      <Section labelledBy="area-title">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-[#1D5BD8]">RTO office: {area.rtoCode}</p>
+            <div className="mt-2">
+              <SectionHead id="area-title" title={`Fitment details for ${area.name}`} sub={area.address} />
             </div>
           </div>
+          <Link
+            href={`/truck-passing/${resolved.state}/${resolved.city}/${resolved.area}/${area.rtoSlug}`}
+            className="flex h-14 shrink-0 items-center justify-center bg-[#18202E] px-7 text-base font-bold text-white hover:bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1D5BD8]"
+          >
+            {area.rtoCode} passing steps
+          </Link>
         </div>
+        <dl className="mt-10 grid border-t-2 border-[#18202E] md:grid-cols-3 md:gap-x-10">
+          <div className="border-b border-[#D9DEE6] py-6">
+            <dt className="text-sm font-semibold text-slate-500">Truck yards and staging points</dt>
+            <dd className="mt-3">
+              <ul className="space-y-1.5 font-medium">
+                {area.truckYards.map((yard) => (
+                  <li key={yard}>{yard}</li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+          <div className="border-b border-[#D9DEE6] py-6">
+            <dt className="text-sm font-semibold text-slate-500">Main fleets in the area</dt>
+            <dd className="mt-3">
+              <ul className="space-y-1.5 font-medium">
+                {area.dominantFleets.map((fleet) => (
+                  <li key={fleet}>{fleet}</li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+          <div className="border-b border-[#D9DEE6] py-6">
+            <dt className="text-sm font-semibold text-slate-500">Fitment and passing turnaround</dt>
+            <dd className="mt-3 font-display text-3xl font-bold text-[#0F8A4B]">{area.doorstepFitmentTime}</dd>
+            <dd className="mt-2 text-sm leading-relaxed text-slate-600">{area.passingDetails}</dd>
+          </div>
+        </dl>
+      </Section>
 
-        {/* Categories Grid */}
-        <TruckCategoryGrid />
+      <TruckComplianceSection name={area.name} rtoCode={area.rtoCode} tone="grey" />
 
-        {/* Wholesale Banner */}
-        <RtoConsultantBanner locationName={`${area.name}, ${city.name}`} rtoCode={area.rtoCode} />
+      <TruckCategoryRows />
 
-        {/* Area FAQs */}
-        <div className="my-12">
-          <VltdFaqAccordion faqs={areaFaqs} locationName={`${area.name}, ${city.name}`} />
-        </div>
-      </div>
-    </main>
+      <VltdPartnerSection locationName={area.name} />
+
+      <FaqSection faqs={areaFaqs} title={`${area.name} questions`} track="truck_passing_area_faq_call" />
+
+      <FinalCta
+        title={`Need fitment at ${area.name}?`}
+        sub="Send your vehicle number on WhatsApp and we confirm the slot and price right away."
+        whatsappMessage={waMessage}
+        track="truck_passing_area_final"
+      />
+
+      <DirectoryBand title={`Other areas in ${city.name}`}>
+        <LinkRows
+          cols={4}
+          items={city.areas.map((a) => ({
+            href: `/truck-passing/${resolved.state}/${resolved.city}/${a.slug}`,
+            name: a.name,
+            tag: a.rtoCode,
+            current: a.slug === area.slug,
+          }))}
+        />
+      </DirectoryBand>
+    </KitPage>
   );
 }
