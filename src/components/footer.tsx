@@ -49,6 +49,7 @@ const COLUMNS = [
     links: [
       { href: "/about", label: "About NViQ" },
       { href: "/contact", label: "Contact us" },
+      { href: "/faq", label: "FAQ" },
       { href: "/rto-partner", label: "Become an RTO partner" },
       { href: "/partner-badge", label: "Partner badge" },
       { href: "/hi", label: "हिंदी में देखें" },
