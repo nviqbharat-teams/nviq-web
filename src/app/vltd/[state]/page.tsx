@@ -4,15 +4,26 @@ import Link from "next/link";
 import {
   getStateBySlug,
   getAllStateParams,
-} from "@/data/vltd-locations";
-import VltdHero from "@/components/vltd/vltd-hero";
-import RtoConsultantBanner from "@/components/vltd/rto-consultant-banner";
-import VltdComplianceTable from "@/components/vltd/vltd-compliance-table";
-import VltdFaqAccordion from "@/components/vltd/vltd-faq-accordion";
+  hasMiningIntegration,
+} from "@/data/vltd-india";
+import { TRUCK_CATEGORIES, RAJASTHAN_TRUCK_CITIES } from "@/data/rajasthan-trucks-master";
+import QuickLeadForm from "@/components/quick-lead-form";
 import JsonLdSchema from "@/components/vltd/json-ld-schema";
-import { CityGrid, StateGrid } from "@/components/vltd/vltd-nav-grids";
-import { TruckCategoryGrid, RajasthanTruckCitiesGrid } from "@/components/trucks/truck-nav-grids";
-import { ChevronRight, ShieldCheck, CheckCircle2, Building2, Zap, PhoneCall } from "lucide-react";
+import { VltdCompareSection, VltdPartnerSection, VltdStateChips } from "@/components/vltd/vltd-kit-sections";
+import {
+  KitPage,
+  PageHero,
+  Section,
+  SectionHead,
+  TickList,
+  LinkRows,
+  ChipLinks,
+  Callout,
+  FaqSection,
+  FinalCta,
+  DirectoryBand,
+  textLink,
+} from "@/components/landing/kit";
 
 type Props = {
   params: Promise<{
@@ -35,8 +46,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const title = `${state.name} AIS 140 & Mines VLTD GPS | ${state.miningPortal.name} Approved | NViQ`;
-  const description = `Govt-certified AIS 140 VLTD fitment across ${state.name}. Whitelisted for ${state.miningPortal.name} & Vahan 4.0. Guaranteed 1-hour certificate, doorstep fitment, and wholesale RTO consultant partnership.`;
+  const mining = hasMiningIntegration(state);
+  const rtoCount = state.cities.reduce((n, c) => n + c.rtos.length, 0);
+  const title = mining
+    ? `${state.name} AIS 140 & Mines VLTD GPS | ${state.miningPortal.name} Approved`
+    : `${state.name} AIS 140 VLTD GPS Fitment | All ${rtoCount} RTOs`;
+  const description = mining
+    ? `Govt-certified AIS 140 VLTD fitment across ${state.name}. Whitelisted for ${state.miningPortal.name} & Vahan 4.0. Guaranteed 1-hour certificate, doorstep fitment, and wholesale RTO consultant partnership.`
+    : `AIS 140 VLTD with panic buttons for fitness, permit & registration at all ${rtoCount} RTOs in ${state.name}. Vahan 4.0 certificate in about 1 hour. Fleet & RTO agent rates. Call +91 92570 38711 for today's price.`;
 
   return {
     title,
@@ -44,8 +61,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     keywords: [
       `${state.name} VLTD GPS tracker`,
       `AIS 140 fitment ${state.name}`,
-      `${state.miningPortal.name} approved GPS`,
-      `${state.name} mining dumper GPS`,
+      mining ? `${state.miningPortal.name} approved GPS` : `${state.name} VLTD fitness certificate`,
+      mining ? `${state.name} mining dumper GPS` : `${state.name} school bus GPS AIS 140`,
       `${state.name} RTO passing GPS certificate`,
       `RTO consultant partner ${state.name}`,
     ],
@@ -71,156 +88,171 @@ export default async function StateDetailPage({ params }: Props) {
     notFound();
   }
 
+  const mining = hasMiningIntegration(state);
+
   const breadcrumbs = [
     { name: "Home", item: "https://www.naviqbharat.com" },
     { name: "VLTD Hub", item: "https://www.naviqbharat.com/vltd" },
     { name: state.name, item: `https://www.naviqbharat.com/vltd/${state.slug}` },
   ];
 
-  const whatsappUrl = `https://wa.me/919694551326?text=${encodeURIComponent(
-    `Hi NViQ, I need AIS 140 & Mines VLTD fitment in ${state.name} (${state.miningPortal.name}). Please share quotation.`
-  )}`;
+  const rtoCount = state.cities.reduce((n, c) => n + c.rtos.length, 0);
+  const cityHref = (c: (typeof state.cities)[number]) =>
+    c.rtos.length === 1 ? `/vltd/${state.slug}/${c.slug}/${c.rtos[0].slug}` : `/vltd/${state.slug}/${c.slug}`;
+  const waMessage = mining
+    ? `Hi NViQ, I need AIS 140 & Mines VLTD fitment in ${state.name} (${state.miningPortal.name}). Please share quotation.`
+    : `Hi NViQ, I need AIS 140 VLTD fitment in ${state.name}. Please share quotation.`;
+
+  const pillars = [
+    {
+      title: mining ? `Whitelisted on ${state.miningPortal.name}` : "Vahan 4.0 certificate in ~1 hour",
+      text: mining
+        ? `${state.miningPortal.description} Your vehicle is approved for e-Transit Pass generation right after fitment.`
+        : `Fitment certificate synced to Vahan 4.0 within about 60 minutes, so fitness, permit or registration at any ${state.name} RTO goes ahead.`,
+    },
+    {
+      title: `Accepted by ${state.transportDepartment}`,
+      text: "ARAI / ICAT certified AIS 140 device with 2 emergency panic buttons and dual-SIM failover.",
+    },
+    {
+      title: "Technician comes to you",
+      text: `Doorstep fitment across all ${state.cities.length} cities in ${state.name}: transport nagars, depots, yards and mine pits.`,
+    },
+    {
+      title: "Fleet and RTO agent rates",
+      text: "One all-inclusive package. The more vehicles you fit, the lower the slab. Ask for today's price on WhatsApp.",
+    },
+  ];
 
   return (
-    <main className="min-h-screen bg-white text-gray-900">
+    <KitPage>
       <JsonLdSchema
-        pageTitle={`${state.name} AIS 140 & Mines VLTD GPS`}
-        description={`Government-approved AIS 140 GPS fitment across ${state.name}. Whitelisted for ${state.miningPortal.name}.`}
+        pageTitle={`${state.name} AIS 140 ${mining ? "& Mines " : ""}VLTD GPS`}
+        description={
+          mining
+            ? `Government-approved AIS 140 GPS fitment across ${state.name}. Whitelisted for ${state.miningPortal.name}.`
+            : `AIS 140 VLTD fitment with Vahan 4.0 certificate across ${state.name}.`
+        }
         url={`https://www.naviqbharat.com/vltd/${state.slug}`}
         locationName={state.name}
         faqs={state.stateFaqs}
         breadcrumbs={breadcrumbs}
       />
 
-      {/* Breadcrumb Bar */}
-      <div className="border-b border-gray-100 bg-gray-50/80">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 text-xs text-gray-500 flex items-center gap-1.5 overflow-x-auto whitespace-nowrap">
-          <Link href="/" className="hover:text-gray-900 transition-colors">Home</Link>
-          <ChevronRight className="h-3 w-3 shrink-0" />
-          <Link href="/vltd" className="hover:text-gray-900 transition-colors">VLTD & Mining</Link>
-          <ChevronRight className="h-3 w-3 shrink-0" />
-          <span className="text-blue-600 font-bold">{state.name}</span>
-        </div>
-      </div>
+      <PageHero
+        crumbs={[{ name: "Home", href: "/" }, { name: "AIS 140 VLTD", href: "/vltd" }, { name: state.name }]}
+        eyebrow={mining ? `Whitelisted on ${state.miningPortal.name} · Vahan 4.0` : `Vahan 4.0 certificate · All ${rtoCount} ${state.name} RTOs`}
+        title={`AIS 140 ${mining ? "& mines " : ""}VLTD fitment in ${state.name}`}
+        intro={
+          mining
+            ? `ARAI-certified AIS 140 devices with panic buttons, fitted at your yard or mine pit anywhere in ${state.name}. Certificate synced to Vahan 4.0 and ${state.miningPortal.name} in about an hour.`
+            : `ARAI-certified AIS 140 devices with panic buttons for buses, school vehicles, taxis and goods vehicles across ${state.name}. Fitment certificate updated on Vahan 4.0 in about an hour.`
+        }
+        points={["2 emergency panic buttons", "Technician comes to you", "Certificate in ~1 hour", mining ? "Mining portal whitelisted" : `${rtoCount} RTOs covered`]}
+      >
+        <QuickLeadForm
+          variant="kit"
+          topic={`AIS 140 VLTD fitment (${state.name})`}
+          source={`vltd_state_${state.slug}`}
+          productOfInterest="ais_140_vltd"
+        />
+      </PageHero>
 
-      {/* Hero Section */}
-      <VltdHero
-        title={`${state.name} AIS 140 & Mines VLTD Tracking`}
-        badge={`100% Whitelisted for ${state.miningPortal.name}`}
-        description={`Full state compliance across ${state.name}. ARAI-certified AIS 140 devices with panic buttons, doorstep installation within 24-48 hours, and 1-hour Vahan 4.0 & mining transit pass certificate issuance.`}
-        locationName={state.name}
-        stateName={state.name}
-        miningPortalName={state.miningPortal.name}
-      />
-
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        {/* State Mining & Transport Department Banner (Clean Light Gradient) */}
-        <div className="rounded-3xl border border-blue-200 bg-gradient-to-br from-blue-50/70 via-indigo-50/30 to-white p-8 mb-12 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
-                <ShieldCheck className="h-3.5 w-3.5 text-blue-700" />
-                State Portal Integration
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-3">
-                {state.miningPortal.name}
-              </h2>
-              <p className="text-sm text-gray-700 mt-2 leading-relaxed">
-                {state.miningPortal.description}
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2 text-xs text-gray-600">
-                <span className="px-3 py-1 rounded-lg bg-white border border-gray-200 text-gray-800 font-medium shadow-2xs">
-                  Authority: {state.transportDepartment}
-                </span>
-                <span className="px-3 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold">
-                  ✓ Vahan 4.0 Real-time Sync
-                </span>
-              </div>
-            </div>
-
-            <div className="rounded-2xl bg-white border border-gray-200 p-6 space-y-3 shadow-sm">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                Primary Fleet Types in {state.name}:
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {state.commonVehicleTypes.map((type, idx) => (
-                  <span
-                    key={idx}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-50 text-xs font-semibold text-gray-800 border border-gray-200"
-                  >
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                    <span>{type}</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Cities Grid within State */}
-        <CityGrid state={state} />
-
-        {/* Commercial Trucks & Fleet Corridors */}
-        <div className="my-14 pt-10 border-t border-gray-100">
-          <TruckCategoryGrid />
-          {state.slug === "rajasthan" && <RajasthanTruckCitiesGrid />}
-        </div>
-
-        {/* State Fitment Assistance Callout */}
-        <div className="my-10 p-8 rounded-3xl border border-emerald-200 bg-gradient-to-r from-emerald-50/60 via-green-50/20 to-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+      {/* STATE COMPLIANCE */}
+      <Section labelledBy="compliance-title">
+        <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-20">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full">
-              Across All {state.cities.length} Industrial Hubs
-            </span>
-            <h3 className="text-xl sm:text-2xl font-black text-gray-900 mt-2">
-              Get Mines Approved GPS in {state.name}
-            </h3>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1 max-w-xl">
-              Doorstep technician fitment for stone quarries, marble tippers, sand dumpers, and logistics containers. Guaranteed e-Transit pass approval.
+            <SectionHead
+              id="compliance-title"
+              title={`What ${state.name} checks`}
+              sub={`Fitment is checked by ${state.transportDepartment}${mining ? ` and ${state.miningPortal.name}` : ""}. We handle both in one visit.`}
+            />
+            <div className="mt-8">
+              <Callout title={state.miningPortal.name}>{state.miningPortal.description}</Callout>
+            </div>
+            {state.commonVehicleTypes.length > 0 && (
+              <>
+                <h3 className="mt-10 font-semibold">Vehicles we fit most in {state.name}</h3>
+                <ul className="mt-3 flex flex-wrap gap-2">
+                  {state.commonVehicleTypes.map((t) => (
+                    <li key={t} className="bg-[#F2F4F7] px-3 py-1.5 text-sm font-semibold text-slate-700">
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+            <p className="mt-8 text-slate-600">
+              Not sure your vehicle needs it?{" "}
+              <Link href="/tools/ais-140-checker" className={textLink}>
+                Check in 10 seconds
+              </Link>
             </p>
           </div>
-          <div className="flex flex-wrap gap-3 shrink-0">
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md text-sm transition-all"
-            >
-              <Zap className="h-4 w-4" />
-              <span>Get WhatsApp Quote</span>
-            </a>
-            <Link
-              href="/rto-partner"
-              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-sm transition-all"
-            >
-              <Building2 className="h-4 w-4 text-amber-700" />
-              <span>RTO Partner Portal</span>
-            </Link>
-          </div>
+          <TickList items={pillars} />
         </div>
+      </Section>
 
-        {/* RTO Consultant Banner */}
-        <RtoConsultantBanner
-          locationName={state.name}
+      {/* CITIES */}
+      <Section tone="grey" labelledBy="cities-title">
+        <SectionHead
+          id="cities-title"
+          title={`Pick your city in ${state.name}`}
+          sub={`All ${state.cities.length} cities and ${rtoCount} RTOs. Doorstep fitment at every one.`}
         />
-
-        {/* Compliance Table */}
-        <VltdComplianceTable
-          locationName={state.name}
-          miningPortalName={state.miningPortal.name}
-        />
-
-        {/* FAQ Accordion */}
-        <VltdFaqAccordion
-          faqs={state.stateFaqs}
-          locationName={state.name}
-        />
-
-        {/* Other States Navigation */}
-        <div className="border-t border-gray-200 pt-10">
-          <StateGrid currentStateSlug={state.slug} />
+        <div className="mt-10">
+          <LinkRows
+            cols={state.cities.length > 12 ? 4 : 3}
+            items={state.cities.map((c) => ({
+              href: cityHref(c),
+              name: c.name,
+              tag: c.rtos.length > 3 ? `${c.rtos.slice(0, 3).map((r) => r.code).join(", ")} +${c.rtos.length - 3}` : c.rtos.map((r) => r.code).join(", "),
+            }))}
+          />
         </div>
-      </div>
-    </main>
+      </Section>
+
+      <VltdCompareSection locationName={state.name} miningPortalName={state.miningPortal.name} hasMining={mining} />
+
+      {/* TRUCKS */}
+      <Section tone="grey" labelledBy="trucks-title">
+        <SectionHead
+          id="trucks-title"
+          title="Fitment for your kind of truck"
+          sub="AIS 140 fitment specs by vehicle category."
+        />
+        <div className="mt-10">
+          <LinkRows
+            cols={4}
+            items={TRUCK_CATEGORIES.map((c) => ({ href: `/trucks/${c.slug}`, name: c.title, text: c.shortDesc, tag: c.wheelAxle }))}
+          />
+        </div>
+        {state.slug === "rajasthan" && (
+          <>
+            <h3 className="mt-14 font-display text-2xl font-semibold">Rajasthan trucking and RTO hubs</h3>
+            <div className="mt-5">
+              <ChipLinks
+                items={RAJASTHAN_TRUCK_CITIES.map((c) => ({ href: `/truck-passing/${c.stateSlug}/${c.slug}`, name: c.name }))}
+              />
+            </div>
+          </>
+        )}
+      </Section>
+
+      <VltdPartnerSection locationName={state.name} />
+
+      <FaqSection faqs={state.stateFaqs} title={`${state.name} VLTD questions`} track="vltd_state_faq_call" />
+
+      <FinalCta
+        title={`Fitness or permit due in ${state.name}? Get the certificate in an hour.`}
+        sub="Certified AIS 140 with dual panic buttons, fitted at your depot or yard. Vahan 4.0 upload the same day."
+        whatsappMessage={waMessage}
+        track="vltd_state_final"
+      />
+
+      <DirectoryBand title="VLTD fitment in other states">
+        <VltdStateChips currentStateSlug={state.slug} />
+      </DirectoryBand>
+    </KitPage>
   );
 }

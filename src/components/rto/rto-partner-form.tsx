@@ -9,6 +9,8 @@ interface RtoPartnerFormProps {
   defaultLocationName?: string;
   title?: string;
   subtitle?: string;
+  /** "kit": square white card for the navy landing-page heroes */
+  variant?: "card" | "kit";
 }
 
 export default function RtoPartnerForm({
@@ -16,7 +18,12 @@ export default function RtoPartnerForm({
   defaultLocationName = "",
   title,
   subtitle,
+  variant = "card",
 }: RtoPartnerFormProps) {
+  const K = variant === "kit";
+  const input = K
+    ? "w-full h-12 border border-slate-300 bg-white px-3 text-base text-[#18202E] placeholder-slate-400 focus:border-[#1D5BD8] focus:outline-none focus:ring-2 focus:ring-[#1D5BD8]/30"
+    : "w-full rounded-xl bg-white border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 transition-colors";
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -78,7 +85,7 @@ export default function RtoPartnerForm({
   if (submitted) {
     const assignedRto = defaultRtoCode || defaultLocationName || "";
     return (
-      <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-6 sm:p-8 text-center shadow-xs">
+      <div className={K ? "bg-white p-6 text-center text-[#18202E] shadow-[0_24px_60px_-20px_rgba(0,0,0,0.55)] sm:p-8" : "rounded-2xl border border-emerald-200 bg-emerald-50/50 p-6 sm:p-8 text-center shadow-xs"}>
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 border border-emerald-200 text-emerald-600 mb-4">
           <CheckCircle2 className="h-6 w-6" />
         </div>
@@ -94,7 +101,7 @@ export default function RtoPartnerForm({
 
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
           <a
-            href={`https://wa.me/919694551326?text=${encodeURIComponent(`Hi NViQ Team, I just submitted an RTO Partner application for ${name.trim()} (${phone.replace(/\D/g, "").slice(-10)})${assignedRto ? ` in RTO zone: ${assignedRto}` : ""}. Please expedite my partner portal access.`)}`}
+            href={`https://wa.me/919257038711?text=${encodeURIComponent(`Hi NViQ Team, I just submitted an RTO Partner application for ${name.trim()} (${phone.replace(/\D/g, "").slice(-10)})${assignedRto ? ` in RTO zone: ${assignedRto}` : ""}. Please expedite my partner portal access.`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs transition-colors text-xs sm:text-sm cursor-pointer"
@@ -103,7 +110,7 @@ export default function RtoPartnerForm({
             <ArrowRight className="h-4 w-4" />
           </a>
           <a
-            href="tel:+919694551326"
+            href="tel:+919257038711"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-medium text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200 transition-colors text-xs sm:text-sm"
           >
             <PhoneCall className="h-4 w-4 text-gray-500" />
@@ -115,9 +122,9 @@ export default function RtoPartnerForm({
   }
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-7 shadow-xs">
+    <div className={K ? "bg-white p-5 text-[#18202E] shadow-[0_24px_60px_-20px_rgba(0,0,0,0.55)] sm:p-7" : "rounded-2xl border border-gray-200 bg-white p-6 sm:p-7 shadow-xs"}>
       <div className="mb-5 pb-4 border-b border-gray-100">
-        <h3 className="text-xl font-bold text-gray-900 tracking-tight">
+        <h3 className={K ? "font-display text-2xl font-semibold leading-tight" : "text-xl font-bold text-gray-900 tracking-tight"}>
           {headingTitle}
         </h3>
         <p className="text-xs sm:text-sm text-gray-500 mt-1 leading-relaxed">
@@ -145,7 +152,7 @@ export default function RtoPartnerForm({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Rajesh Sharma"
-            className="w-full rounded-xl bg-white border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 transition-colors"
+            className={input}
           />
         </div>
 
@@ -154,7 +161,7 @@ export default function RtoPartnerForm({
             WhatsApp / Mobile Number <span className="text-blue-600">*</span>
           </label>
           <div className="relative">
-            <span className="absolute left-3.5 top-2.5 text-sm text-gray-400 font-medium select-none">
+            <span className={`absolute left-3.5 text-sm font-medium select-none ${K ? "top-3.5 text-slate-500" : "top-2.5 text-gray-400"}`}>
               +91
             </span>
             <input
@@ -167,7 +174,7 @@ export default function RtoPartnerForm({
               value={phone}
               onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
               placeholder="10-digit mobile number"
-              className="w-full rounded-xl bg-white border border-gray-200 pl-12 pr-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 transition-colors"
+              className={`${input} pl-12`}
             />
           </div>
         </div>
@@ -176,7 +183,7 @@ export default function RtoPartnerForm({
           <button
             type="submit"
             disabled={loading}
-            className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-xs transition-colors text-sm sm:text-base cursor-pointer disabled:opacity-50"
+            className={K ? "flex h-13 w-full items-center justify-center gap-2 bg-[#1D5BD8] px-6 text-base font-bold text-white hover:bg-[#164BB5] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#18202E] disabled:opacity-50" : "w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-xs transition-colors text-sm sm:text-base cursor-pointer disabled:opacity-50"}
           >
             {loading ? (
               <>

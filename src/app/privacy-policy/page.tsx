@@ -188,8 +188,8 @@ export default function PrivacyPolicyPage() {
               </a>
               <br />
               Phone:{" "}
-              <a href="tel:+918796651326" className="text-blue-600 hover:underline">
-                +91 87966 51326
+              <a href="tel:+919257038711" className="text-blue-600 hover:underline">
+                +91 92570 38711
               </a>
             </p>
           </section>

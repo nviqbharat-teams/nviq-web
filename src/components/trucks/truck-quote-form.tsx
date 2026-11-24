@@ -50,7 +50,7 @@ export default function TruckQuoteForm({
     }
   };
 
-  const whatsappUrl = `https://wa.me/919694551326?text=${encodeURIComponent(
+  const whatsappUrl = `https://wa.me/919257038711?text=${encodeURIComponent(
     `Hi NViQ, I need AIS 140 VLTD fitment & certificate for ${vehicleType} in ${defaultLocation || "Rajasthan"}. Please share price & fitment time.`
   )}`;
 
@@ -162,7 +162,7 @@ export default function TruckQuoteForm({
             className="inline-flex items-center justify-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 py-1.5 px-3 rounded-lg w-full transition-colors"
           >
             <Smartphone className="w-3.5 h-3.5" />
-            <span>Chat on WhatsApp (9694551326)</span>
+            <span>Chat on WhatsApp</span>
           </a>
         </div>
       </form>

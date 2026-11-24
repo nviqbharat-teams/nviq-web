@@ -11,6 +11,8 @@ interface VltdHeroProps {
   cityName?: string;
   rtoCode?: string;
   miningPortalName?: string;
+  /** false for states without a verified mining-portal integration: show Vahan-only copy */
+  hasMining?: boolean;
 }
 
 export default function VltdHero({
@@ -21,9 +23,10 @@ export default function VltdHero({
   cityName,
   rtoCode,
   miningPortalName,
+  hasMining = true,
 }: VltdHeroProps) {
-  const whatsappQuoteUrl = `https://wa.me/919694551326?text=${encodeURIComponent(
-    `Hi NViQ, I need AIS 140 & Mines VLTD fitment quotation for ${locationName}. Please share details.`
+  const whatsappQuoteUrl = `https://wa.me/919257038711?text=${encodeURIComponent(
+    `Hi NViQ, I need AIS 140 ${hasMining ? "& Mines " : ""}VLTD fitment quotation for ${locationName}. Please share details.`
   )}`;
 
   return (
@@ -41,7 +44,7 @@ export default function VltdHero({
             {badge}
           </span>
           {rtoCode && (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 tracking-wider">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200 tracking-wider">
               {rtoCode.toUpperCase()} RTO ZONE
             </span>
           )}
@@ -75,18 +78,18 @@ export default function VltdHero({
 
           <Link
             href="/rto-partner"
-            className="inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-all text-sm"
+            className="inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-blue-900 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-all text-sm"
           >
-            <Building2 className="h-4 w-4 text-amber-700" />
+            <Building2 className="h-4 w-4 text-blue-700" />
             <span>RTO Agent? Unlock Wholesale Dealer Rates</span>
           </Link>
 
           <a
-            href="tel:+919694551326"
+            href="tel:+919257038711"
             className="inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 transition-all text-sm"
           >
             <PhoneCall className="h-4 w-4 text-blue-600" />
-            <span>Call +91 93132 00700</span>
+            <span>Call +91 92570 38711</span>
           </a>
         </div>
 
@@ -106,7 +109,9 @@ export default function VltdHero({
               In 1-Hour Certificate Issuance
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-gray-600 leading-relaxed">
-              Vehicle passing or fitness inspection due today? We sync your fitment certificate to Vahan 4.0 and {miningPortalName || "the State Mining Portal"} within 60 minutes of installation.
+              Vehicle passing or fitness inspection due today? {hasMining
+                ? <>We sync your fitment certificate to Vahan 4.0 and {miningPortalName || "the State Mining Portal"} within 60 minutes of installation.</>
+                : <>We update your fitment certificate on Vahan 4.0 within 60 minutes of installation, so fitness or permit work can continue.</>}
             </p>
             <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-emerald-700">
               <CheckCircle2 className="h-4 w-4 text-emerald-600" />
@@ -137,12 +142,12 @@ export default function VltdHero({
           </div>
 
           {/* Greed 3: RTO Consultant Partnership */}
-          <div className="relative group rounded-2xl border border-amber-100 bg-white p-6 shadow-sm hover:shadow-md hover:border-amber-300 transition-all">
+          <div className="relative group rounded-2xl border border-blue-100 bg-white p-6 shadow-sm hover:shadow-md hover:border-blue-300 transition-all">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-amber-700 border border-amber-200">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700 border border-blue-200">
                 <Building2 className="h-5 w-5" />
               </div>
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-800">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-800">
                 RTO Agents & Consultants
               </span>
             </div>
@@ -155,7 +160,7 @@ export default function VltdHero({
             <div className="mt-4">
               <Link
                 href="/rto-partner"
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800 underline underline-offset-4"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:text-blue-800 underline underline-offset-4"
               >
                 <span>Join NViQ RTO Partner Program</span>
                 <ArrowRight className="h-3.5 w-3.5" />

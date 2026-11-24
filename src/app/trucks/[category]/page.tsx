@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const title = `${cat.title} AIS 140 VLTD GPS Fitment | 1-Hour Passing Certificate | NViQ`;
+  const title = `${cat.title} AIS 140 VLTD GPS Fitment | 1-Hour Passing Certificate`;
   const description = `${cat.shortDesc} Guaranteed 1-hour Vahan 4.0 certificate, dual panic buttons, and state mining e-Ravanna authorization.`;
 
   return {

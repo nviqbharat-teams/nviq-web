@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const title = `Rajasthan ${cat.title} AIS 140 VLTD GPS | DMG Khanij e-Ravanna Approved | NViQ`;
+  const title = `Rajasthan ${cat.title} AIS 140 VLTD GPS | DMG Khanij e-Ravanna Approved`;
   const description = `Govt-certified AIS 140 GPS installation for ${cat.title} across Rajasthan. 1-hour Vahan 4.0 certificate, Rajasthan DMG Khanij portal whitelist for e-Ravanna, and doorstep fitment at major Transport Nagars.`;
 
   return {

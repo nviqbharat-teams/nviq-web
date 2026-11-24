@@ -104,8 +104,8 @@ export default function ContactPage() {
         alternateName: "NViQ Bharat",
         url: "https://www.naviqbharat.com",
         logo: "https://www.naviqbharat.com/logo.jpeg",
-        telephone: "+919694551326",
-        email: "naviqbharat@gmail.com",
+        telephone: "+91 92570 38711",
+        email: "team@naviqbharat.com",
         address: {
           "@type": "PostalAddress",
           streetAddress: "320, 3rd floor, Wonder Mall, Company Bagh Road, Katla, Sector 7",
@@ -125,8 +125,15 @@ export default function ContactPage() {
         contactPoint: [
           {
             "@type": "ContactPoint",
-            telephone: "+919694551326",
-            contactType: "customer service",
+            telephone: "+91 92570 38711",
+            contactType: "sales",
+            areaServed: "IN",
+            availableLanguage: ["en", "Hindi"],
+          },
+          {
+            "@type": "ContactPoint",
+            telephone: "+91 92570 38712",
+            contactType: "customer support",
             areaServed: "IN",
             availableLanguage: ["en", "Hindi"],
           },

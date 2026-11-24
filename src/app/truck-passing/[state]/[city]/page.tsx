@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const rtoCodesStr = Array.from(new Set(city.areas.map((a) => a.rtoCode))).join(", ");
-  const title = `${city.name} (${rtoCodesStr}) Truck Passing & AIS 140 VLTD Fitment | NViQ`;
+  const title = `${city.name} (${rtoCodesStr}) Truck Passing & AIS 140 VLTD Fitment`;
   const description = `Govt-approved AIS 140 GPS installation across ${city.name} (${rtoCodesStr}). Doorstep fitment across ${city.areas.map((a) => a.name).join(", ")}. Instant 1-hour Vahan & DMG Khanij e-Ravanna certificate.`;
 
   return {

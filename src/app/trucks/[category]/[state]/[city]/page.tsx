@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const rtoCodesStr = Array.from(new Set(city.areas.map((a) => a.rtoCode))).join(", ");
-  const title = `${city.name} ${cat.title} AIS 140 VLTD Fitment (${rtoCodesStr}) | NViQ`;
+  const title = `${city.name} ${cat.title} AIS 140 VLTD Fitment (${rtoCodesStr})`;
   const description = `Govt-approved AIS 140 GPS fitment for ${cat.title} in ${city.name} (${rtoCodesStr}). Doorstep installation across ${city.areas.map((a) => a.name).join(", ")}. 1-hour Vahan & Rajasthan DMG Khanij e-Ravanna certificate.`;
 
   return {
@@ -157,7 +157,7 @@ export default async function CityTruckCategoryPage({ params }: Props) {
             {city.areas.map((area) => (
               <div key={area.slug} className="p-4 rounded-xl bg-white border border-gray-200 shadow-xs">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
+                  <span className="text-xs font-bold text-blue-800 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
                     {area.rtoCode} Passing
                   </span>
                   <span className="text-[11px] font-semibold text-emerald-600">

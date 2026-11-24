@@ -64,8 +64,8 @@ export default function TruckComplianceBox({
       </div>
 
       {/* Transport Warning Banner */}
-      <div className="mt-4 flex items-center gap-2.5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900">
-        <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+      <div className="mt-4 flex items-center gap-2.5 p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900">
+        <AlertTriangle className="h-4 w-4 text-blue-600 shrink-0" />
         <span>
           <strong>Notice:</strong> AIS 140 VLTD fitment is mandatory for commercial vehicle fitness renewals under Section 192A of the Motor Vehicles Act.
         </span>

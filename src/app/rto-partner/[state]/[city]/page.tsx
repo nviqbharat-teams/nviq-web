@@ -28,6 +28,7 @@ import {
   Users,
   TrendingUp,
 } from "lucide-react";
+import { HeroEyebrow } from "@/components/hero/hero-text";
 
 export const dynamicParams = true;
 export const revalidate = 604800;
@@ -160,7 +161,7 @@ export default async function RtoCityPartnerPage({ params }: Props) {
   const whatsappMessage = encodeURIComponent(
     `Hi NViQ Team, I am an RTO Agent/Consultant in ${city.name}, ${state.name}. I want to partner with NViQ for commercial vehicle fitness passing and instant VLTD certificates.`
   );
-  const whatsappUrl = `https://wa.me/919694551326?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/919257038711?text=${whatsappMessage}`;
 
   const cityFaqs = [
     {
@@ -181,7 +182,7 @@ export default async function RtoCityPartnerPage({ params }: Props) {
     },
     {
       q: `What is the wholesale dealer pricing and commission structure for RTO agents in ${city.name}?`,
-      a: `Authorized RTO partners in ${city.name} receive direct factory-wholesale pricing on AIS 140 units (starting ₹2,699–₹3,299 per unit depending on order volume), zero upfront inventory lock-in, and 100% recurring annual commission on software and eSIM renewals.`,
+      a: `Authorized RTO partners in ${city.name} receive direct factory-wholesale pricing on AIS 140 units (slab-based rates shared after partner verification), zero upfront inventory lock-in, and 100% recurring annual commission on software and eSIM renewals.`,
     },
     {
       q: `Does NViQ provide emergency panic button wiring and calibration for commercial fitness testing?`,
@@ -236,8 +237,8 @@ export default async function RtoCityPartnerPage({ params }: Props) {
         name: `NViQ RTO Partner Network — ${city.name}, ${state.name}`,
         description: `Official AIS 140 VLTD fitment and certificate generation network for RTO offices in ${city.name}, ${state.name}.`,
         url: `https://www.naviqbharat.com/rto-partner/${state.slug}/${city.slug}`,
-        telephone: "+919694551326",
-        email: "naviqbharat@gmail.com",
+        telephone: "+91 92570 38711",
+        email: "team@naviqbharat.com",
         address: {
           "@type": "PostalAddress",
           addressLocality: city.name,
@@ -297,28 +298,25 @@ export default async function RtoCityPartnerPage({ params }: Props) {
       </nav>
 
       {/* ── HERO SECTION ──────────────────────────────────────── */}
-      <section className="bg-white pt-8 pb-16 sm:pt-12 sm:pb-20 border-b border-gray-100">
+      <section className="bg-white pt-6 pb-12 sm:pt-12 sm:pb-20 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 mb-5">
-                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-                <span>Govt Approved AIS 140 VLTD • Parivahan Sewa Ready</span>
-              </div>
+              <HeroEyebrow tone="light" className="mb-4 sm:mb-5">Govt Approved AIS 140 VLTD • Parivahan Sewa Ready</HeroEyebrow>
 
-              <h1 className="text-3xl sm:text-5xl font-black text-gray-900 tracking-tight leading-[1.08]">
+              <h1 className="text-balance text-[28px] sm:text-5xl font-extrabold sm:font-black text-gray-900 tracking-tight leading-[1.15] sm:leading-[1.08]">
                 Authorized AIS 140 GPS Partner in{" "}
                 <span className="text-blue-600">
                   {city.name}, {state.name}
                 </span>
               </h1>
 
-              <p className="mt-4 text-base sm:text-lg text-gray-600 leading-relaxed max-w-2xl">
+              <p className="mt-3 sm:mt-4 line-clamp-3 sm:line-clamp-none text-[15px] sm:text-lg text-gray-600 leading-relaxed max-w-2xl">
                 Get instant commercial vehicle passing certificates, direct wholesale dealer rates, and fast doorstep technician fitting across {city.name}.
               </p>
 
               {/* 4 Simple, Clear Benefits */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-7">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-5 sm:mt-7">
                 <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-3 text-center">
                   <span className="block text-sm sm:text-base font-bold text-gray-900">15-Min Sync</span>
                   <span className="text-[11px] text-gray-500 font-medium">Fast Parivahan Certificate</span>
@@ -454,7 +452,7 @@ export default async function RtoCityPartnerPage({ params }: Props) {
             </div>
 
             <div className="rounded-xl bg-white border border-gray-200 p-6 shadow-xs hover:border-blue-300 transition-colors">
-              <div className="h-10 w-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
+              <div className="h-10 w-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
                 <CheckCircle2 className="h-5 w-5" />
               </div>
               <h3 className="text-base font-bold text-gray-900">Zero Minimum Inventory Lock-in</h3>
@@ -734,11 +732,11 @@ export default async function RtoCityPartnerPage({ params }: Props) {
               </a>
 
               <a
-                href="tel:+919694551326"
+                href="tel:+919257038711"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-medium text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 transition-colors text-sm cursor-pointer"
               >
                 <PhoneCall className="h-4 w-4 text-blue-600" />
-                <span>Call Desk: +91 9694551326</span>
+                <span>Call Desk: +91 92570 38711</span>
               </a>
             </div>
           </div>

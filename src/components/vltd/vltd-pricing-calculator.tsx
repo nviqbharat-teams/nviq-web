@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { CheckCircle2, PhoneCall, ShieldCheck, Zap, ArrowRight, Truck, Sparkles, Building2 } from "lucide-react";
+import { CheckCircle2, PhoneCall, ShieldCheck, Zap, ArrowRight, Truck, Sparkles, Building2, Lock } from "lucide-react";
 import { submitInquiry } from "@/lib/api";
+import { getRefCode, trackLead } from "@/lib/lead-attribution";
 
 interface VltdPricingCalculatorProps {
   locationName: string; // e.g. "Jaipur (RJ-14)" or "Rajasthan"
@@ -12,13 +13,15 @@ interface VltdPricingCalculatorProps {
   miningPortalName?: string;
 }
 
+// Prices are intentionally NOT shipped to the browser: the visitor picks a fleet size
+// and unlocks today's price on WhatsApp / call, which is what creates the lead.
 const VEHICLE_SLABS = [
-  { count: 1, label: "1 Vehicle", pricePerUnit: 3799, originalPrice: 5499, tag: "Passing Urgent" },
-  { count: 2, label: "2 Vehicles", pricePerUnit: 3499, originalPrice: 5199, tag: "Save ₹3,400" },
-  { count: 3, label: "3 Vehicles", pricePerUnit: 3399, originalPrice: 5199, tag: "Save ₹5,400" },
-  { count: 5, label: "5 Vehicles", pricePerUnit: 3299, originalPrice: 4999, tag: "Popular Fleet" },
-  { count: 8, label: "8 Vehicles", pricePerUnit: 3099, originalPrice: 4799, tag: "Volume Deal" },
-  { count: 10, label: "10+ Vehicles", pricePerUnit: 2699, originalPrice: 4499, tag: "RTO Wholesale" },
+  { count: 1, tag: "Passing Urgent", perk: "Same-day slot" },
+  { count: 2, tag: "Fleet Discount", perk: "Fleet discount" },
+  { count: 3, tag: "Fleet Discount", perk: "Fleet discount" },
+  { count: 5, tag: "Popular Fleet", perk: "Bigger discount" },
+  { count: 8, tag: "Volume Deal", perk: "Volume price" },
+  { count: 10, tag: "RTO Wholesale", perk: "Best price" },
 ];
 
 export default function VltdPricingCalculator({
@@ -37,9 +40,7 @@ export default function VltdPricingCalculator({
   const [errorMessage, setErrorMessage] = useState("");
 
   const currentSlab = VEHICLE_SLABS.find((s) => s.count === selectedCount) || VEHICLE_SLABS[0];
-  const totalPrice = currentSlab.pricePerUnit * selectedCount;
-  const originalTotalPrice = currentSlab.originalPrice * selectedCount;
-  const totalSavings = originalTotalPrice - totalPrice;
+  const vehicleLabel = `${selectedCount}${selectedCount === 10 ? "+" : ""} ${selectedCount === 1 ? "Vehicle" : "Vehicles"}`;
 
   const handleWhatsAppQuote = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,11 +51,12 @@ export default function VltdPricingCalculator({
     setErrorMessage("");
     setIsSubmitting(true);
 
-    const messageText = `Hi NViQ Team, I need an official quote for ${selectedCount} vehicle(s) in ${locationName}. 
+    const messageText = `Hi NViQ Team, please send today's best price for ${vehicleLabel} in ${locationName}. 
 Role: ${userRole === "rto_consultant" ? "RTO Consultant / Agent" : "Truck / Fleet Owner"}
 Name: ${fullName || "Customer"}
 Phone: ${phoneNumber}
-${vehicleNumber ? `Vehicle: ${vehicleNumber}` : ""}`;
+${vehicleNumber ? `Vehicle: ${vehicleNumber}` : ""}
+(Ref: ${getRefCode()})`;
 
     try {
       await submitInquiry({
@@ -74,8 +76,9 @@ ${vehicleNumber ? `Vehicle: ${vehicleNumber}` : ""}`;
       setIsSubmitting(false);
       setSubmitSuccess(true);
       const encodedMsg = encodeURIComponent(messageText);
-      const waUrl = `https://wa.me/919694551326?text=${encodedMsg}`;
+      const waUrl = `https://wa.me/919257038711?text=${encodedMsg}`;
       if (typeof window !== "undefined") {
+        trackLead("whatsapp_click", `calculator_${selectedCount}_vehicles`);
         window.open(waUrl, "_blank");
       }
     }
@@ -88,7 +91,7 @@ ${vehicleNumber ? `Vehicle: ${vehicleNumber}` : ""}`;
         <div className="flex items-center gap-2">
           <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
           <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
-            Live Pricing & Immediate Availability
+            Today&apos;s Price · Unlock in 30 Seconds
           </span>
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-400">
@@ -118,7 +121,7 @@ ${vehicleNumber ? `Vehicle: ${vehicleNumber}` : ""}`;
             type="button"
             onClick={() => setUserRole("rto_consultant")}
             className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs md:text-sm font-medium transition-all ${userRole === "rto_consultant"
-                ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-orange-500/30"
+                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-indigo-500/30"
                 : "text-gray-400 hover:text-gray-200"
               }`}
           >
@@ -159,7 +162,7 @@ ${vehicleNumber ? `Vehicle: ${vehicleNumber}` : ""}`;
                   {slab.count === 1 ? "Vehicle" : "Vehicles"}
                 </span>
                 <span className="text-[10px] text-emerald-400 font-semibold mt-1">
-                  ₹{slab.pricePerUnit.toLocaleString("en-IN")}
+                  {slab.perk}
                 </span>
               </button>
             );
@@ -172,24 +175,30 @@ ${vehicleNumber ? `Vehicle: ${vehicleNumber}` : ""}`;
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
           <div>
             <div className="text-xs text-gray-400">
-              Total Package for {selectedCount} {selectedCount === 1 ? "Vehicle" : "Vehicles"} in {locationName}
+              Total Package for {vehicleLabel} in {locationName}
             </div>
-            <div className="flex items-baseline gap-3 mt-1">
-              <span className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-                ₹{totalPrice.toLocaleString("en-IN")}
+            <div className="flex items-center gap-3 mt-1">
+              <span className="relative inline-flex items-center">
+                {/* Placeholder only: no real price is rendered on the page */}
+                <span aria-hidden="true" className="text-3xl md:text-4xl font-extrabold text-white tracking-tight blur-[6px] select-none">
+                  ₹X,XXX
+                </span>
+                <span className="absolute inset-0 flex items-center justify-center">
+                  <Lock className="h-5 w-5 text-blue-300" />
+                </span>
               </span>
-              <span className="text-sm line-through text-gray-500">
-                ₹{originalTotalPrice.toLocaleString("en-IN")}
-              </span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                Save ₹{totalSavings.toLocaleString("en-IN")}
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-blue-500/20 text-blue-200 border border-blue-500/30">
+                Price locked · {currentSlab.tag}
               </span>
             </div>
+            <p className="mt-2 text-xs text-gray-300">
+              Enter your WhatsApp number below. We send your exact price for {vehicleLabel.toLowerCase()} in under 2 minutes.
+            </p>
           </div>
 
           <div className="sm:text-right text-xs text-gray-400">
-            <span className="text-blue-400 font-semibold">₹{currentSlab.pricePerUnit.toLocaleString("en-IN")}</span> per vehicle
-            <span className="block text-[11px] text-gray-500">Includes Hardware + 1-Yr SIM + Portal Sync</span>
+            <span className="text-blue-400 font-semibold">All-inclusive</span> package
+            <span className="block text-[11px] text-gray-500">Hardware + 1-Yr SIM + Portal Sync</span>
           </div>
         </div>
 
@@ -216,8 +225,8 @@ ${vehicleNumber ? `Vehicle: ${vehicleNumber}` : ""}`;
 
       {/* RTO Consultant Alert if selected */}
       {userRole === "rto_consultant" && (
-        <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs flex items-start gap-2">
-          <Sparkles className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
+        <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-200 text-xs flex items-start gap-2">
+          <Sparkles className="h-4 w-4 text-blue-400 shrink-0 mt-0.5" />
           <div>
             <strong>RTO Consultant Wholesale Advantage:</strong> You are eligible for bulk dealer credits (₹1,500–₹3,000 margin per client) and direct online certificate issuance. Our partner team will assign your local RTO dealer code immediately.
           </div>
@@ -278,23 +287,23 @@ ${vehicleNumber ? `Vehicle: ${vehicleNumber}` : ""}`;
           >
             <Zap className="h-4 w-4" />
             <span>
-              {isSubmitting ? "Connecting..." : "Get Instant Official Quote on WhatsApp"}
+              {isSubmitting ? "Connecting..." : "Unlock My Price on WhatsApp"}
             </span>
             <ArrowRight className="h-4 w-4" />
           </button>
 
           <a
-            href="tel:+919694551326"
+            href="tel:+919257038711"
             className="inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl font-medium text-gray-300 bg-gray-800 hover:bg-gray-700 border border-gray-700 transition-all text-sm"
           >
             <PhoneCall className="h-4 w-4 text-blue-400" />
-            <span>Call RTO Desk</span>
+            <span>Call for Price</span>
           </a>
         </div>
 
         {submitSuccess && (
           <p className="text-xs text-emerald-400 text-center animate-fade-in">
-            ✓ Inquiry recorded! Opening WhatsApp to send your official quotation immediately.
+            ✓ Request received! Opening WhatsApp: your price is on the way.
           </p>
         )}
       </form>

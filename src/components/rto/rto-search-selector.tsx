@@ -129,7 +129,7 @@ export default function RtoSearchSelector() {
       {/* Trending / Breakout Queries from Google Trends */}
       <div className="mb-6 text-center">
         <span className="text-xs font-semibold text-gray-500 inline-flex items-center gap-1.5 mb-2.5">
-          <TrendingUp className="w-3.5 h-3.5 text-amber-500" />
+          <TrendingUp className="w-3.5 h-3.5 text-blue-500" />
           High-Volume RTO Search Hubs Across India:
         </span>
         <div className="flex flex-wrap items-center justify-center gap-2">
@@ -147,13 +147,13 @@ export default function RtoSearchSelector() {
       </div>
 
       {/* High-Intent Commercial Fleet & Truck Corridor Quick Bar */}
-      <div className="mb-10 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 max-w-4xl mx-auto">
+      <div className="mb-10 p-3.5 rounded-2xl bg-blue-500/10 border border-blue-500/25 max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-2 px-1">
-          <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
-            <Truck className="w-4 h-4 text-amber-600" />
+          <span className="text-xs font-bold text-blue-900 flex items-center gap-1.5">
+            <Truck className="w-4 h-4 text-blue-600" />
             Commercial Truck &amp; Mining Passing Hubs (Direct URLs):
           </span>
-          <Link href="/trucks" className="text-[11px] font-bold text-amber-700 hover:text-amber-900 underline">
+          <Link href="/trucks" className="text-[11px] font-bold text-blue-700 hover:text-blue-900 underline">
             View All Categories →
           </Link>
         </div>
@@ -162,9 +162,9 @@ export default function RtoSearchSelector() {
             <Link
               key={idx}
               href={pill.href}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-amber-300 hover:border-amber-500 text-gray-800 hover:text-amber-800 shadow-2xs transition-all hover:scale-102"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-blue-300 hover:border-blue-500 text-gray-800 hover:text-blue-800 shadow-2xs transition-all hover:scale-102"
             >
-              <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded">
+              <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-1.5 py-0.2 rounded">
                 {pill.badge}
               </span>
               <span>{pill.label}</span>
@@ -220,8 +220,8 @@ export default function RtoSearchSelector() {
           onClick={() => setActiveTab("corridors")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
             activeTab === "corridors"
-              ? "bg-amber-600 text-white shadow-sm"
-              : "bg-white text-amber-700 hover:text-amber-800 border border-amber-300"
+              ? "bg-blue-600 text-white shadow-sm"
+              : "bg-white text-blue-700 hover:text-blue-800 border border-blue-300"
           }`}
         >
           <MapPin className="w-3.5 h-3.5" />
@@ -272,11 +272,11 @@ export default function RtoSearchSelector() {
             {RAJASTHAN_TRUCK_CITIES.map((city) => (
               <div
                 key={city.slug}
-                className="p-5 rounded-2xl bg-white border border-gray-200 hover:border-amber-400 hover:shadow-md transition-all text-left flex flex-col justify-between"
+                className="p-5 rounded-2xl bg-white border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all text-left flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-mono text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                    <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
                       {Array.from(new Set(city.areas.map((a) => a.rtoCode))).join(", ")}
                     </span>
                     <span className="text-[11px] font-semibold text-emerald-600">
@@ -293,17 +293,17 @@ export default function RtoSearchSelector() {
                       <Link
                         key={area.slug}
                         href={`/truck-passing/rajasthan/${city.slug}/${area.slug}/${area.rtoSlug}`}
-                        className="p-2 rounded-lg bg-gray-50 hover:bg-amber-50 border border-gray-100 hover:border-amber-300 flex items-center justify-between group transition-colors block text-xs"
+                        className="p-2 rounded-lg bg-gray-50 hover:bg-blue-50 border border-gray-100 hover:border-blue-300 flex items-center justify-between group transition-colors block text-xs"
                       >
                         <div>
-                          <span className="font-semibold text-gray-900 block group-hover:text-amber-800">
+                          <span className="font-semibold text-gray-900 block group-hover:text-blue-800">
                             {area.name}
                           </span>
                           <span className="text-[10px] text-gray-500">
                             {area.rtoCode} • {area.doorstepFitmentTime}
                           </span>
                         </div>
-                        <ArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-amber-700 transition-transform group-hover:translate-x-0.5" />
+                        <ArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-blue-700 transition-transform group-hover:translate-x-0.5" />
                       </Link>
                     ))}
                   </div>
@@ -312,7 +312,7 @@ export default function RtoSearchSelector() {
                 <div className="mt-4 pt-3 border-t border-gray-100">
                   <Link
                     href={`/truck-passing/rajasthan/${city.slug}`}
-                    className="text-xs font-bold text-amber-700 hover:text-amber-800 flex items-center justify-between"
+                    className="text-xs font-bold text-blue-700 hover:text-blue-800 flex items-center justify-between"
                   >
                     <span>Explore All {city.name} Fleets</span>
                     <ArrowRight className="w-3.5 h-3.5" />
