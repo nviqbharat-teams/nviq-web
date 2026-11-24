@@ -5,14 +5,15 @@
 // the one thing they always know by heart. Saves the inquiry, then opens WhatsApp
 // with the request filled in, same flow as QuickLeadForm.
 import React, { useState } from "react";
-import { PhoneCall } from "lucide-react";
+import { MessageCircle, PhoneCall } from "lucide-react";
 import { submitInquiry } from "@/lib/api";
+import { Select } from "@/components/ui/select";
 import { getRefCode, trackLead } from "@/lib/lead-attribution";
 import { SALES_PHONE_DISPLAY, SALES_TEL_HREF, whatsappHref } from "@/lib/contact";
 
 const FLEET_OPTIONS = ["1", "2–5", "6–10", "11–50", "50+"];
 
-export default function PlateLeadForm() {
+export default function PlateLeadForm({ variant = "card" }: { variant?: "card" | "bar" }) {
   const [vehicleNo, setVehicleNo] = useState("");
   const [fleet, setFleet] = useState("1");
   const [phone, setPhone] = useState("");
@@ -57,6 +58,98 @@ export default function PlateLeadForm() {
       );
     }
   };
+
+  // Travel-site style search bar: one white row of fields with the button at the end.
+  if (variant === "bar") {
+    // Mobile: each field is its own boxed tile. md+: borderless segments of one pill.
+    const cell =
+      "flex min-w-0 flex-col justify-center rounded-[12px] border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-left focus-within:border-[#1D5BD8] focus-within:bg-white md:rounded-full md:border-0 md:bg-transparent md:px-5 md:py-3 md:hover:bg-slate-50";
+    const label = "text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500 md:text-[11px]";
+    return (
+      <div id="quick-lead" className="scroll-mt-24 w-full text-[#18202E]">
+        {done ? (
+          <div className="rounded-[20px] bg-white p-5 text-left shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)]" role="status">
+            <p className="font-semibold text-emerald-800">Request sent. WhatsApp is opening with your details.</p>
+            <p className="mt-1 text-sm text-slate-600">
+              If it did not open, call us on <a className="font-semibold underline" href={SALES_TEL_HREF}>{SALES_PHONE_DISPLAY}</a>.
+            </p>
+          </div>
+        ) : (
+          <form
+            onSubmit={onSubmit}
+            noValidate
+            className="grid grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] gap-2 rounded-[20px] bg-white p-2.5 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] md:grid-cols-[1.25fr_0.8fr_1.15fr_auto] md:items-stretch md:gap-0 md:rounded-full md:p-2 md:pl-3"
+          >
+            <label htmlFor="home-vno" className={cell}>
+              <span className={label}>Vehicle number</span>
+              <input
+                id="home-vno"
+                type="text"
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+                maxLength={13}
+                size={1}
+                value={vehicleNo}
+                onChange={(e) => setVehicleNo(e.target.value.toUpperCase().replace(/[^A-Z0-9 ]/g, ""))}
+                placeholder="RJ 14 GA 1234"
+                className="mt-0.5 w-full min-w-0 bg-transparent font-display text-lg font-bold tracking-[0.04em] md:tracking-[0.06em] placeholder:font-semibold placeholder:text-slate-400 focus:outline-none"
+              />
+            </label>
+            <label htmlFor="home-fleet" className={`${cell} md:rounded-none md:border-l md:border-slate-200`}>
+              <span className={label}>Vehicles</span>
+              <Select
+                id="home-fleet"
+                bare
+                value={fleet}
+                onValueChange={setFleet}
+                options={FLEET_OPTIONS.map((opt) => ({ value: opt, label: `${opt} ${opt === "1" ? "vehicle" : "vehicles"}` }))}
+                className="mt-0.5 text-base font-semibold"
+              />
+            </label>
+            <label htmlFor="home-phone" className={`${cell} col-span-2 md:col-span-1 md:rounded-none md:border-l md:border-slate-200`}>
+              <span className={label}>WhatsApp number</span>
+              <span className="mt-0.5 flex items-baseline gap-1.5">
+                <span className="text-base font-semibold text-slate-500">+91</span>
+                <input
+                  id="home-phone"
+                  type="tel"
+                  inputMode="numeric"
+                  autoComplete="tel-national"
+                  maxLength={14}
+                  size={1}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="10-digit mobile"
+                  aria-invalid={!!error}
+                  aria-describedby={error ? "home-phone-error" : undefined}
+                  className="w-full min-w-0 bg-transparent text-base font-semibold placeholder:font-normal placeholder:text-slate-400 focus:outline-none"
+                />
+              </span>
+            </label>
+            <button
+              type="submit"
+              disabled={loading}
+              className="col-span-2 flex h-[52px] items-center justify-center gap-2 rounded-[12px] bg-[#0F8A4B] px-7 text-base font-bold text-white transition-colors hover:bg-[#0B7440] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#1D5BD8] disabled:opacity-70 md:col-span-1 md:h-auto md:rounded-full"
+            >
+              <MessageCircle className="h-5 w-5" aria-hidden="true" />
+              {loading ? "Sending…" : (
+                <>
+                  <span className="md:hidden">Get price on WhatsApp</span>
+                  <span className="hidden md:inline">Get price</span>
+                </>
+              )}
+            </button>
+          </form>
+        )}
+        {error && (
+          <p id="home-phone-error" className="mt-3 inline-block rounded-full bg-white px-4 py-1.5 text-sm font-medium text-red-700">
+            {error}
+          </p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div id="quick-lead" className="scroll-mt-24 bg-white p-5 text-[#18202E] shadow-[0_24px_60px_-20px_rgba(0,0,0,0.55)] sm:p-7">

@@ -5,6 +5,7 @@
 import React, { useState } from "react";
 import { ArrowRight, PhoneCall, Lock } from "lucide-react";
 import { submitInquiry } from "@/lib/api";
+import { Select } from "@/components/ui/select";
 import { getRefCode, trackLead } from "@/lib/lead-attribution";
 import { SALES_TEL_HREF, whatsappHref } from "@/lib/contact";
 
@@ -147,17 +148,13 @@ export default function QuickLeadForm({
             </label>
             <label className="block">
               <span className={K ? "text-sm font-semibold" : "text-xs font-semibold text-gray-700"}>{L.fleet}</span>
-              <select
+              <Select
+                aria-label={L.fleet}
                 value={fleet}
-                onChange={(e) => setFleet(e.target.value)}
+                onValueChange={setFleet}
+                options={FLEET_OPTIONS.map((o) => ({ value: o, label: `${o} ${o === "1" ? L.one : L.many}` }))}
                 className={field}
-              >
-                {FLEET_OPTIONS.map((o) => (
-                  <option key={o} value={o}>
-                    {o} {o === "1" ? L.one : L.many}
-                  </option>
-                ))}
-              </select>
+              />
             </label>
           </div>
           <label className="block">

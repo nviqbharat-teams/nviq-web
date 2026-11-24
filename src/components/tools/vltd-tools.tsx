@@ -7,6 +7,7 @@ import Link from "next/link";
 import { CheckCircle2, XCircle, HelpCircle, Share2, ClipboardList } from "lucide-react";
 import QuickLeadForm from "@/components/quick-lead-form";
 import { trackLead } from "@/lib/lead-attribution";
+import { Select } from "@/components/ui/select";
 import {
   VEHICLE_TYPES,
   checkVltd,
@@ -50,39 +51,37 @@ function Inputs({
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
       <label className="block">
         <span className="text-xs font-semibold text-gray-700">Vehicle type</span>
-        <select value={i.vehicle} onChange={(e) => i.setVehicle(e.target.value)} className={selectCls}>
-          <option value="">Select vehicle…</option>
-          {VEHICLE_TYPES.map((v) => (
-            <option key={v.id} value={v.id}>
-              {v.label}
-            </option>
-          ))}
-        </select>
+        <Select
+          aria-label="Vehicle type"
+          placeholder="Select vehicle…"
+          value={i.vehicle}
+          onValueChange={i.setVehicle}
+          options={VEHICLE_TYPES.map((v) => ({ value: v.id, label: v.label }))}
+          searchPlaceholder="Search vehicle…"
+          className={selectCls}
+        />
       </label>
       <label className="block">
         <span className="text-xs font-semibold text-gray-700">State</span>
-        <select value={i.stateSlug} onChange={(e) => i.setStateSlug(e.target.value)} className={selectCls}>
-          {states.map((s) => (
-            <option key={s.slug} value={s.slug}>
-              {s.name}
-            </option>
-          ))}
-        </select>
+        <Select
+          aria-label="State"
+          value={i.stateSlug}
+          onValueChange={i.setStateSlug}
+          options={states.map((s) => ({ value: s.slug, label: s.name }))}
+          searchPlaceholder="Search state…"
+          className={selectCls}
+        />
       </label>
       <label className={`block ${i.isGoods ? "" : "opacity-50"}`}>
         <span className="text-xs font-semibold text-gray-700">Permit (goods vehicles)</span>
-        <select
+        <Select
+          aria-label="Permit"
           value={i.permit}
           disabled={!i.isGoods}
-          onChange={(e) => i.setPermit(e.target.value as PermitType)}
+          onValueChange={(v) => i.setPermit(v as PermitType)}
+          options={PERMITS.map((p) => ({ value: p.id, label: p.label }))}
           className={selectCls}
-        >
-          {PERMITS.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.label}
-            </option>
-          ))}
-        </select>
+        />
       </label>
     </div>
   );

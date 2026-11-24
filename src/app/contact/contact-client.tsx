@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { submitInquiry, trackEvent } from "@/lib/api";
+import { Select } from "@/components/ui/select";
 import { SALES_PHONE_DISPLAY, SALES_TEL_HREF, SUPPORT_PHONE_DISPLAY, SUPPORT_TEL_HREF } from "@/lib/contact";
 
 export default function ContactClient() {
@@ -231,27 +232,21 @@ export default function ContactClient() {
                     <label htmlFor="contact-fleet" className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                       Fleet Size
                     </label>
-                    <div className="relative">
-                      <select
-                        id="contact-fleet"
-                        name="fleet"
-                        className="w-full px-4 py-3 border border-slate-200 rounded-none bg-white text-slate-900 text-[15px] outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-slate-400 appearance-none pr-10 cursor-pointer"
-                        value={form.fleet}
-                        onChange={handleChange}
-                      >
-                        <option value="">Select fleet size</option>
-                        <option value="1-5">1–5 vehicles</option>
-                        <option value="6-20">6–20 vehicles</option>
-                        <option value="21-50">21–50 vehicles</option>
-                        <option value="51-200">51–200 vehicles</option>
-                        <option value="200+">200+ vehicles</option>
-                      </select>
-                      <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M6 9l6 6 6-6" />
-                        </svg>
-                      </div>
-                    </div>
+                    <Select
+                      id="contact-fleet"
+                      name="fleet"
+                      placeholder="Select fleet size"
+                      value={form.fleet}
+                      onValueChange={(v) => setForm((prev) => ({ ...prev, fleet: v }))}
+                      options={[
+                        { value: "1-5", label: "1–5 vehicles" },
+                        { value: "6-20", label: "6–20 vehicles" },
+                        { value: "21-50", label: "21–50 vehicles" },
+                        { value: "51-200", label: "51–200 vehicles" },
+                        { value: "200+", label: "200+ vehicles" },
+                      ]}
+                      className="h-auto rounded-none border-slate-200 px-4 py-3 text-[15px] focus-visible:border-blue-500 focus-visible:ring-4 focus-visible:ring-blue-500/10 data-popup-open:border-blue-500 data-popup-open:ring-4 data-popup-open:ring-blue-500/10"
+                    />
                   </div>
 
                   <div className="flex flex-col gap-2">
