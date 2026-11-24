@@ -85,7 +85,7 @@ export function RajasthanTruckCitiesGrid({ currentCitySlug }: { currentCitySlug?
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="font-bold text-sm text-gray-900">{city.name}</span>
-                <span className="text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-md">
+                <span className="text-xs font-semibold text-blue-800 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded-md">
                   {rtoCodes}
                 </span>
               </div>
@@ -121,7 +121,7 @@ export function AreaPassingGrid({ city }: { city: TruckingCity }) {
           >
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
+                <span className="text-xs font-semibold text-blue-800 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md">
                   {area.rtoCode} — {area.rtoName}
                 </span>
                 <span className="text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-100 font-medium px-2 py-0.5 rounded-md">

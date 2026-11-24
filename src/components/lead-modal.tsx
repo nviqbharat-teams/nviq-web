@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useId, useRef, useState } from "react";
+import { SALES_PHONE_DISPLAY } from "@/lib/contact";
 import { submitInquiry, trackEvent } from "@/lib/api";
 
 export type LeadPlan = "starter" | "professional" | "enterprise";
@@ -199,11 +200,11 @@ export function LeadModal({ open, plan, onClose }: LeadModalProps) {
 
     const payload = {
       inquiryType: "fleet_inquiry" as const,
-      fullName: form.fullName.trim(),
+      fullName: form.fullName.trim() || "Website Visitor",
       email: form.email.trim(),
       phoneNumber: form.phone.trim(),
-      message: form.requirement.trim() || "No additional requirements.",
-      businessName: form.company.trim(),
+      message: form.requirement.trim() || "Quick lead: call back with price.",
+      businessName: form.company.trim() || "N/A",
       numberOfVehicles,
       sourceElement: `lead-modal-${plan}`,
       productOfInterest: "gps_fleet_tracking",
@@ -262,7 +263,7 @@ export function LeadModal({ open, plan, onClose }: LeadModalProps) {
           <div className="lead-modal__success" role="status">
             <p className="lead-modal__success-title">Request received</p>
             <p className="lead-modal__success-text">
-              Our team will contact you within one business day to confirm your {PLAN_LABELS[plan].toLowerCase()} setup.
+              Our team will call you shortly with your {PLAN_LABELS[plan].toLowerCase()} price. Need it right now? Call or WhatsApp {SALES_PHONE_DISPLAY}.
             </p>
             <button type="button" className="lead-modal__submit" onClick={onClose}>
               Close
@@ -272,11 +273,10 @@ export function LeadModal({ open, plan, onClose }: LeadModalProps) {
           <form className="lead-modal__form" onSubmit={handleSubmit}>
             <div className="lead-modal__fields">
               <div className="lead-modal__field">
-                <label htmlFor="lead-full-name" className="lead-modal__label">Full Name</label>
+                <label htmlFor="lead-full-name" className="lead-modal__label">Your Name (optional)</label>
                 <input
                   id="lead-full-name"
                   type="text"
-                  required
                   autoComplete="name"
                   className="lead-modal__input"
                   placeholder="Enter your full name"
@@ -286,44 +286,18 @@ export function LeadModal({ open, plan, onClose }: LeadModalProps) {
               </div>
 
               <div className="lead-modal__field">
-                <label htmlFor="lead-phone" className="lead-modal__label">Phone Number</label>
+                <label htmlFor="lead-phone" className="lead-modal__label">Mobile / WhatsApp Number *</label>
                 <input
                   id="lead-phone"
                   type="tel"
                   required
                   autoComplete="tel"
                   className="lead-modal__input"
-                  placeholder="+91 98765 43210"
+                  inputMode="numeric"
+                  pattern="[0-9+ ]{10,15}"
+                  placeholder="10-digit mobile number"
                   value={form.phone}
                   onChange={(e) => updateField("phone", e.target.value)}
-                />
-              </div>
-
-              <div className="lead-modal__field">
-                <label htmlFor="lead-email" className="lead-modal__label">Email Address</label>
-                <input
-                  id="lead-email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  className="lead-modal__input"
-                  placeholder="you@gmail.com"
-                  value={form.email}
-                  onChange={(e) => updateField("email", e.target.value)}
-                />
-              </div>
-
-              <div className="lead-modal__field">
-                <label htmlFor="lead-company" className="lead-modal__label">Company / Business Name</label>
-                <input
-                  id="lead-company"
-                  type="text"
-                  required
-                  autoComplete="organization"
-                  className="lead-modal__input"
-                  placeholder="e.g. RoadLink Logistics Pvt. Ltd."
-                  value={form.company}
-                  onChange={(e) => updateField("company", e.target.value)}
                 />
               </div>
 
@@ -336,17 +310,6 @@ export function LeadModal({ open, plan, onClose }: LeadModalProps) {
                 />
               </div>
 
-              <div className="lead-modal__field lead-modal__field--full">
-                <label htmlFor="lead-requirement" className="lead-modal__label">Tracking Requirement</label>
-                <textarea
-                  id="lead-requirement"
-                  rows={4}
-                  className="lead-modal__textarea"
-                  placeholder="Tell us about your fleet tracking needs..."
-                  value={form.requirement}
-                  onChange={(e) => updateField("requirement", e.target.value)}
-                />
-              </div>
             </div>
 
             {errorMsg && (

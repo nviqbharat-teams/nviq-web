@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { submitInquiry, trackEvent } from "@/lib/api";
+import { SALES_PHONE_DISPLAY, SALES_TEL_HREF, SUPPORT_PHONE_DISPLAY, SUPPORT_TEL_HREF } from "@/lib/contact";
 
 export default function ContactClient() {
   const [form, setForm] = useState({ name: "", phone: "", email: "", fleet: "", message: "" });
@@ -98,10 +99,10 @@ export default function ContactClient() {
                       Our friendly team is here to help.
                     </p>
                     <a
-                      href="mailto:naviqbharat@gmail.com"
+                      href="mailto:team@naviqbharat.com"
                       className="text-sm font-semibold text-white underline underline-offset-4 hover:text-blue-200 transition-colors"
                     >
-                      naviqbharat@gmail.com
+                      team@naviqbharat.com
                     </a>
                   </div>
 
@@ -113,12 +114,25 @@ export default function ContactClient() {
                     <p className="text-sm text-white/90 leading-relaxed mb-1">
                       Mon–Sat, 9 AM–7 PM IST
                     </p>
-                    <a
-                      href="tel:+919694551326"
-                      className="text-sm font-semibold text-white underline underline-offset-4 hover:text-blue-200 transition-colors"
-                    >
-                      +91 9694551326
-                    </a>
+                    <p className="text-sm text-white/90">
+                      Sales:{" "}
+                      <a
+                        href={SALES_TEL_HREF}
+                        className="text-sm font-semibold text-white underline underline-offset-4 hover:text-blue-200 transition-colors"
+                      >
+                        {SALES_PHONE_DISPLAY}
+                      </a>
+                    </p>
+                    <p className="mt-1 text-sm text-white/90">
+                      Support:{" "}
+                      <a
+                        href={SUPPORT_TEL_HREF}
+                        data-track="contact_support_call"
+                        className="text-sm font-semibold text-white underline underline-offset-4 hover:text-blue-200 transition-colors"
+                      >
+                        {SUPPORT_PHONE_DISPLAY}
+                      </a>
+                    </p>
                   </div>
                 </div>
               </div>

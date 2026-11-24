@@ -1,5 +1,7 @@
 "use client";
 
+import { getLeadAttribution, trackLead } from "./lead-attribution";
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.naviqbharat.com/api";
 // const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
 
@@ -162,6 +164,7 @@ export async function submitInquiry(payload: {
     ...payload,
     sessionId,
     sourcePage,
+    attribution: getLeadAttribution(),
     productOfInterest: payload.productOfInterest || "gps_fleet_tracking",
   };
 
@@ -176,6 +179,7 @@ export async function submitInquiry(payload: {
 
     const data = await response.json();
     if (response.ok && data.success) {
+      trackLead("quote_submit", payload.sourceElement || payload.inquiryType);
       return {
         success: true,
         message: data.message || "Inquiry recorded successfully.",
@@ -259,15 +263,21 @@ export interface RtoPartnerLeadPayload {
 export async function submitRtoPartnerLead(
   payload: RtoPartnerLeadPayload
 ): Promise<{ success: boolean; message: string; leadId?: string; isExisting?: boolean }> {
-  const utmParams = getUtmParams();
-  const sourcePage = typeof window !== "undefined" ? window.location.pathname : "";
-  const referrerUrl = typeof document !== "undefined" ? document.referrer : "";
+  const attribution = getLeadAttribution();
+  const firstTouch = attribution.firstTouch;
+  const currentUtm = getUtmParams();
+  // Prefer the first-touch source: the visitor often lands from Google on one page
+  // and submits the form on another, by which time the UTM params are gone.
+  const utmParams = firstTouch?.utm.source ? firstTouch.utm : currentUtm;
+  const sourcePage = attribution.sourcePage;
+  const referrerUrl = firstTouch?.referrer || (typeof document !== "undefined" ? document.referrer : "");
 
   const body = {
     ...payload,
     sourcePage,
     referrerUrl,
     utmParams,
+    attribution,
   };
 
   try {
@@ -281,6 +291,7 @@ export async function submitRtoPartnerLead(
 
     const data = await response.json();
     if (response.ok && data.success) {
+      trackLead("partner_lead_submit", payload.sourceElement || "rto_partner_form");
       return {
         success: true,
         message: data.message || "Application submitted successfully.",

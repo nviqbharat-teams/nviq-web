@@ -40,18 +40,6 @@ export default function JsonLdSchema({
       "@type": "Brand",
       name: "NViQ",
     },
-    offers: {
-      "@type": "AggregateOffer",
-      priceCurrency: "INR",
-      lowPrice: "2699",
-      highPrice: "3799",
-      offerCount: "4",
-      availability: "https://schema.org/InStock",
-      seller: {
-        "@type": "Organization",
-        name: "NViQ Bharat",
-      },
-    },
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "4.9",
@@ -67,8 +55,7 @@ export default function JsonLdSchema({
     image: "https://www.naviqbharat.com/logo.jpeg",
     "@id": url,
     url,
-    telephone: "+919694551326",
-    priceRange: "₹2,699 - ₹3,799",
+    telephone: "+91 92570 38711",
     address: {
       "@type": "PostalAddress",
       addressLocality: locationName,

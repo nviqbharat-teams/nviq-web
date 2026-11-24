@@ -9,11 +9,11 @@ interface RtoConsultantBannerProps {
 
 export default function RtoConsultantBanner({ locationName, rtoCode }: RtoConsultantBannerProps) {
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50/70 via-orange-50/30 to-white p-8 md:p-12 my-12 shadow-sm">
+    <section className="relative overflow-hidden rounded-3xl border border-blue-200 bg-gradient-to-br from-blue-50/70 via-indigo-50/30 to-white p-8 md:p-12 my-12 shadow-sm">
       <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
         <div className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-4">
-            <Award className="h-3.5 w-3.5 text-amber-700" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-900 border border-blue-300 mb-4">
+            <Award className="h-3.5 w-3.5 text-blue-700" />
             <span>NViQ RTO Partner Network — {rtoCode || locationName}</span>
           </div>
 
@@ -27,15 +27,15 @@ export default function RtoConsultantBanner({ locationName, rtoCode }: RtoConsul
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-6 text-xs sm:text-sm text-gray-800 font-medium">
             <div className="flex items-center gap-2.5">
-              <Building2 className="h-4 w-4 text-amber-600 shrink-0" />
+              <Building2 className="h-4 w-4 text-blue-600 shrink-0" />
               <span><strong>Priority Agency Support</strong> & fast dispatch</span>
             </div>
             <div className="flex items-center gap-2.5">
-              <Clock className="h-4 w-4 text-amber-600 shrink-0" />
+              <Clock className="h-4 w-4 text-blue-600 shrink-0" />
               <span><strong>Mobile App Issuance:</strong> Upon verified fitment</span>
             </div>
             <div className="flex items-center gap-2.5">
-              <ShieldCheck className="h-4 w-4 text-amber-600 shrink-0" />
+              <ShieldCheck className="h-4 w-4 text-blue-600 shrink-0" />
               <span><strong>Zero Fitness Rejections</strong> on Vahan 4.0</span>
             </div>
             <div className="flex items-center gap-2.5">
@@ -48,7 +48,7 @@ export default function RtoConsultantBanner({ locationName, rtoCode }: RtoConsul
         <div className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full lg:w-auto shrink-0">
           <Link
             href="/rto-partner"
-            className="inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 shadow-md transition-all text-sm"
+            className="inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md transition-all text-sm"
           >
             <Building2 className="h-4 w-4" />
             <span>Join RTO Partner Portal</span>
@@ -56,7 +56,7 @@ export default function RtoConsultantBanner({ locationName, rtoCode }: RtoConsul
           </Link>
 
           <a
-            href="https://wa.me/919694551326?text=Hi%20NViQ%20Team%2C%20I%20am%20an%20RTO%20Consultant%20interested%20in%20partnering%20for%20VLTD%20fitments."
+            href="https://wa.me/919257038711?text=Hi%20NViQ%20Team%2C%20I%20am%20an%20RTO%20Consultant%20interested%20in%20partnering%20for%20VLTD%20fitments."
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 transition-all text-sm shadow-sm"

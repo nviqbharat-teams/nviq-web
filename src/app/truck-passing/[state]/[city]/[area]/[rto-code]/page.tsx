@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const { city, area } = match;
-  const title = `${area.rtoCode} (${area.rtoName}) Truck Passing & AIS 140 VLTD Fitment | ${area.name} | NViQ`;
+  const title = `${area.rtoCode} (${area.rtoName}) Truck Passing & AIS 140 VLTD Fitment | ${area.name}`;
   const description = `Get approved AIS 140 VLTD installation for ${area.rtoCode} vehicle fitness passing at ${area.name}, ${city.name}. 1-hour Vahan 4.0 certificate upload, Rajasthan DMG Khanij whitelist, & RTO agent wholesale margins.`;
 
   return {

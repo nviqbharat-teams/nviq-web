@@ -4,10 +4,13 @@ import { Check, X, ShieldAlert, Zap } from "lucide-react";
 interface VltdComplianceTableProps {
   locationName: string;
   miningPortalName?: string;
+  /** false for states without a verified mining-portal integration: drop the mining row */
+  hasMining?: boolean;
 }
 
-export default function VltdComplianceTable({ locationName, miningPortalName }: VltdComplianceTableProps) {
-  const comparisons = [
+/** NViQ vs generic GPS rows. Shared with the redesigned /vltd hub. */
+export function getComplianceRows(locationName: string, miningPortalName?: string, hasMining = true) {
+  const allComparisons = [
     {
       feature: "Fitment Certificate Generation Time",
       nviq: "Within 60 Minutes (Instant)",
@@ -21,6 +24,7 @@ export default function VltdComplianceTable({ locationName, miningPortalName }: 
       important: true,
     },
     {
+      mining: true,
       feature: miningPortalName || "State Mining Portal Whitelist",
       nviq: "Pre-Integrated for e-Transit Pass / e-Ravanna",
       others: "Not whitelisted on mining servers",
@@ -57,6 +61,11 @@ export default function VltdComplianceTable({ locationName, miningPortalName }: 
       important: false,
     },
   ];
+  return allComparisons.filter((c) => hasMining || !("mining" in c && c.mining));
+}
+
+export default function VltdComplianceTable({ locationName, miningPortalName, hasMining = true }: VltdComplianceTableProps) {
+  const comparisons = getComplianceRows(locationName, miningPortalName, hasMining);
 
   return (
     <section className="my-16">
@@ -69,7 +78,7 @@ export default function VltdComplianceTable({ locationName, miningPortalName }: 
           Why 50,000+ Trucks & RTO Agents Choose NViQ in {locationName}
         </h2>
         <p className="mt-2 text-sm text-gray-600">
-          Don’t let a cheap, non-whitelisted GPS tracker fail your RTO fitness passing or halt your mining transit pass.
+          Don’t let a cheap, non-whitelisted GPS tracker fail your RTO fitness passing{hasMining ? " or halt your mining transit pass" : " or permit renewal"}.
         </p>
       </div>
 
@@ -115,7 +124,7 @@ export default function VltdComplianceTable({ locationName, miningPortalName }: 
 
       <div className="mt-4 flex items-center justify-between text-xs text-gray-500 px-2">
         <span className="flex items-center gap-1.5">
-          <ShieldAlert className="h-4 w-4 text-amber-600" />
+          <ShieldAlert className="h-4 w-4 text-blue-600" />
           <span>Using an unwhitelisted device can lead to ₹10,000+ vehicle impound fines under the Motor Vehicles Act.</span>
         </span>
       </div>

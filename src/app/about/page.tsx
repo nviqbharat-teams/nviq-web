@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SALES_PHONE_DISPLAY, SALES_TEL_HREF, SUPPORT_PHONE_DISPLAY, SUPPORT_TEL_HREF } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "About NViQ — India's Fleet GPS Tracking Platform",
@@ -195,6 +196,21 @@ export default function AboutPage() {
                 </address>
               </div>
 
+              {/* Phone lines */}
+              <div className="p-8 md:p-10 flex flex-col gap-1 md:col-span-2 md:border-t md:border-slate-200">
+                <span className="text-[11px] font-bold tracking-[0.18em] uppercase text-slate-400 mb-1">
+                  Call Us
+                </span>
+                <p className="text-[15px] text-slate-700 font-medium">
+                  Sales:{" "}
+                  <a href={SALES_TEL_HREF} className="font-bold text-blue-700 hover:underline">{SALES_PHONE_DISPLAY}</a>
+                </p>
+                <p className="text-[15px] text-slate-700 font-medium">
+                  Support:{" "}
+                  <a href={SUPPORT_TEL_HREF} data-track="about_support_call" className="font-bold text-blue-700 hover:underline">{SUPPORT_PHONE_DISPLAY}</a>
+                </p>
+              </div>
+
             </div>
           </div>
         </section>
@@ -218,10 +234,10 @@ export default function AboutPage() {
                 </svg>
               </Link>
               <Link
-                href="/#pricing"
+                href="/contact"
                 className="inline-flex items-center gap-2 text-white/80 hover:text-white font-semibold underline underline-offset-4 decoration-white/30 hover:decoration-white transition-all duration-200"
               >
-                View Pricing
+                Get Today&apos;s Price
               </Link>
             </div>
           </div>

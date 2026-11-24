@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const { city, area } = match;
-  const title = `${area.name} (${area.rtoCode}) Truck Passing & AIS 140 Fitment Center | NViQ`;
+  const title = `${area.name} (${area.rtoCode}) Truck Passing & AIS 140 Fitment Center`;
   const description = `Doorstep AIS 140 GPS fitment at ${area.name}, ${city.name} (${area.rtoCode}). Technicians at ${area.truckYards.join(", ")}. 1-hour Vahan 4.0 certificate upload for ${area.rtoName} fitness passing.`;
 
   return {
@@ -145,7 +145,7 @@ export default async function TruckPassingAreaPage({ params }: Props) {
         <div className="my-10 bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-xs">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-100">
             <div>
-              <span className="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-md">
+              <span className="text-xs font-bold text-blue-800 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-md">
                 Official RTO Office: {area.rtoCode}
               </span>
               <h3 className="text-2xl font-bold text-gray-900 mt-2">{area.name} Local Fitment Details</h3>
@@ -183,7 +183,7 @@ export default async function TruckPassingAreaPage({ params }: Props) {
               <ul className="text-sm text-gray-800 space-y-1.5 font-medium">
                 {area.dominantFleets.map((fleet, idx) => (
                   <li key={idx} className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />
                     {fleet}
                   </li>
                 ))}

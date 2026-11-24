@@ -1,723 +1,539 @@
-"use client";
-
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import logoImg from "./logo.jpeg";
-import { type LeadPlan } from "@/components/lead-modal";
-import { useLeadModal } from "@/context/lead-modal-context";
-import HeroCarousel from "@/components/home/hero-carousel";
+import { Barlow_Semi_Condensed } from "next/font/google";
+import { Check, MessageCircle, PhoneCall, X } from "lucide-react";
+import PlateLeadForm from "@/components/home/plate-lead-form";
+import AppPreview from "@/components/home/app-preview";
+import { HeroEyebrow, HeroHeadline, HeroIntro, HeroPoints } from "@/components/hero/hero-text";
+import { SEGMENTS } from "@/data/segments";
+import { TOOLS } from "@/components/tools/tool-page";
+import { SALES_PHONE_DISPLAY, SALES_TEL_HREF, whatsappHref } from "@/lib/contact";
 
-const HERO_FLEET_INSIGHTS = {
-  summary: { active: 27, total: 32, onRoute: 24, alerts: 2 },
-  metrics: [
-    { value: "8,420 km", label: "Tracked today", detail: "Avg 312 km per vehicle" },
-    { value: "₹18,400", label: "Fuel saved", detail: "Waste cut this month" },
-    { value: "5 sec", label: "GPS refresh", detail: "Works in low-signal zones" },
-    { value: "AIS140", label: "Govt compliant", detail: "Audit-ready reports" },
-  ],
-  alert: {
-    plate: "MH12 AB 1244",
-    message: "Overspeed detected on NH-48 near Lonavala",
-    time: "2 min ago",
+// Home page. Written for a vehicle owner reading on a phone: say what we do in
+// plain words, let them find their own problem, show exactly what they get and
+// what happens after, answer the doubts, and keep one next step in reach.
+// Only claims already made elsewhere on the site; no prices (unlocked on WhatsApp).
+
+const display = Barlow_Semi_Condensed({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-display-face",
+});
+
+const WA_GENERAL = whatsappHref("Hi NViQ, I need AIS 140 VLTD / GPS for my vehicle. Please share today's price.");
+
+// What a visitor came for, in their own words.
+const NEEDS = [
+  {
+    problem: "The RTO is asking for a VLTD certificate for fitness or permit.",
+    answer: "We fit a government-approved AIS 140 tracker with panic buttons at your place and update Vahan in about an hour.",
+    link: "AIS 140 VLTD fitment",
+    href: "/vltd",
   },
+  {
+    problem: "I want to see where my vehicles are and stop fuel theft.",
+    answer: "Watch every vehicle live on your phone, see where it went, and get an alert the moment a driver overspeeds or leaves the route.",
+    link: "GPS tracking for fleets",
+    href: "/gps-tracking",
+  },
+  {
+    problem: "I need fitness, permit, RC transfer or NOC done.",
+    answer: "Tell us what the RTO wants. We check your papers, fit the tracker if needed, and handle the filing while you stay on the road.",
+    link: "RTO services",
+    href: "/rto-services",
+  },
+  {
+    problem: "I'm an RTO agent and want better rates for my customers.",
+    answer: "Get wholesale prices, issue certificates from the partner app, and keep your margin. Our technician does the fitting.",
+    link: "RTO Partner Program",
+    href: "/rto-partner",
+  },
+];
+
+// The real order of events, so the numbers mean something.
+const STEPS = [
+  { title: "Send your vehicle number", text: "On WhatsApp, a call, or the form above. We reply with today's price and a time that suits you." },
+  { title: "Technician comes to you", text: "At your home, yard, school or transport nagar. Fitting takes about 30–45 minutes." },
+  { title: "Vahan is updated", text: "We activate the device and push it to Vahan. Your certificate is ready in about an hour." },
+  { title: "Track from your phone", text: "Log in to the NViQ app the same day and see your vehicle live." },
+];
+
+const INCLUDED = [
+  ["ARAI / ICAT certified AIS 140 device", "The tracker the RTO accepts, with 2 emergency panic buttons."],
+  ["Fitting at your place", "A trained technician comes to you. No trip to a workshop."],
+  ["Vahan activation and certificate", "Linked to Vahan, and to state mining portals where your vehicle needs it."],
+  ["The NViQ tracking app", "Live location, route history, alerts and reports on your phone."],
+  ["Lifetime replacement warranty", "If the device stops working, we replace it."],
+  ["One number for help", `Call or WhatsApp ${SALES_PHONE_DISPLAY} for anything, before or after fitting.`],
+];
+
+const NOT_NEEDED = [
+  "Stand in RTO queues to get the certificate updated",
+  "Find a dealer, then a mechanic, then someone for Vahan",
+  "Buy a new device when the old one fails",
+];
+
+const APP_FEATURES = [
+  ["See it live", "Location refreshes every 5 seconds, even on highways and in mines."],
+  ["Know where it went", "Full route history with every stop, halt and idle time."],
+  ["Get told when something's wrong", "Alerts for overspeed, leaving a set area, and ignition on at night."],
+  ["Stop theft", "Cut the engine from your phone if the vehicle is taken."],
+  ["Share a live link", "Send your customer, a parent or the family a link that shows the vehicle moving."],
+  ["Trip and km reports", "Daily distance and trip reports for billing and fuel checks."],
+];
+
+const FAQS = [
+  {
+    q: "Is a VLTD (GPS tracker) compulsory for my vehicle?",
+    a: "Buses, school vans, taxis, cabs and other public service vehicles need an AIS 140 VLTD with panic buttons under CMVR Rule 125H, and so do national-permit goods vehicles. The RTO checks it during fitness, permit and registration work. Not sure about yours? Use the free checker below or ask us on WhatsApp.",
+  },
+  {
+    q: "Do I have to install the device myself?",
+    a: "No. Our technician comes to your home, yard, school or quarry and fits it. Fitting takes about 30–45 minutes.",
+  },
+  {
+    q: "How soon will the certificate show on Vahan?",
+    a: "In about 1 hour after fitting, so your RTO work can usually continue the same day.",
+  },
+  {
+    q: "Is NViQ approved for state mining portals?",
+    a: "Yes. NViQ devices are whitelisted on Vahan 4.0 and on Rajasthan DMG, MP Khanij, Gujarat i-Khanij and Haryana e-Ravanna.",
+  },
+  {
+    q: "What happens when there is no mobile signal?",
+    a: "The device keeps saving location while there is no signal and uploads the full route as soon as signal returns, so you don't lose the trip.",
+  },
+  {
+    q: "What if the device stops working?",
+    a: "Every NViQ device has a lifetime replacement warranty. Call or WhatsApp us and we replace it.",
+  },
+  {
+    q: "Why is the price not on the website?",
+    a: "The price depends on how many vehicles you have and where they are. Send your number and we reply with your exact all-inclusive price, usually within minutes.",
+  },
+];
+
+const DIRECTORY = [
+  {
+    title: "Top transport states",
+    links: [
+      ["Rajasthan", "/rto-partner/rajasthan"],
+      ["Gujarat", "/vltd/gujarat"],
+      ["Maharashtra", "/rto-partner/maharashtra"],
+      ["Delhi NCR", "/rto-partner/delhi"],
+      ["Haryana", "/vltd/haryana"],
+      ["Madhya Pradesh", "/vltd/madhya-pradesh"],
+      ["Uttar Pradesh", "/rto-partner/uttar-pradesh"],
+      ["Punjab", "/rto-partner/punjab"],
+      ["Karnataka", "/rto-partner/karnataka"],
+      ["Tamil Nadu", "/rto-partner/tamil-nadu"],
+    ],
+  },
+  {
+    title: "Industrial and mining hubs",
+    links: [
+      ["Jaipur (RJ-14 / RJ-45)", "/truck-passing/rajasthan/jaipur"],
+      ["Kishangarh marble (RJ-42)", "/truck-passing/rajasthan/kishangarh"],
+      ["Chittorgarh cement (RJ-09)", "/truck-passing/rajasthan/chittorgarh"],
+      ["Bhilwara mining (RJ-06)", "/truck-passing/rajasthan/bhilwara"],
+      ["Jodhpur stone (RJ-19)", "/truck-passing/rajasthan/jodhpur"],
+      ["Kota freight (RJ-20)", "/truck-passing/rajasthan/kota"],
+      ["Alwar transport (RJ-02)", "/truck-passing/rajasthan/alwar"],
+      ["Ahmedabad (GJ-01)", "/vltd/gujarat/ahmedabad"],
+      ["Morbi ceramic (GJ-36)", "/vltd/gujarat/morbi/gj-36"],
+      ["Gurugram (HR-26)", "/vltd/haryana/gurugram/hr-26"],
+    ],
+  },
+  {
+    title: "Truck fitment",
+    links: [
+      ["Marble trolla passing", "/trucks/marble-trolla"],
+      ["Mining dumper GPS", "/trucks/mining-dumper"],
+      ["Bajri tipper fitment", "/trucks/bajri-truck"],
+      ["Cement bulker AIS 140", "/trucks/cement-bulker"],
+      ["Rajasthan truck passing", "/truck-passing/rajasthan"],
+    ],
+  },
+];
+
+const VLTD_LABEL: Record<string, string> = {
+  mandatory: "VLTD required",
+  depends: "Depends on permit",
+  recommended: "Recommended",
 };
 
-const FAQ_ITEMS = [
-  {
-    tag: "Setup",
-    question: "Do I need to install the tracking device myself?",
-    answer: "No. NViQ provides free local technician installation. Once you start your trial, our certified installation team will coordinate with you to install the devices at your warehouse, office, or yard at no extra charge."
-  },
-  {
-    tag: "Coverage",
-    question: "Will this tracking system work in remote villages or low-signal zones?",
-    answer: "Yes. Our trackers are built with dual-cellular backup and offline local memory. If a vehicle travels through a dead zone, the tracker continues storing location and fuel metrics locally, and automatically uploads the complete path history the second connectivity returns."
-  },
-  {
-    tag: "Billing",
-    question: "How does the 90-day trial refund guarantee work?",
-    answer: "We are confident in NViQ's value. You get full access to the tracking platform and hardware for 90 days. If you are not satisfied with NViQ during your first 90 days, you can return the device for a full refund of your subscription cost."
-  },
-  {
-    tag: "Hardware",
-    question: "Is there a warranty on the hardware trackers?",
-    answer: "Yes, every NViQ device comes with a lifetime replacement warranty. If a device stops working or is damaged through normal wear-and-tear, we ship and install a brand-new replacement device completely free of charge."
-  }
-];
+const homeJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://www.naviqbharat.com/#website",
+      url: "https://www.naviqbharat.com",
+      name: "NViQ Bharat",
+      description: "AIS 140 VLTD & Mines GPS Tracker Platform India",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://www.naviqbharat.com/vltd?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://www.naviqbharat.com/#organization",
+      name: "NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED",
+      alternateName: "NViQ Bharat",
+      url: "https://www.naviqbharat.com",
+      logo: "https://www.naviqbharat.com/logo.jpeg",
+      telephone: SALES_PHONE_DISPLAY,
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          telephone: SALES_PHONE_DISPLAY,
+          contactType: "customer service",
+          areaServed: "IN",
+          availableLanguage: ["en", "Hindi"],
+        },
+      ],
+    },
+    {
+      "@type": "Product",
+      "@id": "https://www.naviqbharat.com/#vltd-product",
+      name: "NViQ AIS 140 VLTD & Mines GPS Tracker",
+      image: "https://www.naviqbharat.com/logo.jpeg",
+      description:
+        "Government-approved AIS 140 GPS tracker for commercial vehicles, mining tippers, and dumpers with emergency panic buttons and Vahan 4.0 sync.",
+      brand: { "@type": "Brand", name: "NViQ" },
+    },
+    {
+      "@type": "Service",
+      "@id": "https://www.naviqbharat.com/#vltd-service",
+      name: "AIS 140 VLTD Fitment & Mining Portal Whitelist Certification",
+      serviceType: "Automotive GPS Tracking & Compliance Certification",
+      provider: { "@id": "https://www.naviqbharat.com/#organization" },
+      areaServed: { "@type": "Country", name: "India" },
+      description:
+        "Doorstep installation of ARAI/ICAT certified AIS 140 devices with certificate upload to Vahan 4.0 and state mining portals (Rajasthan DMG, MP Khanij, Gujarat i-Khanij, Haryana e-Ravanna) in about 1 hour.",
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://www.naviqbharat.com/#faq",
+      mainEntity: FAQS.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
+  ],
+};
 
-const FLEET_VALUE = [
-  {
-    id: "tracking",
-    title: "Smart Tracking",
-    desc: "Always-on location visibility with clean route history to keep fleet operations grounded.",
-    accent: "blue",
-    features: [
-      "Live GPS position every 5 seconds",
-      "Full route history with timestamps",
-      "Geofence Breach Alerts",
-    ],
-  },
-  {
-    id: "summary",
-    title: "Business Summary",
-    desc: "Complete business overview with trip, fuel, and fleet performance reports in one place.",
-    accent: "indigo",
-    features: [
-      "Fuel consumption & cost summary",
-      "Trip distance & stoppage reports",
-      "Fleet utilization analytics",
-    ],
-  },
-  {
-    id: "behaviour",
-    title: "Drive Behaviour",
-    desc: "Real-time driver monitoring with instant alerts for unsafe driving patterns on the road.",
-    accent: "amber",
-    features: [
-      "Overspeed & harsh braking alerts",
-      "Geo-fence entry/exit alerts",
-      "Engine ignition & idling alerts",
-    ],
-  },
-  {
-    id: "safety",
-    title: "Certified Safety Solutions",
-    desc: "Compliance-friendly controls that strengthen driver safety and audit confidence for fleets.",
-    accent: "emerald",
-    features: [
-      "Driver fatigue & overspeed alerts",
-      "Panic button & emergency SOS relay",
-      "Compliance audit trail & reports",
-    ],
-  },
-];
-
-const PREMIUM_PLAN_FEATURES = [
-  "Mobile App Access",
-  "Live GPS Tracking (5s refresh)",
-  "Geo-fence Breach Alerts",
-  "Ignition & Overspeed Alerts",
-  "30-Day Route Playback History",
-  "Anti-Theft Engine Cut-off",
-  "Trip Management & Mileage Reports",
-  "Free GPS Device & Installation",
-  "Lifetime Replacement Warranty",
-] as const;
-
-const PRICING_PLANS = [
-  {
-    key: "lifetime",
-    badge: "Lifetime Plan",
-    tagline: "No monthly/annual renewals",
-    price: 9999,
-    features: PREMIUM_PLAN_FEATURES,
-    cta: "Get Lifetime",
-    featured: true,
-    recommendedText: "★ Lifetime Free",
-    badgeText: "Pay Once, Track Free Forever!",
-    isLifetime: true,
-    modalPlan: "professional" as LeadPlan
-  },
-  {
-    key: "48-month",
-    badge: "48 Months Plan",
-    tagline: "Maximum savings",
-    price: 5999,
-    features: PREMIUM_PLAN_FEATURES,
-    cta: "Choose Plan",
-    featured: false,
-    modalPlan: "professional" as LeadPlan
-  },
-  {
-    key: "24-month",
-    badge: "24 Months Plan",
-    tagline: "Longer term stability",
-    price: 4499,
-    features: PREMIUM_PLAN_FEATURES,
-    cta: "Choose Plan",
-    recommendedText: "★ Recommended",
-    featured: true,
-    modalPlan: "professional" as LeadPlan
-  },
-  {
-    key: "12-month",
-    badge: "12 Months Plan",
-    tagline: "Our most popular choice",
-    price: 2999,
-    features: PREMIUM_PLAN_FEATURES,
-    cta: "Get Started",
-    featured: false,
-    modalPlan: "professional" as LeadPlan
-  },
-  {
-    key: "3-month",
-    badge: "3 Months Plan",
-    tagline: "Great for quick testing",
-    price: 1999,
-    features: PREMIUM_PLAN_FEATURES,
-    cta: "Choose Plan",
-    featured: false,
-    badgeText: "3 Months Free Tracking included!",
-    modalPlan: "starter" as LeadPlan
-  }
-
-];
-
-
-function PricingCheck() {
+function SectionHead({ title, sub, dark = false }: { title: string; sub?: string; dark?: boolean }) {
   return (
-    <span className="pricing__check" aria-hidden="true">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <circle cx="7" cy="7" r="7" fill="currentColor" fillOpacity="0.15" />
-        <path d="M4 7l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </span>
+    <div className="max-w-2xl">
+      <h2 className={`font-display text-3xl font-semibold leading-[1.1] sm:text-[40px] ${dark ? "text-white" : "text-[#18202E]"}`}>{title}</h2>
+      {sub && <p className={`mt-3 text-base leading-relaxed sm:text-lg ${dark ? "text-slate-300" : "text-slate-600"}`}>{sub}</p>}
+    </div>
   );
 }
 
-const FLEET_SERIES = [
-  {
-    id: "core",
-    title: "Core Series",
-    desc: "Entry-level GPS tracking for small fleets. Real-time location, trip history, and driver behavior monitoring out of the box.",
-    color: "#3b82f6",
-  },
-  {
-    id: "smart",
-    title: "Smart Series",
-    desc: "High-speed 4G connectivity with live alerts, geo-fencing, and route analytics for growing mid-size fleets.",
-    color: "#22c55e",
-  },
-  {
-    id: "intelli",
-    title: "Intelli Series",
-    desc: "AI-powered fleet intelligence with predictive maintenance, fuel cost analytics, and advanced multi-branch reporting.",
-    color: "#8b5cf6",
-  },
-  {
-    id: "secure",
-    title: "Secure Series",
-    desc: "AIS140-certified devices meeting all government mandates for commercial vehicle compliance, panic alerts, and audit-ready logs.",
-    color: "#f59e0b",
-  },
-  {
-    id: "vision",
-    title: "Vision Series",
-    desc: "Dual-channel AI dashcam with event-based recording, cloud backup, and real-time driver coaching to reduce accidents.",
-    color: "#ef4444",
-  },
-];
-
-function FleetSeriesIcon({ id }: { id: string }) {
-  const props = { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.75, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
-
-  if (id === "core") {
-    return (
-      <svg {...props}>
-        <path d="M12 21s7-4.5 7-11a7 7 0 1 0-14 0c0 6.5 7 11 7 11z" />
-        <circle cx="12" cy="10" r="2.5" />
-      </svg>
-    );
-  }
-  if (id === "smart") {
-    return (
-      <svg {...props}>
-        <path d="M5 12.55a11 11 0 0 1 14.08 0" />
-        <path d="M1.42 9a16 16 0 0 1 21.16 0" />
-        <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
-        <circle cx="12" cy="20" r="1" fill="currentColor" stroke="none" />
-      </svg>
-    );
-  }
-  if (id === "intelli") {
-    return (
-      <svg {...props}>
-        <path d="M3 17l6-6 4 4 8-8" />
-        <path d="M14 7h7v7" />
-      </svg>
-    );
-  }
-  if (id === "secure") {
-    return (
-      <svg {...props}>
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        <path d="M9 12l2 2 4-4" />
-      </svg>
-    );
-  }
-  return (
-    <svg {...props}>
-      <path d="M15 10l4.553-2.276A1 1 0 0 1 21 8.618v6.764a1 1 0 0 1-1.447.894L15 14" />
-      <rect x="3" y="7" width="12" height="10" rx="2" />
-    </svg>
-  );
-}
-
-function FleetValueVisual({ id }: { id: string }) {
-  if (id === "tracking") {
-    return (
-      <svg viewBox="0 0 200 140" fill="none" aria-hidden="true" className="fleet-value__visual-svg">
-        <line x1="20" y1="120" x2="180" y2="120" stroke="#d4d4d8" strokeWidth="1" />
-        {[32, 52, 72, 92, 112, 132, 152, 168].map((x) => (
-          <line key={x} x1={x} y1="28" x2={x} y2="120" stroke="#e4e4e7" strokeWidth="1" />
-        ))}
-        <path d="M28 95 Q52 55, 76 72 T124 48 T172 62" stroke="#1a1a2e" strokeWidth="2.5" strokeLinecap="round" />
-        <circle cx="124" cy="48" r="5" fill="#3b82f6" stroke="#fff" strokeWidth="1.5" />
-        <path d="M28 95 Q52 55, 76 72 T124 48" stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.5" />
-      </svg>
-    );
-  }
-  if (id === "summary") {
-    return (
-      <svg viewBox="0 0 200 140" fill="none" aria-hidden="true" className="fleet-value__visual-svg">
-        <rect x="30" y="30" width="140" height="90" rx="4" stroke="#e4e4e7" strokeWidth="1" />
-        <line x1="30" y1="55" x2="170" y2="55" stroke="#e4e4e7" strokeWidth="1" />
-        {[50, 72, 94, 116, 138, 160].map((x, i) => (
-          <rect key={x} x={x - 8} y={120 - (38 + i * 8)} width="14" height={38 + i * 8} rx="3" fill={i % 2 === 0 ? "#1a1a2e" : "#a1a1aa"} opacity={i % 2 === 0 ? 1 : 0.45} />
-        ))}
-        <path d="M42 100 L72 78 L102 88 L158 52" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    );
-  }
-  if (id === "behaviour") {
-    return (
-      <svg viewBox="0 0 200 140" fill="none" aria-hidden="true" className="fleet-value__visual-svg">
-        <circle cx="100" cy="72" r="48" stroke="#e4e4e7" strokeWidth="1" />
-        <line x1="100" y1="24" x2="100" y2="120" stroke="#e4e4e7" strokeWidth="1" />
-        <line x1="52" y1="72" x2="148" y2="72" stroke="#e4e4e7" strokeWidth="1" />
-        <line x1="66" y1="38" x2="134" y2="106" stroke="#e4e4e7" strokeWidth="1" />
-        <line x1="134" y1="38" x2="66" y2="106" stroke="#e4e4e7" strokeWidth="1" />
-        <path d="M100 36 L112 68 L148 72 L120 94 L128 128 L100 108 L72 128 L80 94 L52 72 L88 68 Z" fill="#1a1a2e" />
-        <circle cx="100" cy="72" r="6" fill="#f59e0b" />
-      </svg>
-    );
-  }
-  return (
-    <svg viewBox="0 0 200 140" fill="none" aria-hidden="true" className="fleet-value__visual-svg">
-      <circle cx="118" cy="82" r="42" stroke="#d4d4d8" strokeWidth="1" />
-      <circle cx="98" cy="68" r="32" stroke="#a1a1aa" strokeWidth="1" />
-      <circle cx="82" cy="58" r="22" fill="#1a1a2e" opacity="0.85" />
-      <path d="M82 36 L82 58 L64 70" stroke="#10b981" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 22 L188 22 M12 118 L188 118 M22 12 L22 128 M178 12 L178 128" stroke="#e4e4e7" strokeWidth="0.75" />
-    </svg>
-  );
-}
+const wrap = "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8";
+const link = "font-semibold text-[#1D5BD8] underline decoration-[#1D5BD8]/30 underline-offset-4 hover:decoration-[#1D5BD8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1D5BD8]";
 
 export default function Home() {
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
-  const { openLeadModal } = useLeadModal();
-
-  const pricingRef = useRef<HTMLDivElement>(null);
-
-  const scrollPricing = (dir: "left" | "right") => {
-    const el = pricingRef.current;
-    if (!el) return;
-    const cardWidth = 290 + 24; // card width + gap
-    el.scrollBy({ left: dir === "right" ? cardWidth : -cardWidth, behavior: "smooth" });
-  };
-
-  const [pricingAtStart, setPricingAtStart] = useState(true);
-  const [pricingAtEnd, setPricingAtEnd] = useState(false);
-
-  useEffect(() => {
-    const el = pricingRef.current;
-    if (!el) return;
-    const update = () => {
-      setPricingAtStart(el.scrollLeft <= 4);
-      setPricingAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
-    };
-    update();
-    el.addEventListener("scroll", update, { passive: true });
-    return () => el.removeEventListener("scroll", update);
-  }, []);
-
-
-  const homeJsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebSite",
-        "@id": "https://www.naviqbharat.com/#website",
-        "url": "https://www.naviqbharat.com",
-        "name": "NViQ Bharat",
-        "description": "AIS 140 VLTD & Mines GPS Tracker Platform India",
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": "https://www.naviqbharat.com/vltd?q={search_term_string}",
-          "query-input": "required name=search_term_string",
-        },
-      },
-      {
-        "@type": "Organization",
-        "@id": "https://www.naviqbharat.com/#organization",
-        "name": "NVIQ BHARAT TECHNOLOGY PRIVATE LIMITED",
-        "alternateName": "NViQ Bharat",
-        "url": "https://www.naviqbharat.com",
-        "logo": "https://www.naviqbharat.com/logo.jpeg",
-        "telephone": "+919694551326",
-        "contactPoint": [
-          {
-            "@type": "ContactPoint",
-            "telephone": "+919694551326",
-            "contactType": "customer service",
-            "areaServed": "IN",
-            "availableLanguage": ["en", "Hindi"],
-          },
-        ],
-      },
-      {
-        "@type": "Product",
-        "@id": "https://www.naviqbharat.com/#vltd-product",
-        "name": "NViQ AIS 140 VLTD & Mines GPS Tracker",
-        "image": "https://www.naviqbharat.com/logo.jpeg",
-        "description": "Government-approved AIS 140 GPS tracker for commercial vehicles, mining tippers, and dumpers with emergency panic buttons and Vahan 4.0 sync.",
-        "brand": {
-          "@type": "Brand",
-          "name": "NViQ",
-        },
-        "offers": {
-          "@type": "AggregateOffer",
-          "priceCurrency": "INR",
-          "lowPrice": "2699",
-          "highPrice": "3799",
-          "offerCount": "4",
-          "availability": "https://schema.org/InStock",
-        },
-      },
-      {
-        "@type": "Service",
-        "@id": "https://www.naviqbharat.com/#vltd-service",
-        "name": "AIS 140 VLTD Fitment & Mining Portal Whitelist Certification",
-        "serviceType": "Automotive GPS Tracking & Compliance Certification",
-        "provider": {
-          "@id": "https://www.naviqbharat.com/#organization",
-        },
-        "areaServed": {
-          "@type": "Country",
-          "name": "India",
-        },
-        "description": "Doorstep installation of ARAI/ICAT certified AIS 140 devices with 1-hour certificate upload to Vahan 4.0 and state mining portals (Rajasthan DMG, MP Khanij, Gujarat i-Khanij, Haryana e-Ravanna).",
-      },
-      {
-        "@type": "FAQPage",
-        "@id": "https://www.naviqbharat.com/#faq",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "Is NViQ GPS approved for AIS 140 fitness passing and state mining portals?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes. NViQ VLTD devices are ARAI and ICAT certified under AIS 140 standard and whitelisted on Vahan 4.0 as well as state mining systems (Rajasthan DMG, MP Khanij, Gujarat i-Khanij, and Haryana e-Ravanna). Certificates are issued within 60 minutes.",
-            },
-          },
-          {
-            "@type": "Question",
-            "name": "Do I need to install the tracking device myself?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "No. NViQ provides free local technician installation at your yard, warehouse, or mining quarry at no extra charge.",
-            },
-          },
-          {
-            "@type": "Question",
-            "name": "How can RTO consultants partner with NViQ?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "RTO consultants and agents can join the NViQ RTO Partner Network to access partner dealer access, mobile app certificate issuance, and priority technical support.",
-            },
-          },
-        ],
-      },
-    ],
-  };
-
   return (
-    <div className="bg-background text-foreground font-sans overflow-x-hidden pt-0">
-      {/* Structured Data for SEO (AIS 140 VLTD & Mines) */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
-      />
+    <div className={`${display.variable} bg-white text-[#18202E]`}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
 
-      {/* HERO SECTION */}
-      <section className="relative w-full bg-white overflow-hidden" aria-label="NViQ Overview">
-        <HeroCarousel onOpenLeadModal={openLeadModal} />
-      </section>
-
-      {/* SERVICES SECTION */}
-      <section id="services" className="fleet-value">
-        <div className="fleet-value__bg" aria-hidden="true" />
-
-        <div className="fleet-value__inner">
-          <div className="fleet-value__header">
-            <h2 className="fleet-value__title">
-              Provide Solutions
-            </h2>
-            <p className="fleet-value__subtitle">
-              A focused operating layer that gives your team clear visibility, safer decisions, and stronger control every day.
-            </p>
+      {/* HERO: say it plainly, then ask for the vehicle number */}
+      <section className="bg-[#18202E] pt-16 text-white">
+        <div className={`${wrap} grid grid-cols-[minmax(0,1fr)] gap-8 py-8 sm:gap-10 sm:py-16 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-center lg:gap-16 lg:py-24`}>
+          <div>
+            <HeroEyebrow>AIS 140 VLTD and GPS tracking, across India</HeroEyebrow>
+            <HeroHeadline
+              title="Tracker fitted at your door. Vahan updated in about an hour."
+              highlight="Vahan updated in about an hour."
+              className="mt-4 font-display text-[34px] font-bold leading-[1.05] sm:text-6xl sm:leading-[1.02] lg:text-[68px]"
+            />
+            <HeroIntro className="mt-4 sm:mt-5">
+              NViQ fits government-approved GPS trackers on trucks, buses, taxis and school vans, links them to Vahan so your
+              fitness or permit can go ahead, and gives you an app to watch every vehicle live.
+            </HeroIntro>
+            <HeroPoints
+              className="mt-6 sm:mt-8"
+              points={[
+                "ARAI / ICAT certified devices",
+                "Technician comes to you",
+                "Lifetime replacement warranty",
+                "10,000+ vehicles already on NViQ",
+              ]}
+            />
           </div>
-
-          <div className="fleet-value__grid">
-            {FLEET_VALUE.map((item, index) => (
-              <article
-                key={item.id}
-                className={`fleet-value__card fleet-value__card--${item.accent}`}
-                style={{ animationDelay: `${index * 80}ms` }}
-              >
-                <div className="fleet-value__card-visual">
-                  <FleetValueVisual id={item.id} />
-                </div>
-                <div className="fleet-value__card-body">
-                  <h3 className="fleet-value__card-title">{item.title}</h3>
-                  <p className="fleet-value__card-desc">{item.desc}</p>
-                  {item.features && (
-                    <>
-                      <div className="fleet-value__card-divider" aria-hidden="true" />
-                      <ul className="fleet-value__card-list">
-                        {item.features.map((feature) => (
-                          <li key={feature} className="fleet-value__card-item">
-                            <span className="fleet-value__check" aria-hidden="true">
-                              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M3.5 8.5l3 3 6-6" />
-                              </svg>
-                            </span>
-                            <span className="fleet-value__card-item-text">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
+          <PlateLeadForm />
         </div>
       </section>
 
-      {/* FLEET SERIES SECTION */}
-      <section className="fleet-series">
-        <div className="fleet-series__inner">
-          <div className="fleet-series__header">
-            <h2 className="fleet-series__title">Who Think Ahead</h2>
-            <p className="fleet-series__subtitle">
-              Every feature is built around reducing cost, eliminating guesswork, and giving your team a measurable edge.
-            </p>
+      {/* SELF-SELECTION: find your own problem in one glance */}
+      <section className="py-16 sm:py-24" aria-labelledby="needs-title">
+        <div className={wrap}>
+          <div id="needs-title">
+            <SectionHead title="What do you need help with?" sub="Pick the line that sounds like you. Each one leads to the full details and a price for your case." />
           </div>
-
-          <div className="fleet-series__strip">
-            {FLEET_SERIES.map((series) => (
-              <article key={series.id} className="fleet-series__item">
-                <div className="fleet-series__icon">
-                  <FleetSeriesIcon id={series.id} />
-                </div>
-                <div className="fleet-series__body">
-                  <h3 className="fleet-series__label">{series.title}</h3>
-                  <p className="fleet-series__desc">{series.desc}</p>
-                </div>
-              </article>
+          <ul className="mt-10 border-t-2 border-[#18202E]">
+            {NEEDS.map((n) => (
+              <li key={n.href} className="grid gap-3 border-b border-[#D9DEE6] py-7 md:grid-cols-[1fr_1.1fr_13rem] md:items-baseline md:gap-10">
+                <p className="font-display text-xl font-semibold leading-snug sm:text-2xl">&ldquo;{n.problem}&rdquo;</p>
+                <p className="leading-relaxed text-slate-600">{n.answer}</p>
+                <Link href={n.href} className={`${link} md:justify-self-end`}>
+                  {n.link}
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* PRICING SECTION */}
+      {/* HOW IT WORKS: a real sequence, so numbered */}
+      <section className="bg-[#F2F4F7] py-16 sm:py-24" aria-labelledby="steps-title">
+        <div className={wrap}>
+          <div id="steps-title">
+            <SectionHead title="How it works" sub="Four steps, usually done the same day. You don't have to visit the RTO for the tracker." />
+          </div>
+          <ol className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+            {STEPS.map((s, i) => (
+              <li key={s.title} className="relative">
+                <div className="flex items-center gap-4">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center bg-[#18202E] font-display text-xl font-bold text-[#60A5FA]">
+                    {i + 1}
+                  </span>
+                  {i < STEPS.length - 1 && <span className="hidden h-[3px] flex-1 bg-[repeating-linear-gradient(90deg,#18202E_0_14px,transparent_14px_24px)] lg:block" aria-hidden="true" />}
+                </div>
+                <h3 className="mt-5 font-display text-xl font-semibold">{s.title}</h3>
+                <p className="mt-2 leading-relaxed text-slate-600">{s.text}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
 
-      {/* FAQ SECTION */}
-      {/* <section id="faq" className="faq">
-        <div className="faq__inner">
-          <div className="faq__layout">
-            <div className="faq__intro">
-              <div className="faq__header">
-                <p className="faq__eyebrow">FAQ</p>
-                <h2 className="faq__title">Got questions?</h2>
-                <p className="faq__subtitle">
-                  Everything you need to know about setup, coverage, billing, and hardware — answered before you commit.
-                </p>
+      {/* WHAT'S INCLUDED: remove doubt about hidden costs and extra work */}
+      <section className="py-16 sm:py-24" aria-labelledby="included-title">
+        <div className={`${wrap} grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-20`}>
+          <div>
+            <div id="included-title">
+              <SectionHead title="One price covers all of it" sub="No separate bills for the device, the fitting and the Vahan work. Here is everything you get." />
+            </div>
+            <div className="mt-10 border-l-4 border-[#1D5BD8] bg-[#F2F4F7] p-6">
+              <h3 className="font-display text-lg font-semibold">What you won&apos;t have to do</h3>
+              <ul className="mt-3 space-y-2.5">
+                {NOT_NEEDED.map((t) => (
+                  <li key={t} className="flex items-start gap-2.5 text-slate-700">
+                    <X className="mt-0.5 h-5 w-5 shrink-0 text-slate-400" aria-hidden="true" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <dl className="grid content-start border-t border-[#D9DEE6] sm:grid-cols-2 sm:gap-x-10">
+            {INCLUDED.map(([title, text]) => (
+              <div key={title} className="border-b border-[#D9DEE6] py-6">
+                <dt className="flex items-start gap-2.5 font-semibold">
+                  <Check className="mt-0.5 h-5 w-5 shrink-0 text-[#0F8A4B]" aria-hidden="true" />
+                  {title}
+                </dt>
+                <dd className="mt-1.5 pl-[30px] leading-relaxed text-slate-600">{text}</dd>
               </div>
+            ))}
+          </dl>
+        </div>
+      </section>
 
-              <aside className="faq__support">
-                <p className="faq__support-label">Still need help?</p>
-                <p className="faq__support-text">
-                  Our fleet specialists are available Monday–Saturday, 9 AM – 7 PM IST.
-                </p>
-                <a href="tel:+919694551326" className="faq__support-cta">
-                  Speak to a specialist
-                  <span aria-hidden="true">→</span>
-                </a>
-              </aside>
+      {/* AFTER FITMENT: why the tracker keeps paying back (retention) */}
+      <section className="bg-[#F2F4F7] py-16 sm:py-24" aria-labelledby="app-title">
+        <div className={`${wrap} grid gap-14 lg:grid-cols-[1.3fr_1fr] lg:items-center`}>
+          <div>
+            <div id="app-title">
+              <SectionHead
+                title="After fitting, the tracker keeps working for you"
+                sub="The certificate is only the start. The same device shows you, every day, where your vehicles are and how they are driven."
+              />
             </div>
+            <dl className="mt-10 grid gap-x-10 gap-y-7 sm:grid-cols-2">
+              {APP_FEATURES.map(([title, text]) => (
+                <div key={title}>
+                  <dt className="font-display text-lg font-semibold">{title}</dt>
+                  <dd className="mt-1 leading-relaxed text-slate-600">{text}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+          <AppPreview />
+        </div>
+      </section>
 
-            <div className="faq__list">
-              {FAQ_ITEMS.map((item, idx) => {
-                const isOpen = openFaqIndex === idx;
-                const panelId = `faq-panel-${idx}`;
-                const triggerId = `faq-trigger-${idx}`;
-
-                return (
-                  <article
-                    key={item.question}
-                    className={`faq__item${isOpen ? " faq__item--open" : ""}`}
+      {/* WHO IT'S FOR: let each buyer see their vehicle named */}
+      <section className="py-16 sm:py-24" aria-labelledby="segments-title">
+        <div className={wrap}>
+          <div id="segments-title">
+            <SectionHead title="Made for your kind of vehicle" sub="See what the rules say for your vehicle and what tracking does for your business." />
+          </div>
+          <ul className="mt-10 grid border-t border-[#D9DEE6] sm:grid-cols-2 sm:gap-x-10 lg:grid-cols-3">
+            {SEGMENTS.map((s) => (
+              <li key={s.slug} className="border-b border-[#D9DEE6]">
+                <Link
+                  href={`/gps-tracking/${s.slug}`}
+                  className="group flex items-center justify-between gap-4 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1D5BD8]"
+                >
+                  <span className="font-semibold group-hover:text-[#1D5BD8] group-hover:underline group-hover:underline-offset-4">{s.name}</span>
+                  <span
+                    className={`shrink-0 px-2 py-0.5 text-xs font-semibold ${
+                      s.needsVltd === "mandatory" ? "bg-[#1D5BD8] text-white" : "bg-[#F2F4F7] text-slate-600"
+                    }`}
                   >
-                    <button
-                      id={triggerId}
-                      type="button"
-                      className="faq__trigger"
-                      aria-expanded={isOpen}
-                      aria-controls={panelId}
-                      onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    >
-                      <span className="faq__trigger-main">
-                        <span className="faq__meta">
-                          <span className="faq__index">{String(idx + 1).padStart(2, "0")}</span>
-                          <span className="faq__tag">{item.tag}</span>
-                        </span>
-                        <span className="faq__question">{item.question}</span>
-                      </span>
-                      <span className="faq__icon" aria-hidden="true">
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                          <path d="M4 6l4 4 4-4" />
-                        </svg>
-                      </span>
-                    </button>
-                    <div
-                      id={panelId}
-                      className="faq__panel"
-                      role="region"
-                      aria-labelledby={triggerId}
-                    >
-                      <div className="faq__panel-inner">
-                        <p className="faq__answer">{item.answer}</p>
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
+                    {VLTD_LABEL[s.needsVltd]}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* TRUST: specific facts, not adjectives */}
+      <section className="bg-[#18202E] py-16 text-white sm:py-24" aria-labelledby="trust-title">
+        <div className={`${wrap} grid gap-12 lg:grid-cols-[1fr_1.3fr] lg:gap-20`}>
+          <div id="trust-title">
+            <SectionHead dark title="Why owners stay with NViQ" sub="You fit a tracker once, but you'll need help for years. We built the service around that." />
+          </div>
+          <dl className="grid gap-x-10 gap-y-9 sm:grid-cols-2">
+            <div>
+              <dt className="font-display text-4xl font-bold text-[#60A5FA]">10,000+</dt>
+              <dd className="mt-2 leading-relaxed text-slate-300">vehicles across India already run on NViQ trackers.</dd>
             </div>
+            <div>
+              <dt className="font-display text-4xl font-bold text-[#60A5FA]">~1 hour</dt>
+              <dd className="mt-2 leading-relaxed text-slate-300">from fitting to certificate on Vahan, so you lose a morning, not a week.</dd>
+            </div>
+            <div>
+              <dt className="font-display text-xl font-semibold">Approved where it matters</dt>
+              <dd className="mt-2 leading-relaxed text-slate-300">Vahan 4.0, Rajasthan DMG, MP Khanij, Gujarat i-Khanij and Haryana e-Ravanna.</dd>
+            </div>
+            <div>
+              <dt className="font-display text-xl font-semibold">A device that&apos;s covered for life</dt>
+              <dd className="mt-2 leading-relaxed text-slate-300">If it stops working, we replace it. One number to call, in Hindi or English.</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      {/* FREE TOOLS: help before the sale builds trust */}
+      <section className="py-16 sm:py-24" aria-labelledby="tools-title">
+        <div className={wrap}>
+          <div id="tools-title">
+            <SectionHead title="Check before you spend" sub="Free tools, no sign-up. Get a clear answer in under a minute." />
+          </div>
+          <ul className="mt-10 grid gap-8 md:grid-cols-3">
+            {TOOLS.map((t) => (
+              <li key={t.href} className="border-t-2 border-[#18202E] pt-5">
+                <Link href={t.href} className={`${link} font-display text-xl`}>
+                  {t.name}
+                </Link>
+                <p className="mt-2 leading-relaxed text-slate-600">{t.text}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* FAQ: answer the doubts that stop people from calling */}
+      <section id="faq" className="bg-[#F2F4F7] py-16 sm:py-24" aria-labelledby="faq-title">
+        <div className={`${wrap} grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-20`}>
+          <div>
+            <div id="faq-title">
+              <SectionHead title="Questions people ask us" />
+            </div>
+            <p className="mt-4 leading-relaxed text-slate-600">
+              Still unsure? Call{" "}
+              <a href={SALES_TEL_HREF} data-track="home_faq_call" className={link}>
+                {SALES_PHONE_DISPLAY}
+              </a>
+              , Monday to Saturday, 9 am to 7 pm.
+            </p>
+          </div>
+          <div className="border-t border-[#C9D0DB]">
+            {FAQS.map((f) => (
+              <details key={f.q} className="group border-b border-[#C9D0DB]">
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-6 py-5 font-semibold text-[#18202E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1D5BD8] [&::-webkit-details-marker]:hidden">
+                  <span className="text-[17px] leading-snug">{f.q}</span>
+                  <span className="mt-0.5 font-display text-2xl leading-none text-[#1D5BD8] transition-transform duration-200 group-open:rotate-45 motion-reduce:transition-none" aria-hidden="true">
+                    +
+                  </span>
+                </summary>
+                <p className="max-w-2xl pb-6 leading-relaxed text-slate-700">{f.a}</p>
+              </details>
+            ))}
           </div>
         </div>
-      </section> */}
+      </section>
 
-      {/* DIRECTORY SECTION FOR CRAWLERS & USERS */}
-      <section className="py-14 bg-slate-900 text-white border-t border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-            <div>
-              <span className="text-xs font-bold tracking-widest uppercase text-blue-400 block mb-1">
-                Regional Hubs &amp; RTO Desks
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                Pan-India AIS 140 VLTD &amp; Fitness Passing Network
-              </h2>
-            </div>
-            <Link
-              href="/rto-partner"
-              className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-1.5"
+      {/* FINAL NUDGE: one clear next step */}
+      <section className="bg-[#1D5BD8] py-14 sm:py-20">
+        <div className={`${wrap} flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between`}>
+          <div className="max-w-2xl">
+            <h2 className="font-display text-3xl font-bold leading-[1.1] text-white sm:text-[44px]">Fitness or permit due soon? Don&apos;t wait for the last day.</h2>
+            <p className="mt-3 text-lg text-white/85">Send your vehicle number now and get a fitting slot that suits you.</p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <a
+              href={WA_GENERAL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-track="home_final_whatsapp"
+              className="flex h-14 items-center justify-center gap-2 bg-[#0F8A4B] px-7 text-base font-bold text-white hover:bg-[#0B7440] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#18202E]"
             >
-              <span>Explore All 36 States &amp; UTs</span>
-              <span aria-hidden="true">→</span>
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-xs">
-            {/* Priority Commercial States */}
-            <div>
-              <h3 className="font-bold text-slate-300 uppercase tracking-wider text-[11px] mb-3">
-                Top Commercial Transport States
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { name: "Rajasthan RTO", href: "/rto-partner/rajasthan" },
-                  { name: "Gujarat VLTD", href: "/vltd/gujarat" },
-                  { name: "Maharashtra RTO", href: "/rto-partner/maharashtra" },
-                  { name: "Delhi NCR Hubs", href: "/rto-partner/delhi" },
-                  { name: "Haryana e-Ravanna", href: "/vltd/haryana" },
-                  { name: "MP Khanij Portals", href: "/vltd/madhya-pradesh" },
-                  { name: "Uttar Pradesh", href: "/rto-partner/uttar-pradesh" },
-                  { name: "Punjab Passing", href: "/rto-partner/punjab" },
-                  { name: "Karnataka RTO", href: "/rto-partner/karnataka" },
-                  { name: "Tamil Nadu", href: "/rto-partner/tamil-nadu" },
-                ].map((s) => (
-                  <Link
-                    key={s.name}
-                    href={s.href}
-                    className="px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-blue-600 text-slate-200 hover:text-white transition-colors border border-slate-700/60"
-                  >
-                    {s.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Mining & Passing Hubs */}
-            <div>
-              <h3 className="font-bold text-slate-300 uppercase tracking-wider text-[11px] mb-3">
-                Key Industrial &amp; Mining Desks
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { name: "Jaipur (RJ-14 / RJ-45)", href: "/truck-passing/rajasthan/jaipur" },
-                  { name: "Kishangarh Marble (RJ-42)", href: "/truck-passing/rajasthan/kishangarh" },
-                  { name: "Chittorgarh Cement (RJ-09)", href: "/truck-passing/rajasthan/chittorgarh" },
-                  { name: "Bhilwara Mining (RJ-06)", href: "/truck-passing/rajasthan/bhilwara" },
-                  { name: "Jodhpur Stone (RJ-19)", href: "/truck-passing/rajasthan/jodhpur" },
-                  { name: "Kota Freight (RJ-20)", href: "/truck-passing/rajasthan/kota" },
-                  { name: "Alwar Transport (RJ-02)", href: "/truck-passing/rajasthan/alwar" },
-                  { name: "Ahmedabad Hub (GJ-01)", href: "/vltd/gujarat/ahmedabad" },
-                  { name: "Morbi Ceramic (GJ-36)", href: "/vltd/gujarat/morbi/gj-36" },
-                  { name: "Gurugram Depot (HR-26)", href: "/vltd/haryana/gurugram/hr-26" },
-                ].map((hub) => (
-                  <Link
-                    key={hub.name}
-                    href={hub.href}
-                    className="px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-amber-600 text-slate-200 hover:text-white transition-colors border border-slate-700/60"
-                  >
-                    {hub.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Commercial Truck Categories */}
-            <div>
-              <h3 className="font-bold text-slate-300 uppercase tracking-wider text-[11px] mb-3">
-                Commercial Fleet Fitment Categories
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { name: "Marble Trolla Passing", href: "/trucks/marble-trolla" },
-                  { name: "Mining Dumper GPS", href: "/trucks/mining-dumper" },
-                  { name: "Bajri Tipper Fitment", href: "/trucks/bajri-truck" },
-                  { name: "Cement Bulker AIS 140", href: "/trucks/cement-bulker" },
-                  { name: "Rajasthan Truck Passing", href: "/truck-passing/rajasthan" },
-                  { name: "RTO Partner Dealership", href: "/rto-partner" },
-                ].map((cat) => (
-                  <Link
-                    key={cat.name}
-                    href={cat.href}
-                    className="px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-emerald-600 text-slate-200 hover:text-white transition-colors border border-slate-700/60"
-                  >
-                    {cat.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
+              <MessageCircle className="h-5 w-5" aria-hidden="true" />
+              WhatsApp us
+            </a>
+            <a
+              href={SALES_TEL_HREF}
+              data-track="home_final_call"
+              className="flex h-14 items-center justify-center gap-2 bg-[#18202E] px-7 text-base font-bold text-white hover:bg-black focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#18202E]"
+            >
+              <PhoneCall className="h-5 w-5" aria-hidden="true" />
+              Call {SALES_PHONE_DISPLAY}
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Mobile Sticky CTA */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 p-3.5 bg-background/95 backdrop-blur-md border-t border-border z-50 flex items-center justify-between shadow-2xl">
-        <div className="flex items-center gap-2">
-          <Image src={logoImg} alt="NViQ Logo" width={24} height={24} className="object-cover" suppressHydrationWarning />
-          <span className="text-xs font-black text-foreground">NV<span className="text-primary">i</span>Q</span>
+      {/* DIRECTORY: local pages for people and crawlers */}
+      <section className="border-t border-[#D9DEE6] py-14" aria-labelledby="directory-title">
+        <div className={wrap}>
+          <h2 id="directory-title" className="font-display text-2xl font-semibold">
+            Find NViQ near your RTO
+          </h2>
+          <p className="mt-1 text-slate-600">
+            Fitment and RTO help across all 36 states and UTs.{" "}
+            <Link href="/rto-partner" className={link}>
+              See every state
+            </Link>
+          </p>
+          <div className="mt-8 grid gap-10 md:grid-cols-3">
+            {DIRECTORY.map((col) => (
+              <div key={col.title}>
+                <h3 className="font-semibold">{col.title}</h3>
+                <ul className="mt-3 space-y-2 text-[15px]">
+                  {col.links.map(([name, href]) => (
+                    <li key={href}>
+                      <Link href={href} className="text-slate-600 underline-offset-4 hover:text-[#1D5BD8] hover:underline">
+                        {name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
-        <button type="button" className="group inline-flex h-9 items-center justify-center overflow-hidden text-xs font-bold" onClick={() => openLeadModal("starter")}>
-          <span className="flex h-full items-center bg-foreground text-background px-4">Start Trial</span>
-          <span className="flex h-full items-center bg-primary text-white px-3">→</span>
-        </button>
-      </div>
+      </section>
     </div>
   );
 }
